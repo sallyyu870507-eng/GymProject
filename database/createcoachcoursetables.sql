@@ -1,48 +1,55 @@
 USE gymproject;
 GO
-
-INSERT INTO course (coursename, coursetype, [description], price)
-VALUES
-    (N'初階重訓', N'重量訓練', N'適合初學者的重量訓練課程，每堂 60 分鐘。', 800.00),
-    (N'中階重訓', N'重量訓練', N'適合已有基礎、想進一步提升肌力的學員。', 1000.00),
-    (N'高階重訓', N'重量訓練', N'適合有訓練經驗、想挑戰較高強度的學員。', 1200.00),
-    (N'筋膜放鬆', N'伸展放鬆', N'透過筋膜放鬆練習，舒緩運動後的緊繃感。', 700.00),
-    (N'TRX', N'懸吊訓練', N'利用懸吊器材進行全身肌力與核心訓練。', 900.00);
+-- 教練資料表
+CREATE TABLE coach (
+    coachid INT IDENTITY(1,1) PRIMARY KEY, --教練ID，自動編號
+    accountid INT NULL,                     -- 對應登入帳號的ID，帳號表確定後再設定外鍵
+    coachno VARCHAR(20) NOT NULL UNIQUE,    -- 教練編號，不可重複
+    [name] NVARCHAR(50) NOT NULL,           -- 教練姓名
+    gender NVARCHAR(10) NULL,                -- 性別
+    phone VARCHAR(20) NULL,                  -- 電話
+    email VARCHAR(100) NULL,                 -- 電子郵件
+    specialty NVARCHAR(200) NULL,            -- 專長
+    [status] NVARCHAR(20) NOT NULL            -- 教練狀態
+        CONSTRAINT dfcoachstatus DEFAULT N'在職'
+);
 GO
+-- 課程資料表
+CREATE TABLE course (
+    courseid INT IDENTITY(1,1) PRIMARY KEY, -- 課程ID，自動編號
+    coursename NVARCHAR(100) NOT NULL,       -- 課程名稱
+    coursetype NVARCHAR(50) NOT NULL,        -- 課程類型
+    [description] NVARCHAR(500) NULL,          -- 課程介紹
+    durationmin INT NOT NULL                 -- 每堂課的時長，單位為分鐘
+        CONSTRAINT dfcoursedurationmin DEFAULT 60, -- 未填時自動設為 60 分鐘
+    price DECIMAL(10, 2) NOT NULL,            -- 課程價格
+    [status] NVARCHAR(20) NOT NULL             -- 課程狀態
+        CONSTRAINT dfcoursestatus DEFAULT N'上架',
 
-SELECT * FROM course;
+    CONSTRAINT ckcoursedurationmin
+        CHECK (durationmin = 60),-- 每堂課時長只能是 60 分鐘
 
-INSERT INTO coach (coachno, [name])
-VALUES
-    ('C001', N'AMY'),
-    ('C002', N'BEN'),
-    ('C003', N'CHRIS'),
-    ('C004', N'DAVID'),
-    ('C005', N'ERIC');
+    CONSTRAINT ckcourseprice
+        CHECK (price >= 0)       -- 課程價格不可為負數
+);
 GO
-INSERT INTO coachcourse (coachid, courseid)
-SELECT c.coachid, co.courseid
-FROM (VALUES
-    ('C001', N'初階重訓'),
-    ('C001', N'中階重訓'),
-    ('C001', N'TRX'),
-    ('C002', N'筋膜放鬆'),
-    ('C003', N'中階重訓'),
-    ('C003', N'高階重訓'),
-    ('C004', N'初階重訓'),
-    ('C004', N'筋膜放鬆'),
-    ('C005', N'高階重訓'),
-    ('C005', N'TRX')
-) AS mapping(coachno, coursename)
-JOIN coach AS c ON c.coachno = mapping.coachno
-JOIN course AS co ON co.coursename = mapping.coursename;
+-- 教練與課程的關聯表
+CREATE TABLE coachcourse (
+    coachid INT NOT NULL,  -- 教練ID，對應 coach.coachid
+    courseid INT NOT NULL, -- 課程ID，對應 course.courseid
+
+    -- 複合主鍵：避免同一位教練重複綁定同一門課
+    CONSTRAINT pkcoachcourse
+        PRIMARY KEY (coachid, courseid),
+
+    -- coachid 關聯 coach
+    CONSTRAINT fkcoachcoursecoach
+        FOREIGN KEY (coachID)
+        REFERENCES coach(coachid),
+
+    -- courseid 關聯 course
+    CONSTRAINT fkcoachcoursecourse
+        FOREIGN KEY (courseid)
+        REFERENCES course(courseid)
+);
 GO
-SELECT
-    c.coachno,
-    c.[name] AS coachname,
-    c.[status],
-    co.coursename
-FROM coachcourse AS cc
-JOIN coach AS c ON c.coachid = cc.coachid
-JOIN course AS co ON co.courseid = cc.courseid
-ORDER BY c.coachno, co.courseid;
