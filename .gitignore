@@ -24,3 +24,14 @@ hs_err_pid*
 replay_pid*
 /bin/
 /target/
+
+
+# Eclipse workspace metadata
+.metadata/
+
+# Maven build
+target/
+
+# Eclipse temporary files
+.lock
+.location

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence
+    xmlns="https://jakarta.ee/xml/ns/persistence"
+    xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="
+      https://jakarta.ee/xml/ns/persistence
+      https://jakarta.ee/xml/ns/persistence/persistence_3_2.xsd"
+    version="3.2">
+
+  <persistence-unit name="gym">
+  
+  <!--加入會使用到的entity <class>tw.gymproject.entity.member</class> -->	
+  
+    <properties>
+	    <property name="jakarta.persistence.jdbc.url"
+	          value="jdbc:sqlserver://localhost:1433;databaseName=gym;encrypt=true;trustServerCertificate=true" />
+	
+		<property name="jakarta.persistence.jdbc.user"
+	          value="sa" />
+	
+		<property name="jakarta.persistence.jdbc.password"
+	          value="password" />
+
+      <property name="hibernate.show_sql"
+                value="true"/>
+
+      <property name="hibernate.format_sql"
+                value="true"/>
+    </properties>
+
+  </persistence-unit>
+
+</persistence>
