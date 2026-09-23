@@ -16,10 +16,10 @@
 	          value="jdbc:sqlserver://localhost:1433;databaseName=gym;encrypt=true;trustServerCertificate=true" />
 	
 		<property name="jakarta.persistence.jdbc.user"
-	          value="sa" />
+	          value="gym" />
 	
 		<property name="jakarta.persistence.jdbc.password"
-	          value="password" />
+	          value="gym" />
 
       <property name="hibernate.show_sql"
                 value="true"/>
