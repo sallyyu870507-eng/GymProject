@@ -16,13 +16,13 @@ public class Useraccount {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer accountid;
 	
-	private String username;
+	private String username; //暫定為電話號碼
 
 	private String password;
 	
 	private String role;
 	
-	private String satus;
+	private String status;
 
 	public Integer getAccountid() {
 		return accountid;
@@ -57,11 +57,11 @@ public class Useraccount {
 	}
 
 	public String getSatus() {
-		return satus;
+		return status;
 	}
 
 	public void setSatus(String satus) {
-		this.satus = satus;
+		this.status = satus;
 	}
 
 	//--------------//
@@ -70,5 +70,29 @@ public class Useraccount {
 	
 	@OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
 	private Member member;
+
+	public Coach getCoach() {
+		return coach;
+	}
+
+	public void setCoach(Coach coach) {
+		this.coach = coach;
+		if(coach != null) {
+			//在coach端也建立account的資料，雙向
+			coach.setAccount(this);
+		}
+	}
+
+	public Member getMember() {
+		return member;
+	}
+
+	public void setMember(Member member) {
+		this.member = member;
+		if(member != null) {
+			member.setAccount(this);
+		}
+	}
+	
 	
 }
