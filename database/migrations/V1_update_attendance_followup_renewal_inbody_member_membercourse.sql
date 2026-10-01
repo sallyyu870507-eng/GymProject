@@ -64,6 +64,37 @@ ALTER TABLE dbo.member
 ADD avatarurl NVARCHAR(500) NULL;
 GO
 
+
+--membercourse:
+-- 1. 新增 coachid，暫時允許 NULL
+ALTER TABLE dbo.membercourse
+ADD coachid INT NULL;
+GO
+
+-- 2. 目前測試資料全部都由 coachid = 1 負責
+UPDATE dbo.membercourse
+SET coachid = 1
+WHERE coachid IS NULL;
+GO
+
+-- 3. 確認都已經有 coachid
+SELECT *
+FROM dbo.membercourse;
+GO
+
+-- 4. 改成 NOT NULL
+ALTER TABLE dbo.membercourse
+ALTER COLUMN coachid INT NOT NULL;
+GO
+
+-- 5. 建立 FK
+ALTER TABLE dbo.membercourse
+ADD CONSTRAINT FK_membercourse_coach
+FOREIGN KEY (coachid)
+REFERENCES dbo.coach(coachid);
+GO
+
+
 --檢查修改的table
 SELECT 
     TABLE_NAME,
@@ -76,12 +107,14 @@ WHERE TABLE_NAME IN (
     'renewal',
     'followup',
     'inbodyrecords',
-    'member'
+    'member',
+    'membercourse'
 )
 ORDER BY TABLE_NAME, ORDINAL_POSITION;
+GO
 
 
--- 看 UNIQUE / FK / DEFAULT 等 constraint
+-- 檢查 UNIQUE / FK / DEFAULT 等 Constraint
 SELECT 
     t.name AS table_name,
     o.name AS constraint_name,
@@ -89,5 +122,14 @@ SELECT
 FROM sys.objects o
 JOIN sys.tables t
     ON o.parent_object_id = t.object_id
-WHERE t.name IN ('attendance', 'followup', 'inbodyrecords', 'renewal', 'member')
+WHERE t.name IN (
+    'attendance',
+    'followup',
+    'inbodyrecords',
+    'renewal',
+    'member',
+    'membercourse'
+)
 ORDER BY t.name, o.type_desc;
+GO
+

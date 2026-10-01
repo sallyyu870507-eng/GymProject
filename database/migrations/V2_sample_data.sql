@@ -1,6 +1,8 @@
 USE gym;
 GO
 
+
+
 /* =========================================================
 清除整套測試資料
 注意：依照 FK 關聯，由子表往父表刪除
@@ -18,6 +20,8 @@ DELETE FROM dbo.coach;
 DELETE FROM dbo.course;
 DELETE FROM dbo.useraccount;
 GO
+
+
 
 IDENTITY 全部重新從 1 開始
 RESEED = 0，下一筆 INSERT 就會得到 ID = 1
@@ -276,56 +280,56 @@ DECLARE @member6 INT = SCOPE_IDENTITY();
 
 -- 王小美：20堂，剩2堂 → 極低堂數
 INSERT INTO dbo.membercourse
-(memberid, courseid, purchasedate, totalsessions, remainingsessions, status)
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
 VALUES
-(@member1, @courseId, '2026-05-01', 20, 2, N'active');
+(@member1, @courseId, @coachId, '2026-05-01', 20, 2, N'active');
 
 DECLARE @mc1 INT = SCOPE_IDENTITY();
 
 
 -- 陳志豪：24堂，剩5堂 → 續約提醒
 INSERT INTO dbo.membercourse
-(memberid, courseid, purchasedate, totalsessions, remainingsessions, status)
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
 VALUES
-(@member2, @courseId, '2026-04-15', 24, 5, N'active');
+(@member2, @courseId, @coachId, '2026-04-15', 24, 5, N'active');
 
 DECLARE @mc2 INT = SCOPE_IDENTITY();
 
 
 -- 林怡君：20堂，剩12堂，但久未出席
 INSERT INTO dbo.membercourse
-(memberid, courseid, purchasedate, totalsessions, remainingsessions, status)
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
 VALUES
-(@member3, @courseId, '2026-06-01', 20, 12, N'active');
+(@member3, @courseId, @coachId, '2026-06-01', 20, 12, N'active');
 
 DECLARE @mc3 INT = SCOPE_IDENTITY();
 
-
 -- 張家豪：課程已用完
 INSERT INTO dbo.membercourse
-(memberid, courseid, purchasedate, totalsessions, remainingsessions, status)
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
 VALUES
-(@member4, @courseId, '2026-02-01', 20, 0, N'active');
+(@member4, @courseId, @coachId, '2026-02-01', 20, 0, N'active');
 
 DECLARE @mc4 INT = SCOPE_IDENTITY();
 
 
 -- 李佳穎：正常會員
 INSERT INTO dbo.membercourse
-(memberid, courseid, purchasedate, totalsessions, remainingsessions, status)
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
 VALUES
-(@member5, @courseId, '2026-07-01', 30, 15, N'active');
+(@member5, @courseId, @coachId, '2026-07-01', 30, 15, N'active');
 
 DECLARE @mc5 INT = SCOPE_IDENTITY();
 
 
 -- 黃雅婷：剩2堂＋久未出席
 INSERT INTO dbo.membercourse
-(memberid, courseid, purchasedate, totalsessions, remainingsessions, status)
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
 VALUES
-(@member6, @courseId, '2026-03-01', 16, 2, N'active');
+(@member6, @courseId, @coachId, '2026-03-01', 16, 2, N'active');
 
 DECLARE @mc6 INT = SCOPE_IDENTITY();
+
 
 
 /* =========================================================
@@ -903,9 +907,7 @@ GO
 
 
 
-/* =========================================================
-   檢查SQL
-   ========================================================= */
+--檢查資料表
 SELECT * FROM dbo.member;
 SELECT * FROM dbo.membercourse;
 SELECT * FROM dbo.classschedule;
@@ -914,3 +916,33 @@ SELECT * FROM dbo.attendance;
 SELECT * FROM dbo.inbodyrecords;
 SELECT * FROM dbo.followup;
 SELECT * FROM dbo.renewal;
+
+
+-- 1. membercourse 有 coachid
+SELECT 
+    membercourseid,
+    memberid,
+    courseid,
+    coachid,
+    purchasedate,
+    totalsessions,
+    remainingsessions,
+    status
+FROM dbo.membercourse;
+
+-- 2. coachid FK 正常對到 coach
+SELECT 
+    mc.membercourseid,
+    m.name AS membername,
+    c.name AS coachname,
+    mc.remainingsessions
+FROM dbo.membercourse mc
+JOIN dbo.member m
+    ON mc.memberid = m.memberid
+JOIN dbo.coach c
+    ON mc.coachid = c.coachid;
+
+-- 3. 確認沒有 NULL coachid
+SELECT *
+FROM dbo.membercourse
+WHERE coachid IS NULL;
