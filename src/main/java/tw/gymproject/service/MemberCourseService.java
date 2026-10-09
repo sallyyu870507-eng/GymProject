@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tw.gymproject.entity.MemberCourse;
 import tw.gymproject.exception.BusinessException;
+import tw.gymproject.exception.ConflictException;
 import tw.gymproject.exception.ResourceNotFoundException;
 import tw.gymproject.repository.MemberCourseRepo;
 
@@ -40,7 +41,7 @@ public class MemberCourseService {
         Integer remaining = memberCourse.getRemainingsessions();
 
         if (remaining <= 0) {
-            throw new BusinessException(
+            throw new ConflictException(
                     "剩餘堂數不足，無法扣堂"
             );
         }

@@ -8,11 +8,17 @@ import java.math.BigDecimal;
 前端更新 Attendance 時，
 若狀態為 PRESENT，可以一起送 InBody。
 
-全部 null：
-→ 不建立 InBody
+inBody = null：
+→ 本次沒有量測 InBody
+→ 不建立，也不修改既有資料
 
-任一欄非 null：
-→ 建立 / 更新 InBody
+有傳 InBody：
+→ weight、bodyFatPct、muscleMass 三項都必須完整填寫
+→ 三項數值都必須大於 0
+→ 第一次建立，重送則更新同一筆
+
+只填部分欄位：
+→ 視為不合法資料
 */
 @Data
 public class InBodyRequest {

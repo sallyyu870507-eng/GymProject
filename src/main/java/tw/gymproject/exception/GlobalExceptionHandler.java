@@ -17,6 +17,7 @@ import java.util.Map;
 400 Request / JSON 格式錯誤
 403 ForbiddenException
 404 ResourceNotFoundException
+409 ConflictException
 500 Exception
 */
 @RestControllerAdvice
@@ -27,8 +28,9 @@ public class GlobalExceptionHandler {
     // 400:業務規則錯誤
     // 例如：
     // status = HELLO
-    // 已取消 Booking 不能更新
-    // 剩餘堂數不足
+    // InBody 資料不完整
+    // InBody 數值不合法
+    // 新增堂數 <= 0
     // =========================================================
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Map<String, Object>>
@@ -191,6 +193,47 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
+                .body(body);
+    }
+
+    // =========================================================
+    // 409:目前資料狀態與請求衝突
+    // 例如：
+    // 已取消 Booking 不能更新出席
+    // 剩餘堂數不足
+    // 未來若有並行更新衝突，也可以放這裡
+    // =========================================================
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<Map<String, Object>>
+    handleConflict(
+            ConflictException ex
+    ) {
+
+        Map<String, Object> body =
+                new LinkedHashMap<>();
+
+        body.put(
+                "timestamp",
+                LocalDateTime.now()
+        );
+
+        body.put(
+                "status",
+                HttpStatus.CONFLICT.value()
+        );
+
+        body.put(
+                "error",
+                "Conflict"
+        );
+
+        body.put(
+                "message",
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .body(body);
     }
 

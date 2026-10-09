@@ -2,6 +2,8 @@ package tw.gymproject.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import tw.gymproject.entity.Booking;
 import tw.gymproject.entity.InBodyRecord;
 import tw.gymproject.entity.MemberCourse;
 
+import tw.gymproject.exception.ConflictException;
 import tw.gymproject.repository.AttendanceRepo;
 import tw.gymproject.repository.BookingRepo;
 import tw.gymproject.repository.InBodyRecordRepo;
@@ -94,7 +97,7 @@ public class AttendanceService {
         if ("CANCELLED".equalsIgnoreCase(
                 booking.getBookingstatus()
         )) {
-            throw new BusinessException(
+            throw new ConflictException(
                     "已取消的預約不能更新出席"
             );
         }
@@ -275,9 +278,26 @@ public class AttendanceService {
 
 
     // =========================================================
+    //InBody 規則：
+    /*
+         PRESENT + inBody = null
+        → 通過 validate
+        → hasInBodyValue = false
+        → return
+        → 不建立、不改既有 InBody
+
+        PRESENT + 三個都有值
+        → 通過 validate
+        → hasInBodyValue = true
+        → 建立或更新 InBody
+
+        PRESENT + 只填 1～2 個
+        → validateCompleteInBody()
+        → BusinessException
+     */
+    // =========================================================
     // 4. 處理 InBody
     // =========================================================
-
     private void handleInBody(
             Attendance attendance,
             MemberCourse memberCourse,
@@ -292,14 +312,11 @@ public class AttendanceService {
                                 attendance.getAttendanceid()
                         );
 
-
         /*
-        非 PRESENT
-        如果之前有 InBody，
-        現在改成 LEAVE / ABSENT，
-        就刪除本次 Attendance 對應的 InBody。
-        */
-
+         * 非 PRESENT：
+         * 如果之前有 InBody，
+         * 改成 LEAVE / ABSENT 時就刪除。
+         */
         if (!"PRESENT".equals(status)) {
             existingRecord.ifPresent(
                     inBodyRecordRepo::delete
@@ -307,23 +324,26 @@ public class AttendanceService {
             return;
         }
 
+        /*
+         * PRESENT：
+         * 要嘛 inBody 完全不填，
+         * 要嘛 weight / bodyFatPct / muscleMass 三個都要填。
+         */
+        validateCompleteInBody(request);
 
-
-        // PRESENT，但是三個 InBody 欄位全部沒填 → 不建立 InBody
+        // 完全沒有輸入 InBody → 不建立，也不修改既有 InBody
         if (!hasInBodyValue(request)) {
             return;
         }
 
-
         /*
-        如果已經有 InBody → 更新
-        如果沒有 → 建立新的
-        */
+         * 已經有 InBody → 更新原本那筆
+         * 沒有 → 建立新的
+         */
         InBodyRecord record =
                 existingRecord.orElseGet(
                         InBodyRecord::new
                 );
-
 
         // 關聯 Attendance
         record.setAttendance(attendance);
@@ -338,7 +358,7 @@ public class AttendanceService {
                 LocalDate.now()
         );
 
-        // DTO → Entity
+        // 完整更新這次 InBody
         record.setWeight(
                 request.getWeight()
         );
@@ -350,35 +370,86 @@ public class AttendanceService {
         record.setMusclemass(
                 request.getMuscleMass()
         );
+
         inBodyRecordRepo.save(record);
     }
+
 
 
     // =========================================================
     // 5. 判斷前端是否有輸入任何 InBody
     // =========================================================
 
-    private boolean hasInBodyValue(
-            InBodyRequest request
-    ) {
+    private boolean hasInBodyValue(InBodyRequest request) {
 
         if (request == null) {
             return false;
         }
 
-
-        /*
-         * 只要其中一欄不是 null
-         * 就代表使用者有輸入 InBody。
-         *
-         * 注意：
-         * 0 不是 null。
-         */
         return request.getWeight() != null
                 || request.getBodyFatPct() != null
                 || request.getMuscleMass() != null;
     }
 
+    private void validateCompleteInBody(InBodyRequest request) {
+
+        // 沒有量 InBody
+        // inBody = null → 合法
+        if (request == null) {
+            return;
+        }
+
+
+        boolean anyValue =
+                request.getWeight() != null
+                        || request.getBodyFatPct() != null
+                        || request.getMuscleMass() != null;
+
+        boolean allValues =
+                request.getWeight() != null
+                        && request.getBodyFatPct() != null
+                        && request.getMuscleMass() != null;
+
+        /*
+         * 有傳 InBody 時，
+         * weight / bodyFatPct / muscleMass
+         * 三個欄位必須全部有值。
+         */
+        if (anyValue && !allValues) {
+            throw new BusinessException(
+                    "InBody 資料需完整填寫體重、體脂率與肌肉量"
+            );
+        }
+
+        /*
+         * 完全沒填任何數值
+         * 交給 hasInBodyValue() 判斷後 return。
+         */
+        if (!anyValue) {
+            return;
+        }
+
+        /*
+         * 數值必須大於 0。
+         */
+        if (request.getWeight().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(
+                    "體重必須大於 0"
+            );
+        }
+
+        if (request.getBodyFatPct().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(
+                    "體脂率必須大於 0"
+            );
+        }
+
+        if (request.getMuscleMass().compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(
+                    "肌肉量必須大於 0"
+            );
+        }
+    }
 
     // =========================================================
     // 6. 取得某日 Attendance 工作台
@@ -538,11 +609,8 @@ public class AttendanceService {
         // 6. 統計
             /*
              * Booking 已取消：
-             *
              * 只算 cancelled。
-             *
-             * 不再重複算：
-             * pending / present / leave / absent
+             * 不再重複算：pending / present / leave / absent
              */
             boolean isCancelled =
                     "CANCELLED".equalsIgnoreCase(
@@ -571,9 +639,7 @@ public class AttendanceService {
                 new AttendanceSummaryResponse();
         /*
          * totalClasses：
-         *
          * 當天回傳的 Booking 卡片總數
-         *
          * 包含 cancelled。
          */
         summary.setTotalClasses(
