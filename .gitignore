@@ -43,3 +43,8 @@ target/
 
 # Maven
 target/
+
+
+# Local Spring Boot configuration
+/src/main/resources/application-local.properties
+
