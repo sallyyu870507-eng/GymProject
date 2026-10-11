@@ -24,6 +24,12 @@ public class Coach {
 	private String gender;
 	
 	private String phone;
+
+	private String email;
+	
+	private String specialty;
+	
+	private String status;
 	
 	public Integer getCoachid() {
 		return coachid;
@@ -90,15 +96,9 @@ public class Coach {
 		this.status = status;
 	}
 
-	private String email;
-	
-	private String specialty;
-	
-	private String status;
 
 	//---------//
 	@OneToOne
-	@MapsId
 	@JoinColumn(name="accountid", nullable = false, unique = true)
 	private Useraccount account;
 

@@ -1,5 +1,7 @@
 package tw.gymproject.entity;
 
+import org.hibernate.annotations.SQLDelete;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +12,8 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table
+@Table(name = "useraccount")
+@SQLDelete(sql = "UPDATE useraccount SET status = 'inactive' WHERE accountid = ?")
 public class Useraccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +25,7 @@ public class Useraccount {
 	
 	private String role;
 	
-	private String status;
+	private String status = "active" ;
 
 	public Integer getAccountid() {
 		return accountid;
@@ -56,11 +59,11 @@ public class Useraccount {
 		this.role = role;
 	}
 
-	public String getSatus() {
+	public String getStatus() {
 		return status;
 	}
 
-	public void setSatus(String satus) {
+	public void setStatus(String satus) {
 		this.status = satus;
 	}
 
@@ -93,6 +96,6 @@ public class Useraccount {
 			member.setAccount(this);
 		}
 	}
-	
-	
+
+
 }

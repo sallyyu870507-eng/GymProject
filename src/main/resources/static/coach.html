@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>FitBook-教練</title>
+		<script>
+		window.addEventListener('DOMContentLoaded', () => {
+			fetch('/api/user',
+			{credentials:'include'})	
+			    .then(response => {
+			        if (!response.ok) {
+			            window.location.href = '/login.html';
+			            return;
+			        }
+			        return response.json();
+			    })
+			    .then(user => {
+			        if (user) {
+			            document.getElementById('loginName').textContent = user.name;
+			        }
+			    })
+			    .catch(error => {
+			        console.error('取得登入者資料失敗：', error);
+			    });
+})
+
+		window.addEventListener('DOMContentLoaded', () => {
+		//已登入但沒權限的帳號會被拒絕然後拋出權限代碼給前端
+		    fetch('/api/coach/members')
+		        .then(response => {
+		            if (response.status === 401) { //沒登入
+		                window.location.href = '/login.html';
+		                return null;
+		            }
+		            if (response.status === 403) { //有登入但沒權限被forbidden
+		                alert('沒有權限');
+		                return null;
+		            }
+		
+		            if (!response.ok) {
+		                throw new Error(`HTTP錯誤：${response.status}`);
+		            }
+		
+		            return response.json();
+		        })
+		        .then(data => {
+		
+		            if (data == null) {
+		                return;
+		            }
+		
+		            console.log(data);
+		            // 之後在這裡把會員資料塞進表格
+		        })
+		        .catch(error => {
+		            console.error(error);
+		        });
+		
+		});
+		</script>
+		<style>
+		h1 {background-color: skyblue;}	
+		
+		</style>
+		
+	</head>
+	<body>
+		<h1>教練，<span id="loginName"></span>您好！</h1>
+			<br>
+		<form action="/logout" method="POST">
+		    <button type="submit">登出系統</button>
+		</form>
+
+	</body>
+</html>

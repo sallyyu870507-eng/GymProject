@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.SQLDelete;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.CascadeType;
@@ -16,21 +17,23 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
-@Table
+@Table(name = "member")
+@SQLDelete(sql = "UPDATE member SET status = 'inactive' WHERE memberid = ?")
+
 @Entity
 public class Member {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer memberid;
-	private String memberno;
-	private String name;
+	private String memberno;//
+	private String name;//
 	private String gender;
-	private String phone;
+	private String phone;//
 	private String email;
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd") //以免自動轉換失效
 	private LocalDate birthday;
-	private String status;
+	private String status = "active" ;
 	
 	
 	public Integer getMemberid() {
