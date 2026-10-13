@@ -42,16 +42,10 @@ public class CoachService {
         coach.setSpecialty(request.getSpecialty());
         coach.setStatus("在職");
 
-        // 先新增，取得 SQL Server 自動產生的 coachid
-        Coach savedCoach = coachRepository.saveAndFlush(coach);
+        // 使用已建立的教練帳號 ID
+        coach.setAccountid(request.getAccountid());
 
-        // 依團隊約定，accountid 與 coachid 相同
-        savedCoach.setAccountid(savedCoach.getCoachid());
-
-        // 在同一筆交易內更新 accountid
-        coachRepository.flush();
-
-        return savedCoach;
+        return coachRepository.save(coach);
     }
 
     @Transactional(readOnly = true)
