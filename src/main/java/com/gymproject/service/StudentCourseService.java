@@ -24,7 +24,7 @@ public class StudentCourseService {
     public List<StudentCourseListResponse> getCourses() {
 
         return courseRepository
-                .findByStatusOrderByCourseidAsc("上架")
+                .findByStatusOrderByCourseidAsc("active")
                 .stream()
                 .map(StudentCourseListResponse::new)
                 .toList();
@@ -35,7 +35,7 @@ public class StudentCourseService {
             Integer courseid) {
 
         Course course = courseRepository
-                .findByCourseidAndStatus(courseid, "上架")
+                .findByCourseidAndStatus(courseid, "active")
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "此課程已下架或不存在"));

@@ -11,8 +11,8 @@ public class CoachStatusRequest {
 
     @NotBlank(message = "請提供教練狀態")
     @Pattern(
-            regexp = "^(在職|停用)$",
-            message = "教練狀態只能是「在職」或「停用」"
+            regexp = "^(active|inactive)$",
+            message = "教練狀態只能是 active 或 inactive "
     )
     private String status;
 }

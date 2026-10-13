@@ -40,7 +40,7 @@ public class CoachService {
         coach.setPhone(request.getPhone());
         coach.setEmail(request.getEmail());
         coach.setSpecialty(request.getSpecialty());
-        coach.setStatus("在職");
+        coach.setStatus("active");
 
         // 使用已建立的教練帳號 ID
         coach.setAccountid(request.getAccountid());

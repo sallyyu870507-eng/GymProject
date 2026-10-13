@@ -24,7 +24,7 @@ public class StudentCoachService {
     public List<StudentCoachListResponse> getCoaches() {
 
         return coachRepository
-                .findByStatusOrderByCoachidAsc("在職")
+                .findByStatusOrderByCoachidAsc("active")
                 .stream()
                 .map(StudentCoachListResponse::new)
                 .toList();
@@ -35,7 +35,7 @@ public class StudentCoachService {
             Integer coachid) {
 
         Coach coach = coachRepository
-                .findByCoachidAndStatus(coachid, "在職")
+                .findByCoachidAndStatus(coachid, "active")
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "此教練已停用或不存在"));
