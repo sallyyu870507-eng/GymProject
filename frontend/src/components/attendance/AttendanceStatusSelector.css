@@ -1,0 +1,204 @@
+/* =========================================================
+   Attendance Status Selector
+   ========================================================= */
+
+.attendance-status-selector {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+
+/* =========================================================
+   Base Button
+   ========================================================= */
+
+.attendance-status-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-width: 0;
+    min-height: 76px;
+
+    padding: 14px 16px;
+    box-sizing: border-box;
+
+    border: 1px solid var(--attendance-border-strong);
+    border-radius: 10px;
+
+    background: var(--attendance-card-bg);
+    color: var(--attendance-text-main);
+
+    text-align: left;
+    font: inherit;
+
+    cursor: pointer;
+
+    transition:
+            border-color 0.15s ease,
+            background 0.15s ease,
+            box-shadow 0.15s ease,
+            transform 0.15s ease;
+}
+
+
+.attendance-status-option:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: var(--attendance-shadow);
+}
+
+
+.attendance-status-option:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   Icon
+   ========================================================= */
+
+.attendance-status-option-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 40px;
+    height: 40px;
+
+    flex-shrink: 0;
+
+    border-radius: 9px;
+}
+
+
+.attendance-status-option-icon svg {
+    display: block;
+}
+
+
+/* =========================================================
+   Text
+   ========================================================= */
+
+.attendance-status-option-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    min-width: 0;
+}
+
+
+.attendance-status-option-text strong {
+    font-size: 14px;
+    font-weight: 700;
+    color: inherit;
+}
+
+
+.attendance-status-option-text small {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--attendance-text-secondary);
+}
+
+
+/* =========================================================
+   PRESENT
+   ========================================================= */
+
+.attendance-status-option-present .attendance-status-option-icon {
+    background: var(--attendance-success-bg);
+    color: var(--attendance-success-text);
+}
+
+
+.attendance-status-option-present:hover:not(:disabled) {
+    border-color: var(--attendance-success-text);
+}
+
+
+.attendance-status-option-present.attendance-status-option-selected {
+    border: 2px solid var(--attendance-success-text);
+    background: var(--attendance-success-bg);
+
+    box-shadow:
+            0 0 0 3px rgba(21, 128, 61, 0.10);
+}
+
+
+.attendance-status-option-present.attendance-status-option-selected .attendance-status-option-text strong {
+    color: var(--attendance-success-text);
+}
+
+
+/* =========================================================
+   LEAVE
+   ========================================================= */
+
+.attendance-status-option-leave .attendance-status-option-icon {
+    background: var(--attendance-primary-soft);
+    color: var(--attendance-primary);
+}
+
+
+.attendance-status-option-leave:hover:not(:disabled) {
+    border-color: var(--attendance-primary);
+}
+
+
+.attendance-status-option-leave.attendance-status-option-selected {
+    border: 2px solid var(--attendance-primary);
+    background: var(--attendance-primary-soft);
+
+    box-shadow:
+            0 0 0 3px rgba(22, 119, 255, 0.10);
+}
+
+.attendance-status-option-leave.attendance-status-option-selected .attendance-status-option-text strong {
+    color: var(--attendance-primary);
+}
+
+
+/* =========================================================
+   ABSENT
+   ========================================================= */
+
+.attendance-status-option-absent .attendance-status-option-icon {
+    background: var(--attendance-danger-bg);
+    color: var(--attendance-danger-text);
+}
+
+
+.attendance-status-option-absent:hover:not(:disabled) {
+    border-color: var(--attendance-danger-text);
+}
+
+
+.attendance-status-option-absent.attendance-status-option-selected {
+    border: 2px solid var(--attendance-danger-text);
+    background: var(--attendance-danger-bg);
+
+    box-shadow:
+            0 0 0 3px rgba(185, 28, 28, 0.08);
+}
+
+
+.attendance-status-option-absent.attendance-status-option-selected .attendance-status-option-text strong {
+    color: var(--attendance-danger-text);
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    .attendance-status-selector {
+        grid-template-columns: 1fr;
+    }
+
+}

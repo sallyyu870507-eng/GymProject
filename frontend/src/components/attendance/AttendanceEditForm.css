@@ -1,0 +1,427 @@
+/* =========================================================
+   Attendance Edit Form
+   UI-E
+   ========================================================= */
+
+.attendance-edit-form {
+    display: grid;
+    gap: 0;
+}
+
+
+/* =========================================================
+   Section
+   ========================================================= */
+
+.attendance-edit-section {
+    padding: 22px 0;
+
+    border-bottom:
+            1px solid
+            var(--attendance-border);
+}
+
+
+.attendance-edit-section:first-child {
+    padding-top: 0;
+}
+
+
+.attendance-edit-section-header {
+    display: flex;
+
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 16px;
+
+    margin-bottom: 16px;
+}
+
+
+.attendance-edit-section-header h3 {
+    margin: 0;
+
+    font-size: 16px;
+    line-height: 1.4;
+
+    color:
+            var(--attendance-text-main);
+}
+
+
+.attendance-edit-section-header p {
+    margin: 5px 0 0;
+
+    font-size: 12px;
+    line-height: 1.6;
+
+    color:
+            var(--attendance-text-secondary);
+}
+
+
+/* =========================================================
+   Form Group
+   ========================================================= */
+
+.attendance-form-group {
+    display: grid;
+
+    gap: 8px;
+
+    min-width: 0;
+}
+
+
+.attendance-form-group > label,
+.attendance-field-label-row label {
+    font-size: 13px;
+    font-weight: 600;
+
+    color:
+            var(--attendance-text-main);
+}
+
+
+.attendance-form-group input,
+.attendance-form-group textarea {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    border:
+            1px solid
+            var(--attendance-border-strong);
+
+    border-radius: 9px;
+
+    background:
+            var(--attendance-card-bg);
+
+    color:
+            var(--attendance-text-main);
+
+    font: inherit;
+
+    transition:
+            border-color 0.15s ease,
+            box-shadow 0.15s ease,
+            background 0.15s ease;
+}
+
+
+.attendance-form-group input {
+    height: 42px;
+
+    padding:
+            0 12px;
+}
+
+
+.attendance-form-group textarea {
+    min-height: 108px;
+
+    padding:
+            11px 12px;
+
+    resize: vertical;
+
+    line-height: 1.6;
+}
+
+
+.attendance-form-group input:focus,
+.attendance-form-group textarea:focus {
+    outline: none;
+
+    border-color:
+            var(--attendance-primary);
+
+    box-shadow:
+            0 0 0 3px
+            var(--attendance-primary-soft);
+}
+
+
+.attendance-form-group input:disabled,
+.attendance-form-group textarea:disabled {
+    background:
+            var(--attendance-neutral-bg);
+
+    color:
+            var(--attendance-text-light);
+
+    cursor: not-allowed;
+}
+
+
+.attendance-form-group input::placeholder,
+.attendance-form-group textarea::placeholder {
+    color:
+            var(--attendance-text-light);
+}
+
+
+/* =========================================================
+   Training
+   ========================================================= */
+
+.attendance-training-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 0.8fr)
+        minmax(0, 1.2fr);
+
+    gap: 16px;
+
+    align-items: start;
+}
+
+
+.attendance-field-label-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 12px;
+}
+
+
+.attendance-note-count {
+    font-size: 11px;
+
+    color:
+            var(--attendance-text-light);
+}
+
+
+/* =========================================================
+   InBody
+   ========================================================= */
+
+.attendance-inbody-disabled-badge {
+    display: inline-flex;
+
+    align-items: center;
+
+    min-height: 26px;
+
+    padding:
+            3px 9px;
+
+    box-sizing: border-box;
+
+    border-radius: 999px;
+
+    background:
+            var(--attendance-neutral-bg);
+
+    color:
+            var(--attendance-neutral-text);
+
+    font-size: 11px;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
+
+.inbody-form {
+    margin: 0;
+
+    padding: 0;
+
+    border: 0;
+
+    min-width: 0;
+}
+
+
+.inbody-form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 14px;
+}
+
+
+.inbody-form:disabled {
+    opacity: 0.62;
+}
+
+
+.attendance-input-with-unit {
+    position: relative;
+}
+
+
+.attendance-input-with-unit input {
+    padding-right: 46px;
+}
+
+
+.attendance-input-with-unit span {
+    position: absolute;
+
+    top: 50%;
+    right: 12px;
+
+    transform:
+            translateY(-50%);
+
+    font-size: 12px;
+
+    color:
+            var(--attendance-text-secondary);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   Messages
+   ========================================================= */
+
+.attendance-form-error,
+.attendance-save-error,
+.attendance-save-success {
+    margin-top: 18px;
+
+    padding:
+            11px 13px;
+
+    border-radius: 9px;
+
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+
+.attendance-form-error,
+.attendance-save-error {
+    border:
+            1px solid
+            var(--attendance-danger-text);
+
+    background:
+            var(--attendance-danger-bg);
+
+    color:
+            var(--attendance-danger-text);
+}
+
+
+.attendance-save-success {
+    border:
+            1px solid
+            var(--attendance-success-text);
+
+    background:
+            var(--attendance-success-bg);
+
+    color:
+            var(--attendance-success-text);
+}
+
+
+/* =========================================================
+   Action
+   ========================================================= */
+
+.attendance-form-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    padding-top: 20px;
+}
+
+
+.attendance-save-button {
+    min-width: 154px;
+    min-height: 42px;
+
+    padding:
+            10px 20px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background:
+            var(--attendance-primary);
+
+    color:
+            var(--attendance-primary-text);
+
+    font: inherit;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+            background 0.15s ease,
+            box-shadow 0.15s ease,
+            opacity 0.15s ease,
+            transform 0.15s ease;
+}
+
+
+.attendance-save-button:hover:not(:disabled) {
+    background:
+            var(--attendance-primary-hover);
+
+    box-shadow:
+            0 5px 12px
+            rgba(22, 119, 255, 0.18);
+
+    transform:
+            translateY(-1px);
+}
+
+
+.attendance-save-button:disabled {
+    opacity: 0.55;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+    .attendance-training-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .inbody-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+
+    .attendance-edit-section-header {
+        flex-direction: column;
+    }
+
+
+    .attendance-form-actions {
+        justify-content: stretch;
+    }
+
+
+    .attendance-save-button {
+        width: 100%;
+    }
+
+}
