@@ -5,9 +5,11 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import tw.gym.entity.Booking;
 
+@Repository
 public interface BookingRepository
         extends JpaRepository<Booking, Integer> {
 	
@@ -33,6 +35,7 @@ public interface BookingRepository
 
     //防呆機制(A會員拿相對應的課)
     //查 membercourse 對應的 courseid
+    
     @Query(value = """
             SELECT courseid
             FROM membercourse
@@ -118,5 +121,61 @@ public interface BookingRepository
             """, nativeQuery = true)
     List<Object[]> findBookingResponseByBookingid(
             @Param("bookingid") Integer bookingid
+    );
+    
+    /*會員查詢自己的所有預約*/
+    @Query(value = """
+            SELECT
+                b.bookingid,
+                c.coursename,
+                co.name,
+                cs.classdate,
+                cs.starttime,
+                cs.endtime,
+                cs.classroom,
+                b.bookingstatus
+            FROM booking b
+            JOIN membercourse mc
+                ON b.membercourseid = mc.membercourseid
+            JOIN course c
+                ON mc.courseid = c.courseid
+            JOIN classschedule cs
+                ON b.scheduleid = cs.scheduleid
+            JOIN coach co
+                ON cs.coachid = co.coachid
+            WHERE mc.memberid = :memberid
+            ORDER BY cs.classdate DESC, cs.starttime ASC
+            """,
+            nativeQuery = true)
+    List<Object[]> findBookingsByMemberid(
+            @Param("memberid") Integer memberid
+    );
+    
+    /*會員端取消自己的預約*/
+    @Query(value="""
+    		SELECT COUNT(*)
+    		FROM booking b
+    		JOIN membercourse mc
+    		 ON mc.membercourseid = b.membercourseid
+    		WHERE b.bookingid = :bookingid
+    		AND mc.memberid = :memberid
+    		""",nativeQuery = true)
+    int countBookingByMember(
+    		@Param("bookingid")Integer bookingid,
+    		@Param("memberid")Integer memberid
+    		);
+    
+    /*教練端幫忙取消課程*/
+    @Query(value = """
+            SELECT COUNT(*)
+            FROM booking b
+            JOIN classschedule cs
+                ON b.scheduleid = cs.scheduleid
+            WHERE b.bookingid = :bookingid
+              AND cs.coachid = :coachid
+            """, nativeQuery = true)
+    int countBookingByCoach(
+            @Param("bookingid") Integer bookingid,
+            @Param("coachid") Integer coachid
     );
 }

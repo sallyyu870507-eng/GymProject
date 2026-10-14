@@ -69,30 +69,31 @@ public interface ClassScheduleRepository
     /*教練端*/
     /* 1.查教練某一天已被預約的課表 */
     @Query(value = """
-    		SELECT 
-    			cs.scheduleid,
-    			c.coursename,
-    			m.name,
-    			cs.starttime,
-    			cs.endtime
-    		FROM classschedule cs
-    		JOIN booking b
-    			ON cs.scheduleid = b.scheduleid
-    		JOIN membercourse mc
-    			ON b.membercourseid = mc.membercourseid
-    		JOIN member m
-    		 	ON mc.memberid = m.memberid
-    		JOIN course c
-    			ON cs.courseid = c.courseid
-    		WHERE cs.coachid = :coachid
-    		AND cs.classdate = :classdate
-    		AND b.bookingstatus ='booked'
-    		ORDER BY cs.starttime
-    		""",nativeQuery = true)
+            SELECT
+                b.bookingid,
+                cs.scheduleid,
+                c.coursename,
+                m.name,
+                cs.starttime,
+                cs.endtime
+            FROM classschedule cs
+            JOIN booking b
+                ON cs.scheduleid = b.scheduleid
+            JOIN membercourse mc
+                ON b.membercourseid = mc.membercourseid
+            JOIN member m
+                ON mc.memberid = m.memberid
+            JOIN course c
+                ON cs.courseid = c.courseid
+            WHERE cs.coachid = :coachid
+              AND cs.classdate = :classdate
+              AND b.bookingstatus = 'booked'
+            ORDER BY cs.starttime
+            """, nativeQuery = true)
     List<Object[]> findBookedSchedulesByCoachAndDate(
-    		@Param("coachid") Integer coachid,
-    		@Param("classdate") LocalDate classdate
-    		);
+            @Param("coachid") Integer coachid,
+            @Param("classdate") LocalDate classdate
+    );
     
     /*2.教練某一天的課程數*/
     @Query(value="""

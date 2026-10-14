@@ -5,12 +5,19 @@ import java.time.LocalTime;
 public class CoachScheduleDTO {
 	//教練端
 	//1.教練指定日期的已預約課表
+	private Integer bookingid;
 	private Integer scheduleid;
 	private String coursename;
 	private String studentname;
 	private LocalTime starttime;
 	private LocalTime endtime;
 	
+	public Integer getBookingid() {
+		return bookingid;
+	}
+	public void setBookingid(Integer bookingid) {
+		this.bookingid = bookingid;
+	}
 	public Integer getScheduleid() {
 		return scheduleid;
 	}
@@ -41,4 +48,5 @@ public class CoachScheduleDTO {
 	public void setEndtime(LocalTime endtime) {
 		this.endtime = endtime;
 	}
+	
 }

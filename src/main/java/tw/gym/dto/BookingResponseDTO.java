@@ -8,6 +8,7 @@ public class BookingResponseDTO {
 	
 		//會員端
 		//5.最後一步預約成功
+		//查詢預約成功頁
 	    private Integer bookingid;
 	    private String coursename;
 	    private String coachname;
