@@ -2,10 +2,10 @@ USE gym;
 GO
 
 
-
 /* =========================================================
-清除整套測試資料
-注意：依照 FK 關聯，由子表往父表刪除
+   清除整套測試資料
+   注意：依照 FK 關聯，由子表往父表刪除
+   ========================================================= */
 
 DELETE FROM dbo.renewal;
 DELETE FROM dbo.followup;
@@ -22,9 +22,10 @@ DELETE FROM dbo.useraccount;
 GO
 
 
-
-IDENTITY 全部重新從 1 開始
-RESEED = 0，下一筆 INSERT 就會得到 ID = 1
+/* =========================================================
+   IDENTITY 全部重新從 1 開始
+   RESEED = 0，下一筆 INSERT 就會得到 ID = 1
+   ========================================================= */
 
 DBCC CHECKIDENT ('dbo.renewal', RESEED, 0);
 DBCC CHECKIDENT ('dbo.followup', RESEED, 0);
@@ -39,8 +40,6 @@ DBCC CHECKIDENT ('dbo.course', RESEED, 0);
 DBCC CHECKIDENT ('dbo.useraccount', RESEED, 0);
 GO
 
-========================================================= */
-
 
 /* =========================================================
    建立教練帳號
@@ -49,7 +48,7 @@ GO
 INSERT INTO dbo.useraccount
 (username, password, role, status)
 VALUES
-(N'coach001', N'123456', N'COACH', N'active');
+(N'coach001', N'123456', N'coach', N'active');
 
 DECLARE @coachAccountId INT = SCOPE_IDENTITY();
 
@@ -107,7 +106,7 @@ VALUES
 INSERT INTO dbo.useraccount
 (username, password, role, status)
 VALUES
-(N'member001', N'123456', N'MEMBER', N'active');
+(N'member001', N'123456', N'member', N'active');
 
 DECLARE @account1 INT = SCOPE_IDENTITY();
 
@@ -123,7 +122,7 @@ VALUES
     N'member001@gym.com',
     '1998-05-07',
     N'active',
-    N'/images/members/member01.jpg'
+  N'/avatars/member001.jpg'
 );
 
 DECLARE @member1 INT = SCOPE_IDENTITY();
@@ -136,7 +135,7 @@ DECLARE @member1 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.useraccount
 (username, password, role, status)
 VALUES
-(N'member002', N'123456', N'MEMBER', N'active');
+(N'member002', N'123456', N'member', N'active');
 
 DECLARE @account2 INT = SCOPE_IDENTITY();
 
@@ -152,7 +151,7 @@ VALUES
     N'member002@gym.com',
     '1995-08-15',
     N'active',
-    N'/images/members/member02.jpg'
+    N'/avatars/member002.jpg'
 );
 
 DECLARE @member2 INT = SCOPE_IDENTITY();
@@ -165,7 +164,7 @@ DECLARE @member2 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.useraccount
 (username, password, role, status)
 VALUES
-(N'member003', N'123456', N'MEMBER', N'active');
+(N'member003', N'123456', N'member', N'active');
 
 DECLARE @account3 INT = SCOPE_IDENTITY();
 
@@ -181,7 +180,7 @@ VALUES
     N'member003@gym.com',
     '1992-03-18',
     N'active',
-    N'/images/members/member03.jpg'
+   N'/avatars/member003.jpg'
 );
 
 DECLARE @member3 INT = SCOPE_IDENTITY();
@@ -194,7 +193,7 @@ DECLARE @member3 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.useraccount
 (username, password, role, status)
 VALUES
-(N'member004', N'123456', N'MEMBER', N'active');
+(N'member004', N'123456', N'member', N'active');
 
 DECLARE @account4 INT = SCOPE_IDENTITY();
 
@@ -210,7 +209,7 @@ VALUES
     N'member004@gym.com',
     '1989-11-25',
     N'active',
-    N'/images/members/member04.jpg'
+    N'/avatars/member004.jpg'
 );
 
 DECLARE @member4 INT = SCOPE_IDENTITY();
@@ -223,7 +222,7 @@ DECLARE @member4 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.useraccount
 (username, password, role, status)
 VALUES
-(N'member005', N'123456', N'MEMBER', N'active');
+(N'member005', N'123456', N'member', N'active');
 
 DECLARE @account5 INT = SCOPE_IDENTITY();
 
@@ -239,7 +238,7 @@ VALUES
     N'member005@gym.com',
     '1997-01-12',
     N'active',
-    N'/images/members/member05.jpg'
+    N'/avatars/member005.jpg'
 );
 
 DECLARE @member5 INT = SCOPE_IDENTITY();
@@ -252,7 +251,7 @@ DECLARE @member5 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.useraccount
 (username, password, role, status)
 VALUES
-(N'member006', N'123456', N'MEMBER', N'active');
+(N'member006', N'123456', N'member', N'active');
 
 DECLARE @account6 INT = SCOPE_IDENTITY();
 
@@ -268,7 +267,7 @@ VALUES
     N'member006@gym.com',
     '1994-06-30',
     N'active',
-    N'/images/members/member06.jpg'
+    N'/avatars/member006.jpg'
 );
 
 DECLARE @member6 INT = SCOPE_IDENTITY();
@@ -903,46 +902,477 @@ VALUES
     N'暑期續約加購10堂'
 );
 
+
+/* =========================================================
+   Coach 2 測試資料
+   用途：
+   1. 驗證不同教練的資料隔離
+   2. 驗證 Coach 1 不可查看 / 修改 Coach 2 Booking
+   3. 未來登入整合後可直接切換教練測試
+   ========================================================= */
+
+
+/* =========================================================
+   Coach 2 帳號
+   ========================================================= */
+
+INSERT INTO dbo.useraccount
+(username, password, role, status)
+VALUES
+(N'coach002', N'123456', N'coach', N'active');
+
+DECLARE @coachAccountId2 INT = SCOPE_IDENTITY();
+
+
+INSERT INTO dbo.coach
+(accountid, coachno, name, gender, phone, email, specialty, status)
+VALUES
+(
+    @coachAccountId2,
+    N'C002',
+    N'林教練',
+    N'女',
+    N'0988000002',
+    N'coach002@gym.com',
+    N'皮拉提斯、體態訓練',
+    N'active'
+);
+
+DECLARE @coachId2 INT = SCOPE_IDENTITY();
+
+
+/* Coach 2 也教授目前這個私人教練課程 */
+INSERT INTO dbo.coachcourse
+(coachid, courseid)
+VALUES
+(@coachId2, @courseId);
+
+
+/* =========================================================
+   Coach 2 六位會員：Member 7 ~ 12
+   avatarurl 先設 NULL，前端會使用姓名首字 fallback
+   ========================================================= */
+
+-------------------------
+-- 會員 7：周子晴
+-------------------------
+INSERT INTO dbo.useraccount
+(username, password, role, status)
+VALUES
+(N'member007', N'123456', N'member', N'active');
+
+DECLARE @account7 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.member
+(accountid, memberno, name, gender, phone, email, birthday, status, avatarurl)
+VALUES
+(
+    @account7,
+    N'M007',
+    N'周子晴',
+    N'女',
+    N'0977000007',
+    N'member007@gym.com',
+    '1996-02-14',
+    N'active',
+    NULL
+);
+
+DECLARE @member7 INT = SCOPE_IDENTITY();
+
+
+-------------------------
+-- 會員 8：吳承翰
+-------------------------
+INSERT INTO dbo.useraccount
+(username, password, role, status)
+VALUES
+(N'member008', N'123456', N'member', N'active');
+
+DECLARE @account8 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.member
+(accountid, memberno, name, gender, phone, email, birthday, status, avatarurl)
+VALUES
+(
+    @account8,
+    N'M008',
+    N'吳承翰',
+    N'男',
+    N'0977000008',
+    N'member008@gym.com',
+    '1993-09-22',
+    N'active',
+    NULL
+);
+
+DECLARE @member8 INT = SCOPE_IDENTITY();
+
+
+-------------------------
+-- 會員 9：許庭瑜
+-------------------------
+INSERT INTO dbo.useraccount
+(username, password, role, status)
+VALUES
+(N'member009', N'123456', N'member', N'active');
+
+DECLARE @account9 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.member
+(accountid, memberno, name, gender, phone, email, birthday, status, avatarurl)
+VALUES
+(
+    @account9,
+    N'M009',
+    N'許庭瑜',
+    N'女',
+    N'0977000009',
+    N'member009@gym.com',
+    '2000-04-09',
+    N'active',
+    NULL
+);
+
+DECLARE @member9 INT = SCOPE_IDENTITY();
+
+
+-------------------------
+-- 會員 10：郭柏廷
+-------------------------
+INSERT INTO dbo.useraccount
+(username, password, role, status)
+VALUES
+(N'member010', N'123456', N'member', N'active');
+
+DECLARE @account10 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.member
+(accountid, memberno, name, gender, phone, email, birthday, status, avatarurl)
+VALUES
+(
+    @account10,
+    N'M010',
+    N'郭柏廷',
+    N'男',
+    N'0977000010',
+    N'member010@gym.com',
+    '1991-12-03',
+    N'active',
+    NULL
+);
+
+DECLARE @member10 INT = SCOPE_IDENTITY();
+
+
+-------------------------
+-- 會員 11：蔡宜蓁
+-------------------------
+INSERT INTO dbo.useraccount
+(username, password, role, status)
+VALUES
+(N'member011', N'123456', N'member', N'active');
+
+DECLARE @account11 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.member
+(accountid, memberno, name, gender, phone, email, birthday, status, avatarurl)
+VALUES
+(
+    @account11,
+    N'M011',
+    N'蔡宜蓁',
+    N'女',
+    N'0977000011',
+    N'member011@gym.com',
+    '1998-07-19',
+    N'active',
+    NULL
+);
+
+DECLARE @member11 INT = SCOPE_IDENTITY();
+
+
+-------------------------
+-- 會員 12：鄭宇翔
+-------------------------
+INSERT INTO dbo.useraccount
+(username, password, role, status)
+VALUES
+(N'member012', N'123456', N'member', N'active');
+
+DECLARE @account12 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.member
+(accountid, memberno, name, gender, phone, email, birthday, status, avatarurl)
+VALUES
+(
+    @account12,
+    N'M012',
+    N'鄭宇翔',
+    N'男',
+    N'0977000012',
+    N'member012@gym.com',
+    '1994-10-28',
+    N'active',
+    NULL
+);
+
+DECLARE @member12 INT = SCOPE_IDENTITY();
+
+
+/* =========================================================
+   Coach 2 MemberCourse
+   ========================================================= */
+
+INSERT INTO dbo.membercourse
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
+VALUES
+(@member7, @courseId, @coachId2, '2026-06-10', 20, 10, N'active');
+DECLARE @mc7 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.membercourse
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
+VALUES
+(@member8, @courseId, @coachId2, '2026-04-20', 24, 4, N'active');
+DECLARE @mc8 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.membercourse
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
+VALUES
+(@member9, @courseId, @coachId2, '2026-07-01', 16, 9, N'active');
+DECLARE @mc9 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.membercourse
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
+VALUES
+(@member10, @courseId, @coachId2, '2026-03-15', 20, 1, N'active');
+DECLARE @mc10 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.membercourse
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
+VALUES
+(@member11, @courseId, @coachId2, '2026-08-01', 30, 18, N'active');
+DECLARE @mc11 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.membercourse
+(memberid, courseid, coachid, purchasedate, totalsessions, remainingsessions, status)
+VALUES
+(@member12, @courseId, @coachId2, '2026-05-12', 24, 5, N'active');
+DECLARE @mc12 INT = SCOPE_IDENTITY();
+
+
+/* =========================================================
+   Coach 2 ClassSchedule
+   六堂都排在 2026-09-27，方便驗證 Coach 1 列表不會混入 Coach 2
+   ========================================================= */
+
+INSERT INTO dbo.classschedule
+(coachid, courseid, classdate, starttime, endtime, classroom, status)
+VALUES
+(@coachId2, @courseId, '2026-09-27', '08:00', '09:00', N'C教室', N'open');
+DECLARE @s12 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.classschedule
+(coachid, courseid, classdate, starttime, endtime, classroom, status)
+VALUES
+(@coachId2, @courseId, '2026-09-27', '09:30', '10:30', N'C教室', N'open');
+DECLARE @s13 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.classschedule
+(coachid, courseid, classdate, starttime, endtime, classroom, status)
+VALUES
+(@coachId2, @courseId, '2026-09-27', '11:00', '12:00', N'C教室', N'open');
+DECLARE @s14 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.classschedule
+(coachid, courseid, classdate, starttime, endtime, classroom, status)
+VALUES
+(@coachId2, @courseId, '2026-09-27', '13:30', '14:30', N'C教室', N'open');
+DECLARE @s15 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.classschedule
+(coachid, courseid, classdate, starttime, endtime, classroom, status)
+VALUES
+(@coachId2, @courseId, '2026-09-27', '15:30', '16:30', N'C教室', N'open');
+DECLARE @s16 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.classschedule
+(coachid, courseid, classdate, starttime, endtime, classroom, status)
+VALUES
+(@coachId2, @courseId, '2026-09-27', '17:00', '18:00', N'C教室', N'open');
+DECLARE @s17 INT = SCOPE_IDENTITY();
+
+
+/* =========================================================
+   Coach 2 Booking
+   ========================================================= */
+
+INSERT INTO dbo.booking
+(membercourseid, scheduleid, bookingtime, bookingstatus, note, updatetime)
+VALUES
+(@mc7, @s12, '2026-09-20 08:00', N'BOOKED', N'Coach 2 測試預約', '2026-09-20 08:00');
+DECLARE @b12 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.booking
+(membercourseid, scheduleid, bookingtime, bookingstatus, note, updatetime)
+VALUES
+(@mc8, @s13, '2026-09-20 09:00', N'BOOKED', N'Coach 2 測試預約', '2026-09-20 09:00');
+DECLARE @b13 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.booking
+(membercourseid, scheduleid, bookingtime, bookingstatus, note, updatetime)
+VALUES
+(@mc9, @s14, '2026-09-20 10:00', N'BOOKED', N'Coach 2 測試預約', '2026-09-20 10:00');
+DECLARE @b14 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.booking
+(membercourseid, scheduleid, bookingtime, bookingstatus, note, updatetime)
+VALUES
+(@mc10, @s15, '2026-09-20 11:00', N'BOOKED', N'Coach 2 測試預約', '2026-09-20 11:00');
+DECLARE @b15 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.booking
+(membercourseid, scheduleid, bookingtime, bookingstatus, note, updatetime)
+VALUES
+(@mc11, @s16, '2026-09-20 12:00', N'BOOKED', N'Coach 2 測試預約', '2026-09-20 12:00');
+DECLARE @b16 INT = SCOPE_IDENTITY();
+
+INSERT INTO dbo.booking
+(membercourseid, scheduleid, bookingtime, bookingstatus, note, updatetime)
+VALUES
+(@mc12, @s17, '2026-09-20 13:00', N'BOOKED', N'Coach 2 測試預約', '2026-09-20 13:00');
+DECLARE @b17 INT = SCOPE_IDENTITY();
+
+
+/* =========================================================
+   Coach 2 Attendance
+   六筆都先設 PENDING，供跨教練 403 測試
+   ========================================================= */
+
+INSERT INTO dbo.attendance
+(bookingid, checkintime, attendancestatus, workoutfocus, note, updatetime)
+VALUES
+(@b12, NULL, N'PENDING', NULL, NULL, NULL);
+
+INSERT INTO dbo.attendance
+(bookingid, checkintime, attendancestatus, workoutfocus, note, updatetime)
+VALUES
+(@b13, NULL, N'PENDING', NULL, NULL, NULL);
+
+INSERT INTO dbo.attendance
+(bookingid, checkintime, attendancestatus, workoutfocus, note, updatetime)
+VALUES
+(@b14, NULL, N'PENDING', NULL, NULL, NULL);
+
+INSERT INTO dbo.attendance
+(bookingid, checkintime, attendancestatus, workoutfocus, note, updatetime)
+VALUES
+(@b15, NULL, N'PENDING', NULL, NULL, NULL);
+
+INSERT INTO dbo.attendance
+(bookingid, checkintime, attendancestatus, workoutfocus, note, updatetime)
+VALUES
+(@b16, NULL, N'PENDING', NULL, NULL, NULL);
+
+INSERT INTO dbo.attendance
+(bookingid, checkintime, attendancestatus, workoutfocus, note, updatetime)
+VALUES
+(@b17, NULL, N'PENDING', NULL, NULL, NULL);
+
+
+/* =========================================================
+   Coach 2 驗收用資料結束
+   ========================================================= */
+
 GO
 
 
 
---檢查資料表
-SELECT * FROM dbo.member;
-SELECT * FROM dbo.membercourse;
-SELECT * FROM dbo.classschedule;
-SELECT * FROM dbo.booking;
-SELECT * FROM dbo.attendance;
-SELECT * FROM dbo.inbodyrecords;
-SELECT * FROM dbo.followup;
-SELECT * FROM dbo.renewal;
+/* =========================================================
+   最終檢查
+   ========================================================= */
+
+-- 基本資料
+SELECT * FROM dbo.coach ORDER BY coachid;
+SELECT * FROM dbo.member ORDER BY memberid;
+SELECT * FROM dbo.membercourse ORDER BY membercourseid;
+SELECT * FROM dbo.classschedule ORDER BY scheduleid;
+SELECT * FROM dbo.booking ORDER BY bookingid;
+SELECT * FROM dbo.attendance ORDER BY attendanceid;
+SELECT * FROM dbo.inbodyrecords ORDER BY inbodyid;
+SELECT * FROM dbo.followup ORDER BY followupid;
+SELECT * FROM dbo.renewal ORDER BY renewalid;
 
 
--- 1. membercourse 有 coachid
-SELECT 
-    membercourseid,
-    memberid,
-    courseid,
-    coachid,
-    purchasedate,
-    totalsessions,
-    remainingsessions,
-    status
-FROM dbo.membercourse;
-
--- 2. coachid FK 正常對到 coach
-SELECT 
-    mc.membercourseid,
-    m.name AS membername,
+-- 1. 確認兩位教練各自有六位會員
+SELECT
+    c.coachid,
     c.name AS coachname,
+    m.memberid,
+    m.name AS membername,
+    mc.membercourseid,
     mc.remainingsessions
 FROM dbo.membercourse mc
 JOIN dbo.member m
     ON mc.memberid = m.memberid
 JOIN dbo.coach c
-    ON mc.coachid = c.coachid;
+    ON mc.coachid = c.coachid
+ORDER BY c.coachid, m.memberid;
 
--- 3. 確認沒有 NULL coachid
+
+-- 2. 確認 membercourse 沒有 NULL coachid
 SELECT *
 FROM dbo.membercourse
 WHERE coachid IS NULL;
+
+
+-- 3. 確認 Coach 2 有六筆 2026-09-27 Booking，而且 Attendance 都是 PENDING
+SELECT
+    b.bookingid,
+    c.coachid,
+    c.name AS coachname,
+    m.memberid,
+    m.name AS membername,
+    cs.classdate,
+    cs.starttime,
+    cs.endtime,
+    b.bookingstatus,
+    a.attendancestatus
+FROM dbo.booking b
+JOIN dbo.membercourse mc
+    ON b.membercourseid = mc.membercourseid
+JOIN dbo.member m
+    ON mc.memberid = m.memberid
+JOIN dbo.coach c
+    ON mc.coachid = c.coachid
+JOIN dbo.classschedule cs
+    ON b.scheduleid = cs.scheduleid
+LEFT JOIN dbo.attendance a
+    ON a.bookingid = b.bookingid
+WHERE c.coachid = 2
+ORDER BY b.bookingid;
+
+
+-- 4. 確認 2026-09-27 兩位教練各有幾筆 Booking
+SELECT
+    c.coachid,
+    c.name AS coachname,
+    COUNT(*) AS bookingcount
+FROM dbo.booking b
+JOIN dbo.membercourse mc
+    ON b.membercourseid = mc.membercourseid
+JOIN dbo.coach c
+    ON mc.coachid = c.coachid
+JOIN dbo.classschedule cs
+    ON b.scheduleid = cs.scheduleid
+WHERE cs.classdate = '2026-09-27'
+GROUP BY c.coachid, c.name
+ORDER BY c.coachid;
+
+
+SELECT accountid, username, role, status
+FROM dbo.useraccount
+ORDER BY accountid;
+
+
