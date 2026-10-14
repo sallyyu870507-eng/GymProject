@@ -32,7 +32,7 @@ public class CourseService {
         course.setPrice(request.getPrice());
 
         course.setDurationmin(60);
-        course.setStatus("上架");
+        course.setStatus("active");
 
         return courseRepository.save(course);
     }
