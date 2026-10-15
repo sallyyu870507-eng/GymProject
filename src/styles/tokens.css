@@ -1,0 +1,37 @@
+/* ★ 品牌設計 token：來源 gym-color-palette-power.xlsx（深色為主、淺色備用）★ */
+
+/* 深色模式（預設） */
+:root, :root[data-theme="dark"] {
+  --bg:            #0F1724;
+  --surface:       #182233;
+  --primary:       #FF5A1F;
+  --on-primary:    #0F1724;   /* 橘底白字對比僅 3.3:1，改用深色字 */
+  --text:          #EDF1F6;
+  --text-muted:    #9AA6B6;
+  --border:        #2A3548;
+
+  --ok-text:#5FD39C;   --ok-bg:#12362A;
+  --warn-text:#F2C94C; --warn-bg:#3A3314;
+  --bad-text:#FF7B8E;  --bad-bg:#3B1A22;
+}
+
+/* 淺色模式（櫃檯平板、亮處） */
+:root[data-theme="light"] {
+  --bg:            #F4F5F7;
+  --surface:       #FFFFFF;
+  --primary:       #D93F0B;   /* 加深橘，白字才夠對比 */
+  --on-primary:    #FFFFFF;
+  --text:          #18202B;
+  --text-muted:    #5B6673;
+  --border:        #D5DAE0;
+
+  --ok-text:#0F7A4B;   --ok-bg:#DDF3E8;
+  --warn-text:#7A5C00; --warn-bg:#FFF4CC;
+  --bad-text:#C62828;  --bad-bg:#FBE4E4;
+}
+
+:root {
+  --radius: 12px;
+  --space: 16px;
+  --font: "Noto Sans TC", system-ui, sans-serif;
+}
