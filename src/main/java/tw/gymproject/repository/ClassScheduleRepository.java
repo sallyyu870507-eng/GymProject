@@ -23,6 +23,9 @@ public interface ClassScheduleRepository
     		WHERE cs.courseid = :courseid
     		AND cs.coachid = :coachid
     		AND cs.status ='open'
+    		
+    		AND cs.classdate > CAST(GETDATE() AS DATE)
+
     		AND NOT EXISTS(
     			SELECT 1
     			FROM booking b
@@ -58,6 +61,7 @@ public interface ClassScheduleRepository
             WHERE cs.courseid = :courseid
             AND cs.coachid = :coachid
             AND cs.classdate = :classdate
+            AND cs.classdate > CAST(GETDATE() AS DATE)
             ORDER BY cs.starttime
             """, nativeQuery = true)
     List<Object[]> findScheduleOptions(

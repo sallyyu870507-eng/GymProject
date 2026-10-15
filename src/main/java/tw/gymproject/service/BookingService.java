@@ -131,11 +131,14 @@ public class BookingService {
                                         "找不到這個課表"
                                 )
                         );
+        /*今天以前的日期不能預約*/
+        if(!schedule.getClassdate().isAfter(LocalDate.now())) {
+        	throw new RuntimeException("今天及今天以前的日期無法預約");
+        }
 
 
         /*
-         * 8. 會員買的課程
-         *    必須和課表課程一致
+         * 8. 會員買的課程必須和課表課程一致
          */
         if (!memberCourseCourseid.equals(
                 schedule.getCourseid()
