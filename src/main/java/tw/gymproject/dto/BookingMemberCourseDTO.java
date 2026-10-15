@@ -1,6 +1,6 @@
-package tw.gym.dto;
+package tw.gymproject.dto;
 
-public class MemberCourseDTO {
+public class BookingMemberCourseDTO {
 	
 	//會員端
 	//1.登入後顯示已購課程

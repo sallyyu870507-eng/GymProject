@@ -1,4 +1,4 @@
-package tw.gym.dto;
+package tw.gymproject.dto;
 
 
 import java.time.LocalDate;

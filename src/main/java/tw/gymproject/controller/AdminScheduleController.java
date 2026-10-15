@@ -1,4 +1,4 @@
-package tw.gym.controller;
+package tw.gymproject.controller;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,9 +9,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
-import tw.gym.dto.AdminCoachDTO;
-import tw.gym.dto.AdminScheduleDTO;
-import tw.gym.service.AdminScheduleService;
+import tw.gymproject.dto.AdminCoachDTO;
+import tw.gymproject.dto.AdminScheduleDTO;
+import tw.gymproject.dto.LoginResultDTO;
+import tw.gymproject.service.AdminScheduleService;
 
 @RestController
 @RequestMapping("/admin/schedules")
@@ -40,12 +41,23 @@ public class AdminScheduleController {
             @RequestParam LocalDate date,
             HttpSession session) {
 
+        // 1. 從 Session 取得正式登入者
+        LoginResultDTO user =
+                (LoginResultDTO) session.getAttribute("user");
 
-        String role =
-                (String) session.getAttribute("role");
+
+        // 2. 確認是否登入
+        if (user == null) {
+
+            throw new RuntimeException(
+                    "管理員尚未登入"
+            );
+
+        }
 
 
-        if (!"admin".equals(role)) {
+        // 3. 確認是不是管理員
+        if (!"admin".equals(user.getRole())) {
 
             throw new RuntimeException(
                     "沒有管理員權限"
@@ -54,6 +66,7 @@ public class AdminScheduleController {
         }
 
 
+        // 4. 查某一天全館所有教練排課
         return adminScheduleService
                 .getAdminScheduleByDate(date);
     }
@@ -68,12 +81,23 @@ public class AdminScheduleController {
     public List<AdminCoachDTO> getAllCoaches(
             HttpSession session) {
 
+        // 1. 從 Session 取得正式登入者
+        LoginResultDTO user =
+                (LoginResultDTO) session.getAttribute("user");
 
-        String role =
-                (String) session.getAttribute("role");
+
+        // 2. 確認是否登入
+        if (user == null) {
+
+            throw new RuntimeException(
+                    "管理員尚未登入"
+            );
+
+        }
 
 
-        if (!"admin".equals(role)) {
+        // 3. 確認是不是管理員
+        if (!"admin".equals(user.getRole())) {
 
             throw new RuntimeException(
                     "沒有管理員權限"
@@ -82,6 +106,7 @@ public class AdminScheduleController {
         }
 
 
+        // 4. 查全部教練
         return adminScheduleService
                 .getAllCoaches();
     }

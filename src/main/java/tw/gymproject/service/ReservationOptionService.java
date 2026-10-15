@@ -1,4 +1,4 @@
-package tw.gym.service;
+package tw.gymproject.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import tw.gym.dto.MemberCourseDTO;
-import tw.gym.dto.ScheduleOptionDTO;
-import tw.gym.repository.BookingRepository;
-import tw.gym.repository.ClassScheduleRepository;
+import tw.gymproject.dto.BookingMemberCourseDTO;
+import tw.gymproject.dto.ScheduleOptionDTO;
+import tw.gymproject.repository.BookingRepository;
+import tw.gymproject.repository.ClassScheduleRepository;
 
 @Service
 public class ReservationOptionService {
@@ -28,16 +28,16 @@ public class ReservationOptionService {
 
     /* STEP1查會員已購買且還有剩餘堂數的課程
      * 還有課程相對應的教練 */
-	    public List<MemberCourseDTO> getPurchasedCourses(Integer memberid) {
+	    public List<BookingMemberCourseDTO> getPurchasedCourses(Integer memberid) {
 
 	        List<Object[]> results =
 	                bookingRepository.findPurchasedCoursesByMemberid(memberid);
 
-	        List<MemberCourseDTO> dtoList = new ArrayList<>();
+	        List<BookingMemberCourseDTO> dtoList = new ArrayList<>();
 
 	        for (Object[] row : results) {
 
-	            MemberCourseDTO dto = new MemberCourseDTO();
+	            BookingMemberCourseDTO dto = new BookingMemberCourseDTO();
 
 	            dto.setMembercourseid(
 	                    ((Number) row[0]).intValue()

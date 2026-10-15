@@ -1,4 +1,4 @@
-package tw.gym.service;
+package tw.gymproject.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import tw.gym.dto.AdminCoachDTO;
-import tw.gym.dto.AdminScheduleDTO;
-import tw.gym.repository.ClassScheduleRepository;
+import tw.gymproject.dto.AdminCoachDTO;
+import tw.gymproject.dto.AdminScheduleDTO;
+import tw.gymproject.repository.ClassScheduleRepository;
 
 @Service
 public class AdminScheduleService {

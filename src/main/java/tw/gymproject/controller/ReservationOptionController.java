@@ -1,4 +1,4 @@
-package tw.gym.controller;
+package tw.gymproject.controller;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -10,9 +10,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
-import tw.gym.dto.MemberCourseDTO;
-import tw.gym.dto.ScheduleOptionDTO;
-import tw.gym.service.ReservationOptionService;
+import tw.gymproject.dto.BookingMemberCourseDTO;
+import tw.gymproject.dto.LoginResultDTO;
+import tw.gymproject.dto.ScheduleOptionDTO;
+import tw.gymproject.service.ReservationOptionService;
 
 @RestController
 @RequestMapping
@@ -30,32 +31,29 @@ public class ReservationOptionController {
     /* STEP1查會員已購買且還有剩餘堂數的課程
      * 還有課程相對應的教練 */
     @GetMapping("/members/courses")
-    public List<MemberCourseDTO> getPurchasedCourses(
+    public List<BookingMemberCourseDTO> getPurchasedCourses(
             HttpSession session) {
 
-        // 1. 從 Session 取得角色
-        String role =
-                (String) session.getAttribute("role");
-
+        // 1. 取得角色
+        LoginResultDTO user =
+        		(LoginResultDTO)session.getAttribute("user");
 
         // 2. 確認目前登入者是不是會員
-        if (!"member".equals(role)) {
-            throw new RuntimeException("沒有會員權限");
+        if (user == null) {
+            throw new RuntimeException("尚未登入");
+        }
+        
+        if(!"member".equals(user.getRole())) {
+        	throw new RuntimeException("沒有會員權限");
         }
 
-
-        // 3. 從 Session 取得 memberid
-        Integer memberid =
-                (Integer) session.getAttribute("memberid");
-
-
-        // 4. 如果 Session 沒有 memberid
-        if (memberid == null) {
-            throw new RuntimeException("找不到登入會員資料");
+        Integer memberid = user.getMemberid();
+        
+        if(memberid == null) {
+        	throw new RuntimeException("找不到登入會員資料");
         }
 
-
-        // 5. 查這位會員自己的已購課程
+        // 3. 查這位會員自己的已購課程
         return reservationOptionService
                 .getPurchasedCourses(memberid);
     }
@@ -70,29 +68,30 @@ public class ReservationOptionController {
             @PathVariable Integer membercourseid,
             HttpSession session) {
 
-        // 1. 取得角色
-        String role =
-                (String) session.getAttribute("role");
+    	 // 1. 從 Session 取得正式登入者
+        LoginResultDTO user =
+                (LoginResultDTO) session.getAttribute("user");
 
+        // 2. 確認是否登入
+        if (user == null) {
+            throw new RuntimeException("尚未登入");
+        }
 
-        // 2. 權限判斷
-        if (!"member".equals(role)) {
+        // 3. 確認是不是會員
+        if (!"member".equals(user.getRole())) {
             throw new RuntimeException("沒有會員權限");
         }
 
-
-        // 3. 取得 memberid
+        // 4. 從登入資料取得 memberid
         Integer memberid =
-                (Integer) session.getAttribute("memberid");
+                user.getMemberid();
 
-
-        // 4. 確認 Session 有 memberid
+        // 5. 確認 memberid 存在
         if (memberid == null) {
             throw new RuntimeException("找不到登入會員資料");
         }
 
-
-        // 5. 查可預約日期
+        // 6. 查可預約日期
         return reservationOptionService
                 .getAvailableDatesByMemberCourse(
                         memberid,
@@ -108,29 +107,31 @@ public class ReservationOptionController {
             @RequestParam LocalDate date,
             HttpSession session) {
 
-        // 1. 取得角色
-        String role =
-                (String) session.getAttribute("role");
+    	 // 1. 從 Session 取得正式登入者
+        LoginResultDTO user =
+                (LoginResultDTO) session.getAttribute("user");
 
+        // 2. 確認是否登入
+        if (user == null) {
+            throw new RuntimeException("尚未登入");
+        }
 
-        // 2. 權限判斷
-        if (!"member".equals(role)) {
+        // 3. 確認是不是會員
+        if (!"member".equals(user.getRole())) {
             throw new RuntimeException("沒有會員權限");
         }
 
-
-        // 3. 取得登入會員 memberid
+        // 4. 從登入資料取得 memberid
         Integer memberid =
-                (Integer) session.getAttribute("memberid");
+                user.getMemberid();
 
-
-        // 4. 確認 memberid 存在
+        // 5. 確認 memberid 存在
         if (memberid == null) {
             throw new RuntimeException("找不到登入會員資料");
         }
 
 
-        // 5. 查時段
+        // 6. 查時段
         return reservationOptionService
                 .getScheduleOptionsByMemberCourse(
                         memberid,

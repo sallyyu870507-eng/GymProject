@@ -1,4 +1,4 @@
-package tw.gym.entity;
+package tw.gymproject.entity;
 
 
 import java.time.LocalDateTime;
