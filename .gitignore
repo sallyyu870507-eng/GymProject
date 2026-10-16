@@ -1,33 +1,60 @@
 HELP.md
+
+# 編譯結果
+*.class
 target/
-.mvn/wrapper/maven-wrapper.jar
+bin/
+build/
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/
 
-### STS ###
+# 日誌與 JVM 當機紀錄
+*.log
+hs_err_pid*
+replay_pid*
+
+# Eclipse / STS
+.metadata/
 .apt_generated
 .classpath
 .factorypath
 .project
-.settings
+.settings/
 .springBeans
-.sts4-cache
+.sts4-cache/
+.lock
+.location
 
-### IntelliJ IDEA ###
-.idea
+# IntelliJ IDEA
+.idea/
 *.iws
 *.iml
 *.ipr
 
-### NetBeans ###
+# VS Code
+.vscode/
+
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
-### VS Code ###
-.vscode/
+# 其他工具
+*.ctxt
+.mtj.tmp/
+
+# 打包與壓縮檔
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# 保留 Maven Wrapper 使用的 JAR
+!.mvn/wrapper/maven-wrapper.jar

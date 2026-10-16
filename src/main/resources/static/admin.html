@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>FitBook-管理員</title>
+		<script>
+	//取得登入者名稱
+		window.addEventListener('DOMContentLoaded', () => {
+			fetch('/api/user',
+			{credentials:'include'
+			})	
+			    .then(response => {
+			        if (!response.ok) {
+			            window.location.href = '/login.html';
+			            return;
+			        }
+			        return response.json();
+			    })
+			    .then(user => {
+			        if (user) {
+			            document.getElementById('loginName').textContent = user.name;
+			        }
+			    })
+			    .catch(error => {
+			        console.error('取得登入者資料失敗：', error);
+			    });
+});
+
+
+//----
+		document.addEventListener("DOMContentLoaded", () => {
+		    loadMember();
+		});
+
+
+		
+		window.addEventListener("DOMContentLoaded", ()=>{
+			const dialog = document.getElementById("registerDialog");
+			const openRegisterBtn = document.getElementById("openRegisterBtn");
+			const closeRegisterBtn = document.getElementById("closeRegisterBtn");
+			openRegisterBtn.addEventListener("click", () => {
+				console.log('新增會員');
+			    dialog.showModal();
+			});
+		
+			closeRegisterBtn.addEventListener("click", () => {
+			    dialog.close();
+			});
+			
+		});
+		
+				//新增會員的POST			
+		window.addEventListener("DOMContentLoaded", ()=>{
+			
+			document.getElementById("submitRegisterBtn")
+						.addEventListener("click", async function () {
+
+						    const data = {
+						        username: document.getElementById("username").value,
+						        password: document.getElementById("password").value,
+						        name: document.getElementById("name").value,
+								gender: document.querySelector(
+								    'input[name="gender"]:checked')?.value ?? "",
+						        phone: document.getElementById("phone").value,
+						        email: document.getElementById("email").value,
+								birthday: document.getElementById("birthday").value
+						    };
+							if (/\s/.test(data.password)) {
+							    alert("密碼不能包含空白字元！");
+							    return false;
+							}
+
+							try{console.log("送出表單");
+								const response = await fetch("/api/admin/members", {
+						        method: "POST",
+						        headers: {
+						            "Content-Type": "application/json"
+						        },
+						        body: JSON.stringify(data)
+							});
+											
+							if (response.status === 401) {
+							    window.location.href = "/login.html";
+							    return;
+							}
+
+							if (response.status === 403) {
+							    alert("沒有新增會員的權限");
+							    return;
+							}
+							console.log("HTTP狀態代碼" + response.status);
+							
+							const result = await response.json();	
+							if (response.ok) {
+								const dialog = document.getElementById("registerDialog");
+							    dialog.close();
+								alert("新增會員成功");
+
+							    // 重新取得會員列表
+							  loadMembers();
+
+							} else {
+							    document.getElementById("registerMessage")
+							        .textContent = "資料格式錯誤，新增會員失敗";
+							}
+						
+						}catch (error) {
+						        console.error("新增會員發生錯誤：", error);
+
+						        document.getElementById("registerMessage")
+						            .textContent = "系統發生錯誤，請稍後再試";
+						    }
+							
+							
+			});
+	});
+
+		</script>
+		
+		<style>
+		h1 {background-color:  lightgray;}	
+		
+		</style>
+		
+	</head>
+	<body>
+		<h1><span id="loginName"></span>您好！</h1>
+		<br>
+		<form action="/logout" method="POST">
+		    <button type="submit">登出系統</button>
+		</form>
+<hr/>
+		<button id="openRegisterBtn">新增會員</button>
+
+		<dialog id="registerDialog">
+		    <div>
+		        <h2>新增會員</h2>
+
+		        帳號:<input type="text" id="username" placeholder="帳號" required>
+		        密碼:<input type="password" id="password" placeholder="密碼" required pattern="^\S{4,}$" title="密碼最少四字元且不能有空白">
+		        姓名:<input type="text" id="name" placeholder="姓名" required>
+				性別:
+				<input type="radio" id="male" name="gender" placeholder="男" value="male" required><label for="male">男</label>
+				<input type="radio" id="female" name="gender" placeholder="女" value="female" required><label for="female">女</label>
+		        電話:<input type="tel" id="phone" placeholder="電話" required>
+		        電子信箱:<input type="email" id="email" placeholder="Email" required>
+				生日:<input type="date" id="birthday" placeholder="生日" required>
+
+
+		        <button id="submitRegisterBtn">送出</button>
+		        <button id="closeRegisterBtn">取消</button>
+
+		        <p id="registerMessage"></p>
+		    </div>
+		</dialog>
+		<br/><br/>
+		
+		<table style="width: 100%;">
+		    <thead>
+		        <tr>
+		            <th>會員編號</th>
+		            <th>姓名</th>
+		            <th>性別</th>
+		            <th>電話</th>
+		            <th>課程剩餘堂數</th>
+		            <th>操作</th>
+		        </tr>
+		    </thead>
+
+		    <tbody id="memberTableBody"></tbody>
+		</table>
+
+		<div>
+		    <button id="prevPageBtn"> <!--呼叫換頁功能-->
+		        上一頁
+		    </button>
+
+		    <span id="pageInfo"></span>
+
+		    <button id="nextPageBtn">
+		        下一頁
+		    </button>
+		</div>
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		<script>		
+		
+	
+		//---------------------
+		//已登入但沒權限的帳號會被拒絕然後拋出權限代碼給前端
+		//會員清單載入功能
+
+				//先在全域給予預設值，讓所有功能都能存取
+					let currentPage = 0;
+					let totalPages = 0;
+					const pageSize = 10;
+					
+					async function loadMember(page = 0){
+						
+						try {
+							const response = await fetch(
+							    `/api/admin/members?page=${page}&size=${pageSize}`
+						);
+						
+						if (response.status === 401) { //沒登入
+						                window.location.href = '/login.html';
+						                return;
+				           	}
+			            if (response.status === 403) { //有登入但沒權限被forbidden
+				                alert('沒有權限'); 
+								//呼叫api/user找出role,送使用者去該去的頁面
+								const userResponse = await fetch("/api/user");
+
+								if (!userResponse.ok) {
+								    window.location.href = "/login.html";
+								    return;
+								}
+
+								const user = await userResponse.json();
+
+								switch (user.role) {
+								    case "admin":
+								        window.location.href = "/admin.html";
+								        break;
+
+								    case "coach":
+								        window.location.href = "/coach.html";
+								        break;
+
+								    case "member":
+								        window.location.href = "/member.html";
+								        break;
+
+								    default:
+								        window.location.href = "/login.html";
+								}
+								return;
+				            }
+
+				            if (!response.ok) {
+								const errorText = await response.text();
+								console.log("HTTP狀態:"+response.status);
+								console.log("後端內容:"+ errorText);
+				                throw new Error(`HTTP錯誤：${response.status}`);
+				            }
+									
+						const data = await response.json();
+						console.log(data); //將後端傳回來的response拿出來看
+						const members = data.members;
+						document.getElementById("memberTableBody").innerText=""; //帶入前先清空
+						//用迴圈一筆一筆寫入
+						members.forEach(members=>{
+							const tr = document.createElement("tr");
+							
+							const memberNoTd = document.createElement("td");
+							memberNoTd.textContent = members.memberno;
+							const nameTd = document.createElement("td");
+							nameTd.textContent = members.name;
+							const genderTd = document.createElement("td");
+							genderTd.textContent = members.gender;
+							const phoneTd = document.createElement("td");
+							phoneTd.textContent = members.phone;
+							
+							const coursesTd = document.createElement("td");
+							
+							if (members.courses.length === 0){
+								coursesTd.textContent = "尚未購課";
+							}else{
+								//課程是第二層物件
+								members.courses.forEach(course=>{
+									const div = document.createElement("div");
+									
+									div.textContent = `${course.coursename} : ${course.remainingsessions}堂 |`;
+									coursesTd.appendChild(div);
+								});
+							}
+							const actionTd = document.createElement("td");
+
+							const editBtn = document.createElement("button");
+							editBtn.textContent = "查看/編輯";
+							const inactiveBtn = document.createElement("button");
+							inactiveBtn.textContent = "停用";
+							const renewBtn = document.createElement("button");
+							renewBtn.textContent = "購課";
+
+							editBtn.addEventListener("click", () => {
+							    console.log("編輯會員 ID：" + members.memberid);
+							    // 這邊再加入編輯的按鈕設定
+							    // openEditMember(member.memberid);
+							});
+							//在操作區加入按鈕
+							actionTd.append(editBtn, 
+											inactiveBtn, 
+											renewBtn
+									);
+							
+							// 將所有 td 加入 tr
+							        tr.append(
+							            memberNoTd,
+							            nameTd,
+							            genderTd,
+							            phoneTd,
+							            coursesTd,
+							            actionTd
+							        );
+								const tbody = document.getElementById('memberTableBody');
+							        // 將 tr 加入 tbody
+							        tbody.appendChild(tr);
+							    });
+
+							    // 9. 更新分頁資訊
+							    currentPage = data.currentPage;  //0為第一頁
+							    totalPages = data.totalPages;
+
+							    document.getElementById("pageInfo").textContent =
+							        `第 ${currentPage + 1} / ${totalPages} 頁`;
+
+							    document.getElementById("prevPageBtn").disabled =
+							        !data.hasPrev;  //本身從controller傳回來的就是boolean值
+
+							    document.getElementById("nextPageBtn").disabled =
+							        !data.hasNext;
+
+							} catch (error) {
+
+							    console.error("載入會員失敗：", error);
+							    alert("會員資料載入失敗");
+							}
+				}
+					
+			//換頁功能，讓上下頁按鈕呼叫
+					function changePage(direction){
+					console.log('changePage');
+					const newPage = currentPage + direction;
+					
+					if(newPage<0 || newPage >= totalPages){
+						return;
+					}
+					loadMember(newPage);
+				}
+					
+					document.getElementById('prevPageBtn')
+					.addEventListener("click", ()=>{
+							changePage(-1);
+					});
+					document.getElementById('nextPageBtn')
+					.addEventListener("click", ()=>{
+							changePage(1);
+					});
+				
+		</script>
+	</body>
+</html>
