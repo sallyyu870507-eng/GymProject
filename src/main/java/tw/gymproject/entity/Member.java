@@ -30,6 +30,7 @@ public class Member {
 	private String gender;
 	private String phone;//
 	private String email;
+//	private String avatarurl; //照片檔案路徑
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd") //以免自動轉換失效
 	private LocalDate birthday;

@@ -4,8 +4,10 @@ import java.security.PrivateKey;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.aspectj.apache.bcel.classfile.Module.Require;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.FalseCondition;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,9 +25,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import tw.gymproject.dao.AccountRepository;
-import tw.gymproject.dao.CoachRepository;
-import tw.gymproject.dao.MemberRepository;
 import tw.gymproject.dto.CoachRegisterDTO;
 import tw.gymproject.dto.LoginDTO;
 import tw.gymproject.dto.LoginResultDTO;
@@ -33,6 +32,9 @@ import tw.gymproject.dto.RegisterDTO;
 import tw.gymproject.entity.Coach;
 import tw.gymproject.entity.Member;
 import tw.gymproject.entity.Useraccount;
+import tw.gymproject.repository.AccountRepository;
+import tw.gymproject.repository.CoachRepository;
+import tw.gymproject.repository.MemberRepository;
 import tw.gymproject.service.AccountService;
 
 @Controller   //傳字串而非JSON
@@ -51,14 +53,11 @@ public class LoginController {
 	
 	//純登入驗證身分用，驗證後分別指派到三個頁面
 	@PostMapping("/login")
-	public String login(@RequestParam String username,
-						@RequestParam String password,
+	public String login(@RequestParam(required = false) String username,
+						@RequestParam(required = false) String password,
             			HttpSession session) {
 //		@RequestBody @Valid LoginDTO loginDTO用在前端傳入的是JSON檔時
-		
-		LoginResultDTO result = accountService.login(username, password);
-		//等Service那邊傳回來的東西
-		
+	
 		//後端第二道使用者輸入與否檢查防線
 		if(username == null || username.isBlank()) {
 			return "redirect:/login.html?error=usernameEmpty";
@@ -66,6 +65,9 @@ public class LoginController {
 		if(password == null || password.isBlank()) {
 			return "redirect:/login.html?error=passwordEmpty";
 		}
+			
+		LoginResultDTO result = accountService.login(username, password);
+		//等Service那邊傳回來的東西
 		
 		
 		//檢查帳號狀態

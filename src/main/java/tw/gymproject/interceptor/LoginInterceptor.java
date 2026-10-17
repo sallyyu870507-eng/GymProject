@@ -14,7 +14,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 	//寫一個看守人在進入網址前統一先查
 	
 	private String getHomeByRole(String role) {
-//依據登入的roler決定 送他回去他自己的版面
+//依據登入的role決定 送他回去他自己的版面
 	    switch (role) {
 
 	        case "admin":
@@ -49,10 +49,15 @@ public class LoginInterceptor implements HandlerInterceptor {
 		String uri = request.getRequestURI(); //得到送請求進來的識別也就是8080/後面的
 		if(user==null) {
 			if (uri.startsWith("/api/")) {
-		        // API 請求：回傳 401 給 JavaScript
-		        response.sendError(
-		            HttpServletResponse.SC_UNAUTHORIZED
-		        );  //401
+		        // API 請求：回傳 401 給 JavaScript讓前端去轉畫面
+				response.setStatus(
+			            HttpServletResponse.SC_UNAUTHORIZED
+			        );  //401
+		        response.setContentType("application/json;charset=UTF-8");
+
+//		        response.getWriter().write(
+//		            "{\"success\":false,\"message\":\"登入已過期，請重新登入\"}"
+//		        );
 
 		    } else {
 		        // HTML 請求：直接導向登入頁面
@@ -85,7 +90,7 @@ public class LoginInterceptor implements HandlerInterceptor {
 			if (uri.startsWith("/api/")) { //資料接口
 		        response.sendError(
 		                HttpServletResponse.SC_FORBIDDEN);}
-			response.sendRedirect(getHomeByRole(role));
+			else{response.sendRedirect(getHomeByRole(role));}
 			return false;
 		}
 		return true;

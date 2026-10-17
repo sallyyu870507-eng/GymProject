@@ -32,7 +32,8 @@ public class WebConfig implements WebMvcConfigurer {
                 "/member",
                 "/admin.html",
                 "/coach.html",
-                "/member.html"
+                "/member.html",
+                "/api/attendance/**"
         );
 	}
 }

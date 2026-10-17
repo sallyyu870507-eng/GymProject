@@ -1,33 +1,36 @@
 package tw.gymproject.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.hibernate.service.spi.Stoppable;
 import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import tw.gymproject.dao.AccountRepository;
-import tw.gymproject.dao.CoachRepository;
-import tw.gymproject.dao.MemberRepository;
 //import tw.gymproject.dto.LoginDTO;
 import tw.gymproject.dto.LoginResultDTO;
 import tw.gymproject.dto.MemberCourseDTO;
 import tw.gymproject.dto.MemberListDTO;
+import tw.gymproject.dto.MemberUpdateDTO;
 import tw.gymproject.dto.RegisterDTO;
 import tw.gymproject.entity.Coach;
 import tw.gymproject.entity.Member;
 import tw.gymproject.entity.Useraccount;
+import tw.gymproject.exception.DuplicateUsernameException;
+import tw.gymproject.repository.AccountRepository;
+import tw.gymproject.repository.CoachRepository;
+import tw.gymproject.repository.MemberRepository;
 
 @Transactional
 @Service
@@ -48,15 +51,12 @@ public class AccountService {
 		this.coachRepository = coachRepository;
 	}	
 	
-//	public boolean checkAccount(String account) {
-//		return repository.existsByUsername(account);
-//		}
-	
 	//建立會員帳號
 	public boolean registerMember(RegisterDTO dto) { //使用物件類別，可以一次拿到多個參數，即使是null也只會顯示null
 		//檢查帳號是否重複
 		if(repository.existsByUsername(dto.getUsername())) {
-			throw new RuntimeException("帳號已存在，請更換其他名稱");}//也有可能停用，洽館員
+			throw new DuplicateUsernameException(
+					"帳號已存在，請更換其他名稱");}//也有可能停用，洽館員
 		
 		 //註冊、建立帳號
 		Useraccount account = new Useraccount();
@@ -119,6 +119,7 @@ public class AccountService {
 			return result;
 		}		
 		
+		result.setAccountid(account.getAccountid());
 		result.setUsername(account.getUsername());
 		result.setRole(account.getRole());
 		if("member".equals(account.getRole())) {
@@ -132,6 +133,7 @@ public class AccountService {
 			Member member = memberOpt.get();
 			result.setName(member.getName());
 			result.setMemberno(member.getMemberno());
+			result.setMemberid(member.getMemberid());
 			
 		}else if("coach".equals(account.getRole())) {
 			Optional<Coach> coachOpt = coachRepository.findByAccount_Accountid(account.getAccountid()); //同理為了取得教練姓名
@@ -143,6 +145,7 @@ public class AccountService {
 			Coach coach = coachOpt.get();
 			result.setName(coach.getName());
 			result.setCoachno(coach.getCoachno());
+			result.setCoachid(coach.getCoachid());			
 			
 		}else if ("admin".equals(account.getRole())) {
 
@@ -163,11 +166,26 @@ public class AccountService {
 	//-------------------------------------------------
 
 	//會員清單分頁
-	public  Map<String, Object> findAllMembers(int page, int size) {  //回傳給Controller
+	//使用雙層DTO，先用entity抓會員基本資料，再用SQL語法查資料庫的課程堂數
+	public Map<String, Object> findAllMembers(int page, 
+												int size, 
+												String status, 
+												String keyword) {  //回傳給Controller
 		//設定當前分頁該顯示的會員的分頁條件
-		Pageable pageable = PageRequest.of(page, size, Sort.by("memberid"));//建立分頁條件
+		Pageable pageable = PageRequest.of(page, size, Sort.by("memberid").ascending());//建立分頁條件
 		//把分頁條件交給repository去執行撈entity的工作
-		Page<Member> memberPage = memberRepository.findAll(pageable);
+		String searchText = keyword == null ? "" : keyword.trim();
+		System.out.println("searchText:" + searchText);
+		Page<Member> memberPage =
+		        memberRepository.searchMembers(keyword,
+								                status,
+								                pageable
+				);
+		
+		//篩選狀態+關鍵字搜尋
+		if (!List.of("all", "active", "inactive").contains(status)) {
+		    throw new IllegalArgumentException("無效的會員狀態");
+		}
 		
 		//建立Map放會員資料，撈出會員資料要放到容器Map裡，用迴圈放
 		Map<Integer, MemberListDTO> memberMap = new LinkedHashMap<>();  //有順序的放入，先進先出
@@ -175,11 +193,13 @@ public class AccountService {
 		for (Member member : memberPage.getContent()) { //memberPage.getContent()可以得到從entity取出的資料內容
 			
 			MemberListDTO dto = new MemberListDTO();
+			dto.setAccountid(member.getAccount().getAccountid());
 			dto.setMemberid(member.getMemberid());
 			dto.setMemberno(member.getMemberno());
 			dto.setName(member.getName());
 			dto.setGender(member.getGender());
 			dto.setPhone(member.getPhone());
+			dto.setStatus(member.getStatus());
 			dto.setCourses(new ArrayList<>()); //後面再接著抓每一個會員的會員課程內容
 			
 			//把會員放進Map，是Key-value的形式，id當Key，資料是value
@@ -210,9 +230,9 @@ public class AccountService {
 			//用加的，如果直接set，每跑一次迴圈上一圈的內容就會被新的覆蓋掉			
 		}
 		//因為要寫分頁功能，除了memberListDTO的內容之外，還需要page的各種分頁資訊，所以重組成Map回傳
-		Map<String, Object> result = new LinkedHashMap<>();
+		Map<String, Object> result = new HashMap<>();
 
-		result.put("members", new ArrayList<>(memberMap.values()));  //前面拚出來的MemberList
+		result.put("members", new ArrayList<>(memberMap.values()));  //前面拚出來的MemberList，
 		result.put("currentPage", memberPage.getNumber()); //目前頁碼
 		result.put("pageSize", memberPage.getSize()); //每頁幾筆
 		result.put("totalPages", memberPage.getTotalPages()); //總頁數
@@ -224,16 +244,111 @@ public class AccountService {
 		
 }
 	
+	
+	
+	
+	//編輯會員資料，先查 後改
+	public MemberUpdateDTO getMemberForEdit(Integer memberid) {
+
+        Member member = memberRepository.findById(memberid)
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "找不到會員"
+                )
+            );
+
+        MemberUpdateDTO dto = new MemberUpdateDTO();
+        
+        dto.setUsername(member.getAccount().getUsername());
+        dto.setName(member.getName());
+        dto.setPhone(member.getPhone());
+        dto.setEmail(member.getEmail());
+
+        return dto;
+    }
+
+	//編輯會員資料，更新
+    public void updateMember(
+            Integer memberid,
+            MemberUpdateDTO dto) {
+
+        // 取得原本的會員
+        Member member = memberRepository.findById(memberid)
+            .orElseThrow(() ->
+                new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "找不到會員"
+                )
+            );
+        Useraccount account = member.getAccount();
+        // 檢查比對傳進來的username有無改變
+        if (!account.getUsername().equals(dto.getUsername())) {
+
+            // 檢查新帳號有沒有被使用
+            if (repository.existsByUsername(dto.getUsername())) {
+                throw new ResponseStatusException(
+                    HttpStatus.CONFLICT, "帳號已被使用"
+                );
+            }
+
+            account.setUsername(dto.getUsername());
+        }
+
+        member.setName(dto.getName());
+        member.setPhone(dto.getPhone());
+        member.setEmail(dto.getEmail());
+
+        // 由 JPA 自動更新資料庫，這邊不是新增，不用save
+    }
+
+	
 	//刪除帳號
 	//因為Entity已經有跟member和coach聯集了
-	public void softDeleteAccount(Integer accountId) {
-        // 1. 查出主表資料
-        Useraccount account = repository.findById(accountId)
-            .orElseThrow(() -> new EntityNotFoundException("找不到該帳號"));
+	public void softDeleteAccount(Integer accountid) {
+        // 查出主表資料
+        Useraccount account = repository.findById(accountid)
+            .orElseThrow(() -> new EntityNotFoundException("找不到該帳號")); //如果找不到帳號，丟出去給全域處理器
         
-        // 2. 直接刪除主表（JPA 會自動連動 Member 幫你把兩張表都轉為 inactive）
-        repository.delete(account); 
+        Member member = memberRepository
+    	        .findByAccount_Accountid(accountid)
+    	        .orElseThrow(() ->
+    	            new EntityNotFoundException("找不到會員"));
+
+    	    if ("inactive".equals(account.getStatus())
+    	            && "inactive".equals(member.getStatus())) {
+    	        throw new IllegalStateException("會員已是停用狀態");
+    	    }
+    	    // 直接刪除主表，靠entity的設定casecade.All
+          repository.delete(account); 
+    	    
+    	    //作保險用的，因為entity已經有casecade.All關聯會同步受delete影響status
+    	    account.setStatus("inactive");//這邊走的是一般的更改欄位方式
+    	    member.setStatus("inactive");
+        
+       
     }
+	
+	//恢復帳號
+	@Transactional
+	public void reactivateMember(Integer accountid) {
+
+	    Useraccount account = repository
+	        .findById(accountid)
+	        .orElseThrow(() ->
+	            new EntityNotFoundException("找不到帳號"));
+
+	    Member member = memberRepository
+	        .findByAccount_Accountid(accountid)
+	        .orElseThrow(() ->
+	            new EntityNotFoundException("找不到會員"));
+
+	    if ("active".equals(account.getStatus())
+	            && "active".equals(member.getStatus())) {
+	        throw new IllegalStateException("會員已是啟用狀態");
+	    }
+
+	    account.setStatus("active");
+	    member.setStatus("active");
+	}
 	
 }
 

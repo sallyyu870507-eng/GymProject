@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class LoginResultDTO { //接登入後 需要抓的資料
 	private Integer accountid;
+	private Integer memberid;
+	private Integer coachid;
 	private String username;
 	private String name;
     private String role;

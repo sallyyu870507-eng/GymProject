@@ -4,20 +4,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.service.annotation.PutExchange;
 
 import jakarta.validation.Valid;
+import tw.gymproject.dto.MemberUpdateDTO;
 import tw.gymproject.dto.RegisterDTO;
 import tw.gymproject.service.AccountService;
-import tw.gymproject.service.CoachService;
+import tw.gymproject.service.CoachMemberService;
 
 @RestController  //同時包含requestbody回傳JSON格式和controller
 @RequestMapping("/api/admin/members")
@@ -26,16 +29,15 @@ public class AdminController {
 		
 	//引入寫業務邏輯的Service
 	private final  AccountService service;
-	private final CoachService coachService;
+	private final CoachMemberService coachService;
 
-	AdminController(AccountService service, CoachService coachService) {
+	AdminController(AccountService service, CoachMemberService coachService) {
 		this.service = service;
 		this.coachService = coachService;
 	}
 	//新增會員(註冊)
 	@PostMapping
-	public ResponseEntity<Map<String, Object>> createMember(@RequestBody @Valid RegisterDTO dto,
-															BindingResult bindingResult){
+	public ResponseEntity<Map<String, Object>> createMember(@Valid @RequestBody RegisterDTO dto){
 
 		System.out.println("---進入新增會員controller---");
 	    Map<String, Object> result = new HashMap<>();
@@ -62,24 +64,46 @@ public class AdminController {
 	@GetMapping
 	// await fetch(`/api/admin/members?page=${page}&size=${size}`)
     public ResponseEntity<Map<String, Object>> getPageMembers(
-    		@RequestParam(defaultValue = "0") int page, //預設第一頁
-            @RequestParam(defaultValue = "10") int size) {
-		System.out.println("List controller");
+    			@RequestParam(defaultValue = "0") int page, //預設第一頁
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "all") String status,
+            @RequestParam(defaultValue = "") String keyword) {
+//		System.out.println("List controller");
+//		System.out.println("status:" + status);
+//		System.out.println("keyword:" + keyword);
+//		
 		return ResponseEntity.ok(
-		        service.findAllMembers(page, size)
+		        service.findAllMembers(page, size, status, keyword)
 		    );
     }
 
 	
-//	//查詢會員(依據狀態,狀態選項可使用projection)
-//	@GetMapping
-//	public ResponseEntity<Map<String, Object>> findAll() 
-//	
-	
-	
-	//修改會員
-//	@PutMapping
-//	public void updateMember()
+	//修改會員，先查，後改
+	@GetMapping("/{memberid}")
+	public ResponseEntity<MemberUpdateDTO> getMember(
+            @PathVariable Integer memberid) {
+
+        MemberUpdateDTO dto =
+            service.getMemberForEdit(memberid);
+        //例外已經在Service設定拋出給全域例外處理了
+        return ResponseEntity.ok(dto);
+    }
+
+	//將更改的會員資料給Service存進資料庫
+	@PutMapping("/update/{memberid}")
+	public ResponseEntity<Map<String, Object>> updateMember(
+            @PathVariable Integer memberid,
+            @Valid @RequestBody MemberUpdateDTO dto) {
+		System.out.println("進入PUT controller，MemberUpdateDTO:" + dto);
+        service.updateMember(memberid, dto);
+
+        return ResponseEntity.ok(
+            Map.of(
+                "success", true, //讓前端response.success的boolean做if判斷
+                "message", "會員資料更新成功"
+            )
+        );
+	}
 	
 	
 	//刪除(inactive)會員
@@ -88,7 +112,25 @@ public class AdminController {
 		
 		service.softDeleteAccount(accountid);
 		
-		return ResponseEntity.ok("帳號停用成功");
+		return ResponseEntity.ok( Map.of(
+	            "success", true,
+	            "message", "帳號停用成功"
+	        ));
+	}
+		
+	//恢復會員
+	@PatchMapping("/{accountid}/reactivate")
+	public ResponseEntity<?> reactivateMember(
+		        @PathVariable Integer accountid) {
+
+		    service.reactivateMember(accountid);
+		    return ResponseEntity.ok(
+		        Map.of(
+		            "success", true,
+		            "message", "會員恢復成功"
+		        )
+		    );
+		}
 		
 /*		如果沒有使用全域例外處理器，要記得try-catch
  		try {
@@ -105,7 +147,7 @@ public class AdminController {
 */		
 	}
 	
-}
+
 	
 
 
