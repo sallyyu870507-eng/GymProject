@@ -111,6 +111,10 @@ public class Coach {
 	public void setAccount(Useraccount account) {
 		this.account = account;
 	}
+
+	public Integer getAccountid() {
+		return account == null ? null : account.getAccountid();
+	}
 	
 	
 	

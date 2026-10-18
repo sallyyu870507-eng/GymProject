@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教練管理</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row min-vh-100">
+
+            <!-- 左側導覽 -->
+            <aside class="col-md-3 col-lg-2 bg-dark text-white p-4">
+                <h2 class="h4 fw-bold mb-4 d-flex align-items-center gap-2">
+                    <i class="bi bi-activity" aria-hidden="true"></i>
+                    <span>GYM CRM</span>
+                </h2>
+
+                <nav class="nav flex-column gap-2">
+                    <a class="nav-link text-white" href="course.html">課程管理</a>
+                    <a class="nav-link text-white bg-secondary rounded" href="coach.html">教練管理</a>
+                </nav>
+            </aside>
+
+            <!-- 右側內容 -->
+            <main class="col-md-9 col-lg-10 bg-light p-4">
+                <h1 class="h3 fw-bold mb-4">教練管理</h1>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h2 class="h5 fw-bold mb-0">教練列表</h2>
+                            <button type="button" class="btn btn-dark" id="addCoachBtn">
+                                ＋ 新增教練
+                            </button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>教練編號</th>
+                                        <th>姓名</th>
+                                        <th>性別</th>
+                                        <th>電話</th>
+                                        <th>電子郵件</th>
+                                        <th>專長</th>
+                                        <th>狀態</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="coachTableBody">
+                                    <!-- main.js 會把資料放進這裡 -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+    <div class="modal fade" id="coachModal" tabindex="-1" aria-labelledby="coachModalTitle" aria-hidden="true">
+        <div class="modal-dialog">
+            <form class="modal-content" id="coachForm">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5" id="coachModalTitle">新增教練</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="關閉"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="coachNo" class="form-label">教練編號</label>
+                        <input id="coachNo" class="form-control" maxlength="20" placeholder="必填" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="coachName" class="form-label">姓名</label>
+                        <input id="coachName" class="form-control" maxlength="50" placeholder="必填" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="coachAccountId" class="form-label">帳號 ID</label>
+                        <input id="coachAccountId" class="form-control" type="text" inputmode="numeric"
+                            pattern="[1-9][0-9]*" title="請輸入大於 0 的整數帳號 ID" placeholder="必填" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="coachGender" class="form-label">性別</label>
+                        <input id="coachGender" class="form-control" maxlength="10" placeholder="必填" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="coachPhone" class="form-label">電話</label>
+                        <input id="coachPhone" class="form-control" type="tel" maxlength="20" placeholder="必填" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="coachEmail" class="form-label">電子郵件</label>
+                        <input id="coachEmail" class="form-control" type="email" maxlength="100" placeholder="必填" required>
+                    </div>
+
+                    <fieldset class="mb-3">
+                        <legend class="form-label fs-6">專長（可選多門課程）</legend>
+                        <div id="coachCourseOptions"></div>
+                    </fieldset>
+
+                    <div class="mb-3" id="coachStatusGroup" hidden>
+                        <label for="coachStatus" class="form-label">狀態</label>
+                        <select id="coachStatus" class="form-select">
+                            <option value="active">在職</option>
+                            <option value="inactive">離職</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-dark">儲存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
