@@ -1,0 +1,4 @@
+/* 課程與教練表格的標題列 */
+.table > thead > tr > th {
+    background-color: red;
+}
