@@ -7,6 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="coach")
@@ -100,6 +101,7 @@ public class Coach {
 	@JoinColumn(name="accountid", nullable = false, unique = true)
 	private Useraccount account;
 
+	@JsonIgnore
 	public Useraccount getAccount() {
 		return account;
 	}
@@ -107,7 +109,9 @@ public class Coach {
 	public void setAccount(Useraccount account) {
 		this.account = account;
 	}
-	
-	
+
+	public Integer getAccountid() {
+		return account == null ? null : account.getAccountid();
+	}
 	
 }

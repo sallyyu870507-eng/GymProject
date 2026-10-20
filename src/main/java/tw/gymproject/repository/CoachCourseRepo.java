@@ -24,4 +24,6 @@ public interface CoachCourseRepo extends JpaRepository<CoachCourse, CoachCourseI
     List<Coach> findCoachesByCourseId(
             @Param("courseid") Integer courseid);
 
+    List<CoachCourse> findById_Coachid(Integer coachid);
+
 }
