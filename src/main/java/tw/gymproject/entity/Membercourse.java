@@ -1,11 +1,11 @@
 package tw.gymproject.entity;
 
-import java.math.BigDecimal;
+//import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.springframework.data.relational.core.sql.FalseCondition;
+//import org.springframework.data.relational.core.sql.FalseCondition;
 
-import jakarta.persistence.Column;
+//import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -34,8 +34,8 @@ public class Membercourse {
 	private String status;
 	
 
-	@Column(name = "totalamount", precision = 12, scale = 2)
-	private BigDecimal totalamount;
+//	@Column(name = "totalamount", precision = 12, scale = 2)
+//	private BigDecimal totalamount;
 	
 	//----------//
 	@ManyToOne(fetch = FetchType.LAZY)
