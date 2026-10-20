@@ -2,8 +2,8 @@ package tw.gymproject.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import tw.gymproject.entity.MemberCourse;
-import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ConflictException;
 import tw.gymproject.exception.ResourceNotFoundException;
 import tw.gymproject.repository.MemberCourseRepo;
@@ -11,73 +11,80 @@ import tw.gymproject.repository.MemberCourseRepo;
 @Service
 public class MemberCourseService {
 
-
     private final MemberCourseRepo memberCourseRepo;
 
-    public MemberCourseService(MemberCourseRepo memberCourseRepo) {
+    public MemberCourseService(
+            MemberCourseRepo memberCourseRepo
+    ) {
         this.memberCourseRepo = memberCourseRepo;
     }
 
-    //getById()→ 找 MemberCourse
-    public MemberCourse getById(
-            Integer memberCourseId
-    ) {
-
+    public MemberCourse getById(Integer memberCourseId) {
         return memberCourseRepo
                 .findById(memberCourseId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
+                .orElseThrow(
+                        () -> new ResourceNotFoundException(
                                 "找不到 MemberCourse：" + memberCourseId
                         )
                 );
     }
 
-    //decreaseSession()→ 剩餘堂數 -1
+    // 扣 1 堂，並同步方案狀態。
     @Transactional
     public void decreaseSession(Integer memberCourseId) {
-
         MemberCourse memberCourse = getById(memberCourseId);
 
-        Integer remaining = memberCourse.getRemainingsessions();
+        validateSessions(memberCourse);
 
-        if (remaining <= 0) {
+        int remaining = memberCourse.getRemainingsessions();
+
+        if (remaining == 0) {
             throw new ConflictException(
                     "剩餘堂數不足，無法扣堂"
             );
         }
 
-        memberCourse.setRemainingsessions(remaining - 1);
+        int updatedRemaining = remaining - 1;
+
+        memberCourse.setRemainingsessions(updatedRemaining);
+
+        memberCourse.setStatus(
+                updatedRemaining == 0 ? "usedup" : "active"
+        );
     }
 
-    //increaseSession()→ 剩餘堂數 +1
+    // 補回 1 堂，並同步方案狀態。
     @Transactional
     public void increaseSession(Integer memberCourseId) {
-
         MemberCourse memberCourse = getById(memberCourseId);
 
-        Integer remaining = memberCourse.getRemainingsessions();
+        validateSessions(memberCourse);
 
-        memberCourse.setRemainingsessions(remaining + 1);
-    }
+        int remaining = memberCourse.getRemainingsessions();
+        int total = memberCourse.getTotalsessions();
 
-    /*
-    addSessions() 是正式續約
-    totalsessions     + addedSessions
-    remainingsessions + addedSessions
-     */
-    @Transactional
-    public void addSessions(Integer memberCourseId, Integer addedSessions) {
-
-        MemberCourse memberCourse = getById(memberCourseId);
-
-        if (addedSessions == null|| addedSessions <= 0) {
-            throw new BusinessException("新增堂數必須大於 0");
+        if (remaining >= total) {
+            throw new ConflictException(
+                    "補回堂數後不可超過總堂數"
+            );
         }
 
+        memberCourse.setRemainingsessions(remaining + 1);
+        memberCourse.setStatus("active");
+    }
+
+    private void validateSessions(MemberCourse memberCourse) {
         Integer total = memberCourse.getTotalsessions();
         Integer remaining = memberCourse.getRemainingsessions();
 
-        memberCourse.setTotalsessions(total + addedSessions);
-        memberCourse.setRemainingsessions(remaining + addedSessions);
+        if (total == null
+                || total <= 0
+                || remaining == null
+                || remaining < 0
+                || remaining > total) {
+            throw new ConflictException(
+                    "方案堂數資料異常，請先確認資料"
+            );
+        }
     }
 }

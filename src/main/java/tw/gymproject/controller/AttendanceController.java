@@ -1,6 +1,7 @@
 package tw.gymproject.controller;
 
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,14 +9,22 @@ import org.springframework.web.bind.annotation.*;
 import tw.gymproject.dto.attendance.AttendanceDetailResponse;
 import tw.gymproject.dto.attendance.AttendanceListResponse;
 import tw.gymproject.dto.attendance.AttendanceUpdateRequest;
+import tw.gymproject.exception.BusinessException;
 import tw.gymproject.service.AttendanceService;
 import tw.gymproject.service.CoachSessionService;
 
 import java.time.LocalDate;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/attendance")
 public class AttendanceController {
+
+    private static final Set<String> LIST_QUERY_PARAMS =
+            Set.of("date");
+
+    private static final Set<String> NO_QUERY_PARAMS =
+            Set.of();
 
     private final AttendanceService attendanceService;
     private final CoachSessionService coachSessionService;
@@ -28,101 +37,103 @@ public class AttendanceController {
         this.coachSessionService = coachSessionService;
     }
 
-
-    // API 1
-    // GET /api/attendance?date=2026-09-27
-    // 指定日期：統計 + 今日課程卡片
+    // A1：指定日期的出席工作台
     @GetMapping
     public ResponseEntity<AttendanceListResponse>
     getAttendanceList(
-
             @RequestParam("date")
-            @DateTimeFormat(
-                    iso = DateTimeFormat.ISO.DATE
-            )
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date,
 
-            HttpSession session
+            HttpServletRequest request
     ) {
+        Integer coachId = coachSessionService.getCurrentCoachId(
+                request.getSession(false)
+        );
 
-        Integer currentCoachId =
-                coachSessionService.getCurrentCoachId(session);
-
-        AttendanceListResponse response =
-                attendanceService
-                        .getAttendanceList(
-                                date,
-                                currentCoachId
-                        );
+        validateQueryParameters(request, LIST_QUERY_PARAMS);
 
         return ResponseEntity.ok(
-                response
+                attendanceService.getAttendanceList(
+                        date,
+                        coachId
+                )
         );
     }
 
-
-    // API 2
-    // GET /api/attendance/{bookingId}
-    // 點擊會員卡片後：取得完整 Detail
+    // A2：單一預約的出席詳情
     @GetMapping("/{bookingId}")
     public ResponseEntity<AttendanceDetailResponse>
     getAttendanceDetail(
-
             @PathVariable("bookingId")
             Integer bookingId,
 
-            HttpSession session
+            HttpServletRequest request
     ) {
+        Integer coachId = coachSessionService.getCurrentCoachId(
+                request.getSession(false)
+        );
 
-        Integer currentCoachId =
-                coachSessionService.getCurrentCoachId(session);
-
-        AttendanceDetailResponse response =
-                attendanceService
-                        .getAttendanceDetail(
-                                bookingId,
-                                currentCoachId
-                        );
+        validateQueryParameters(request, NO_QUERY_PARAMS);
 
         return ResponseEntity.ok(
-                response
+                attendanceService.getAttendanceDetail(
+                        bookingId,
+                        coachId
+                )
         );
     }
 
-
-    // API 3
-    // PUT /api/attendance/{bookingId}
-    // 更新：
-    // PRESENT / LEAVE / ABSENT
-    // workoutFocus
-    // note
-    // InBody
+    // A3：更新出席、堂數與 InBody
     @PutMapping("/{bookingId}")
     public ResponseEntity<AttendanceDetailResponse>
     updateAttendance(
-
             @PathVariable("bookingId")
             Integer bookingId,
 
             @RequestBody
-            AttendanceUpdateRequest request,
+            AttendanceUpdateRequest body,
 
-            HttpSession session
+            HttpServletRequest request
     ) {
+        Integer coachId = coachSessionService.getCurrentCoachId(
+                request.getSession(false)
+        );
 
-        Integer currentCoachId =
-                coachSessionService.getCurrentCoachId(session);
-
-        AttendanceDetailResponse response =
-                attendanceService
-                        .updateAttendance(
-                                bookingId,
-                                currentCoachId,
-                                request
-                        );
+        validateQueryParameters(request, NO_QUERY_PARAMS);
 
         return ResponseEntity.ok(
-                response
+                attendanceService.updateAttendance(
+                        bookingId,
+                        coachId,
+                        body
+                )
         );
+    }
+
+    // 只檢查 Attendance API，不影響其他 Controller。
+    private void validateQueryParameters(
+            HttpServletRequest request,
+            Set<String> allowedNames
+    ) {
+        request.getParameterMap().forEach((name, values) -> {
+            if (!allowedNames.contains(name)) {
+                throw new BusinessException(
+                        "不支援的查詢參數：" + name
+                );
+            }
+
+            if (values.length != 1) {
+                throw new BusinessException(
+                        "查詢參數不可重複：" + name
+                );
+            }
+
+            if (values[0].isBlank()) {
+                throw new BusinessException(
+                        name + " 不可為空白"
+                );
+            }
+        });
     }
 }

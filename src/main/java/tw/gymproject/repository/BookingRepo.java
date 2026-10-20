@@ -1,36 +1,33 @@
 package tw.gymproject.repository;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import tw.gymproject.entity.Booking;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
-public interface BookingRepo extends JpaRepository<Booking,Integer> {
+public interface BookingRepo extends JpaRepository<Booking, Integer> {
 
-    /*
-    Booking.schedule.classdate
-            AND
-    Booking.memberCourse.coach.coachid
-
-    SELECT b.*
-    FROM booking b
-    JOIN classschedule s
-        ON b.scheduleid = s.scheduleid
-    JOIN membercourse mc
-        ON b.membercourseid = mc.membercourseid
-    WHERE s.classdate = ?
-      AND mc.coachid = ?;
-
-    bookingRepo.findBySchedule_ClassdateAndMemberCourse_Coach_Coachid(
-        LocalDate.of(2026, 10, 8),
-        1
-    );
-    ->查 2026/10/08，而且屬於 coach 1 的所有 Booking。
-     */
-
+    // 查指定日期、屬於指定教練的預約列表
     List<Booking> findBySchedule_ClassdateAndMembercourse_Coach_Coachid(
-        LocalDate classdate,
-        Integer coachid
+            LocalDate classdate,
+            Integer coachid
+    );
+
+    // 更新出席前鎖定預約。
+    // 必須在 Service 的 @Transactional 方法內呼叫。
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select b
+            from Booking b
+            where b.bookingid = :bookingId
+            """)
+    Optional<Booking> findByIdForUpdate(
+            @Param("bookingId") Integer bookingId
     );
 }

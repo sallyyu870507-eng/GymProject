@@ -28,10 +28,6 @@ public class Course {
     @Column(name = "price", nullable = false)
     private Integer price;
 
-    @Column(
-            name = "status",
-            nullable = false,
-            columnDefinition = "nchar(10)"
-    )
+    @Column(name = "status", nullable = false, length = 20)
     private String status;
 }

@@ -3,13 +3,18 @@ package tw.gymproject.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.RoundingMode;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 
 import tw.gymproject.dto.attendance.AttendanceCardResponse;
 import tw.gymproject.dto.attendance.AttendanceListResponse;
@@ -25,34 +30,46 @@ import tw.gymproject.entity.Booking;
 import tw.gymproject.entity.InBodyRecord;
 import tw.gymproject.entity.MemberCourse;
 
-import tw.gymproject.exception.ConflictException;
+
 import tw.gymproject.repository.AttendanceRepo;
 import tw.gymproject.repository.BookingRepo;
 import tw.gymproject.repository.InBodyRecordRepo;
+import tw.gymproject.repository.MemberCourseRepo;
 
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ResourceNotFoundException;
 import tw.gymproject.exception.ForbiddenException;
+import tw.gymproject.exception.ConflictException;
+
+
 
 
 @Service
 public class AttendanceService {
 
+    private static final ZoneId TAIPEI_ZONE =
+            ZoneId.of("Asia/Taipei");
     private final AttendanceRepo attendanceRepo;
     private final BookingRepo bookingRepo;
     private final InBodyRecordRepo inBodyRecordRepo;
     private final MemberCourseService memberCourseService;
+    private final MemberCourseRepo memberCourseRepo;
+    private final EntityManager entityManager;
 
     public AttendanceService(
             AttendanceRepo attendanceRepo,
             BookingRepo bookingRepo,
             InBodyRecordRepo inBodyRecordRepo,
-            MemberCourseService memberCourseService
+            MemberCourseService memberCourseService,
+            MemberCourseRepo memberCourseRepo,
+            EntityManager entityManager
     ) {
         this.attendanceRepo = attendanceRepo;
         this.bookingRepo = bookingRepo;
         this.inBodyRecordRepo = inBodyRecordRepo;
         this.memberCourseService = memberCourseService;
+        this.memberCourseRepo = memberCourseRepo;
+        this.entityManager = entityManager;
     }
 
     // =========================================================
@@ -65,20 +82,67 @@ public class AttendanceService {
             Integer coachId,
             AttendanceUpdateRequest request
     ) {
+        // 1. 驗證基本輸入
+        if (bookingId == null || bookingId <= 0) {
+            throw new BusinessException(
+                    "bookingId 必須為正整數"
+            );
+        }
 
-        // 1. 找 Booking
-        Booking booking = bookingRepo.findById(bookingId)
+        if (request == null) {
+            throw new BusinessException(
+                    "請提供出席更新內容"
+            );
+        }
+
+        String newStatus = request.getStatus();
+        validateAttendanceStatus(newStatus);
+
+        validateTextLength(
+                request.getWorkoutFocus(),
+                50,
+                "訓練內容"
+        );
+
+        validateTextLength(
+                request.getNote(),
+                100,
+                "出席備註"
+        );
+
+        // 2. 鎖定預約。
+        // 同一筆預約的更新，必須等待前一筆交易結束。
+        Booking booking = bookingRepo
+                .findByIdForUpdate(bookingId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "找不到 Booking：" + bookingId
                         )
                 );
 
-        // 2. 找 MemberCourse
-        MemberCourse memberCourse =
-                booking.getMembercourse();
+        // 3. 取得方案 ID，不先讀取堂數。
+        Integer memberCourseId = booking
+                .getMembercourse()
+                .getMembercourseid();
 
-        // 3. 權限檢查->只能操作自己負責的 MemberCourse
+        // 4. 鎖定方案。
+        // 不同預約若屬於同一方案，也必須依序調整堂數。
+        MemberCourse memberCourse = memberCourseRepo
+                .findByIdForUpdate(memberCourseId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "找不到 MemberCourse：" + memberCourseId
+                        )
+                );
+
+        // 確保使用鎖定後的資料庫最新值，
+        // 避免沿用本次請求中已載入的舊方案資料。
+        entityManager.refresh(
+                memberCourse,
+                LockModeType.PESSIMISTIC_WRITE
+        );
+
+        // 5. 權限檢查
         if (!memberCourse.getCoach()
                 .getCoachid()
                 .equals(coachId)) {
@@ -88,12 +152,7 @@ public class AttendanceService {
             );
         }
 
-
-        // 4. 已取消 Booking 不允許更新出席
-        /*
-         * 目前先使用 CANCELLED。
-         * 之後仍要確認 bookingstatus 的正式值。
-         */
+        // 6. 已取消的預約不能修改出席
         if ("CANCELLED".equalsIgnoreCase(
                 booking.getBookingstatus()
         )) {
@@ -102,86 +161,62 @@ public class AttendanceService {
             );
         }
 
-        // 5. 找 Attendance 還不存在：建立新的，初始狀態 PENDING
+        // 7. 取得出席紀錄。
+        // 在取得預約鎖定後，才讀取目前的出席狀態。
         Attendance attendance = attendanceRepo
                 .findByBooking_Bookingid(bookingId)
                 .orElseGet(() -> {
-
-                    Attendance newAttendance =
-                            new Attendance();
-
+                    Attendance newAttendance = new Attendance();
                     newAttendance.setBooking(booking);
-
-                    newAttendance.setAttendancestatus(
-                            "PENDING"
-                    );
-
+                    newAttendance.setAttendancestatus("PENDING");
                     return newAttendance;
                 });
 
-        // 6. 舊狀態 / 新狀態
-        String oldStatus =
-                attendance.getAttendancestatus();
+        // 已存在的紀錄重新載入，避免使用先前載入的舊狀態。
+        if (attendance.getAttendanceid() != null) {
+            entityManager.refresh(attendance);
+        }
 
-        String newStatus =
-                request.getStatus();
+        String oldStatus = attendance.getAttendancestatus();
 
-        // 7. 驗證新狀態
-        validateAttendanceStatus(newStatus);
-
-        // 8. MemberCourse ID
-        Integer memberCourseId =
-                memberCourse.getMembercourseid();
-
-        // 9. 堂數調整
+        // 8. 沿用原本扣堂、補堂與方案狀態同步邏輯
         handleSessionChange(
                 oldStatus,
                 newStatus,
                 memberCourseId
         );
 
-        // 10. 更新 Attendance
-        attendance.setAttendancestatus(
-                newStatus
-        );
+        // 9. 更新出席內容
+        LocalDateTime now = LocalDateTime.now(TAIPEI_ZONE);
 
-        attendance.setWorkoutfocus(
-                request.getWorkoutFocus()
-        );
+        attendance.setAttendancestatus(newStatus);
+        attendance.setWorkoutfocus(request.getWorkoutFocus());
+        attendance.setNote(request.getNote());
+        attendance.setUpdatetime(now);
 
-        attendance.setNote(
-                request.getNote()
-        );
-
-        attendance.setUpdatetime(
-                LocalDateTime.now()
-        );
-
-        // 11. checkintime
+        // 第一次改為出席才設定報到時間。
+        // 已經出席再送出，不重設原報到時間。
         if ("PRESENT".equals(newStatus)) {
             if (!"PRESENT".equals(oldStatus)) {
-                attendance.setCheckintime(
-                        LocalDateTime.now()
-                );
+                attendance.setCheckintime(now);
             }
         } else {
             attendance.setCheckintime(null);
         }
 
-        // 12. 儲存 Attendance
         Attendance savedAttendance =
                 attendanceRepo.save(attendance);
 
-
-        // 13. 處理 InBody
+        // 10. 沿用原本 InBody 建立、修改及刪除邏輯
         handleInBody(
                 savedAttendance,
                 memberCourse,
                 newStatus,
-                request.getInBody()
+                request.getInBody(),
+                booking.getSchedule().getClassdate()
         );
 
-        // 14. 回傳更新後完整 Detail ->不再直接把 Entity 回給前端
+        // 11. 回傳更新後詳情
         return getAttendanceDetail(
                 bookingId,
                 coachId
@@ -302,7 +337,8 @@ public class AttendanceService {
             Attendance attendance,
             MemberCourse memberCourse,
             String status,
-            InBodyRequest request
+            InBodyRequest request,
+            LocalDate classDate
     ) {
 
         // 找這筆 Attendance 是否已經有 InBody
@@ -353,10 +389,8 @@ public class AttendanceService {
                 memberCourse.getMember()
         );
 
-        // 日期由後端產生
-        record.setRecorddate(
-                LocalDate.now()
-        );
+        // 量測歸屬該次上課日，允許事後補登或更正。
+        record.setRecorddate(classDate);
 
         // 完整更新這次 InBody
         record.setWeight(
@@ -449,6 +483,27 @@ public class AttendanceService {
                     "肌肉量必須大於 0"
             );
         }
+
+        validateDecimalStorage(
+                request.getWeight(),
+                new BigDecimal("999.99"),
+                2,
+                "體重"
+        );
+
+        validateDecimalStorage(
+                request.getBodyFatPct(),
+                new BigDecimal("999.9"),
+                1,
+                "體脂率"
+        );
+
+        validateDecimalStorage(
+                request.getMuscleMass(),
+                new BigDecimal("999.9"),
+                1,
+                "肌肉量"
+        );
     }
 
     // =========================================================
@@ -696,6 +751,11 @@ public class AttendanceService {
             Integer bookingId,
             Integer coachId
     ) {
+        if (bookingId == null || bookingId <= 0) {
+            throw new BusinessException(
+                    "bookingId 必須為正整數"
+            );
+        }
 
 
         // 1. 找 Booking
@@ -1037,4 +1097,60 @@ public class AttendanceService {
         // 11. 回傳完整 Detail
         return response;
     }
+
+
+    // SQL Server NVARCHAR(n) 的容量以 UTF-16 單位計算。
+    // Java String.length() 可用來檢查此限制。
+    private void validateTextLength(
+            String value,
+            int maxLength,
+            String fieldName
+    ) {
+        if (value != null && value.length() > maxLength) {
+            throw new BusinessException(
+                    fieldName + "不可超過 "
+                            + maxLength + " 個 UTF-16 單位"
+            );
+        }
+    }
+
+    // 避免數值超出 DECIMAL 範圍，
+    // 或由資料庫自動四捨五入而改變使用者輸入。
+    private void validateDecimalStorage(
+            BigDecimal value,
+            BigDecimal maxValue,
+            int decimalPlaces,
+            String fieldName
+    ) {
+        if (value == null) {
+            return;
+        }
+
+        if (value.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException(
+                    fieldName + "必須大於 0"
+            );
+        }
+
+        if (value.compareTo(maxValue) > 0) {
+            throw new BusinessException(
+                    fieldName + "不可大於 "
+                            + maxValue.toPlainString()
+            );
+        }
+
+        try {
+            value.setScale(
+                    decimalPlaces,
+                    RoundingMode.UNNECESSARY
+            );
+        } catch (ArithmeticException ex) {
+            throw new BusinessException(
+                    fieldName + "最多允許 "
+                            + decimalPlaces + " 位有效小數"
+            );
+        }
+    }
+
+
 }

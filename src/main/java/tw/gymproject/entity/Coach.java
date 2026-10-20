@@ -5,7 +5,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -15,15 +14,21 @@ public class Coach {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer coachid;
-	
+
 	private String coachno;
-	
+
 	private String name;
-	
+
 	private String gender;
-	
+
 	private String phone;
-	
+
+	private String email;
+
+	private String specialty;
+
+	private String status;
+
 	public Integer getCoachid() {
 		return coachid;
 	}
@@ -89,15 +94,9 @@ public class Coach {
 		this.status = status;
 	}
 
-	private String email;
-	
-	private String specialty;
-	
-	private String status;
 
 	//---------//
 	@OneToOne
-	@MapsId
 	@JoinColumn(name="accountid", nullable = false, unique = true)
 	private Useraccount account;
 
@@ -108,7 +107,7 @@ public class Coach {
 	public void setAccount(Useraccount account) {
 		this.account = account;
 	}
-	
-	
-	
+
+
+
 }
