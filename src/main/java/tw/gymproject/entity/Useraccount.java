@@ -10,19 +10,22 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table
+@Table(name = "useraccount")
+//如果要執行delete但希望SQL執行非DELETE的指令可以在這邊加上要客製的指令
+//@SQLDelete(sql = "UPDATE useraccount SET status = 'inactive' WHERE accountid = ?")
 public class Useraccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer accountid;
 	
-	private String username;
+	private String username; //暫定為電話號碼
 
 	private String password;
 	
 	private String role;
-	
-	private String satus;
+
+	private String status = "active" ;
+
 
 	public Integer getAccountid() {
 		return accountid;
@@ -56,12 +59,13 @@ public class Useraccount {
 		this.role = role;
 	}
 
-	public String getSatus() {
-		return satus;
+	public String getStatus() {
+		return status;
 	}
 
-	public void setSatus(String satus) {
-		this.satus = satus;
+	public void setStatus(String status) {
+		this.status = status;
+
 	}
 
 	//--------------//
@@ -70,5 +74,28 @@ public class Useraccount {
 	
 	@OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
 	private Member member;
-	
+
+	public Coach getCoach() {
+		return coach;
+	}
+
+	public void setCoach(Coach coach) {
+		this.coach = coach;
+		if(coach != null) {
+			//在coach端也建立account的資料，雙向
+			coach.setAccount(this);
+		}
+	}
+
+	public Member getMember() {
+		return member;
+	}
+
+	public void setMember(Member member) {
+		this.member = member;
+		if(member != null) {
+			member.setAccount(this);
+		}
+	}
+
 }
