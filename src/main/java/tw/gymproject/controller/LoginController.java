@@ -108,17 +108,19 @@ public class LoginController {
 	
 	@GetMapping("/admin")
 	public String adminPage() {
-	    return "forward:/member-management.html"; //由伺服器內部轉發換畫面
+		return "forward:/admin.html"; //還沒套用React時使用
+	    //return "forward:/member-management.html"; //由伺服器內部轉發換畫面
 	}
 
 	@GetMapping("/coach")
 	public String coachPage() {
-	    return "forward:/member-management.html";
+	    return "forward:/coach.html";
+	    //return "forward:/member-management.html";
 	}
 
 	@GetMapping("/member")
 	public String memberPage() {
-	    return "forward:/member.html";
+		return "forward:/member.html";
 	}
 	
 	

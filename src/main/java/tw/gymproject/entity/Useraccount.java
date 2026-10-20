@@ -1,7 +1,5 @@
 package tw.gymproject.entity;
 
-import org.hibernate.annotations.SQLDelete;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +11,8 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "useraccount")
-@SQLDelete(sql = "UPDATE useraccount SET status = 'inactive' WHERE accountid = ?")
+//如果要執行delete但希望SQL執行非DELETE的指令可以在這邊加上要客製的指令
+//@SQLDelete(sql = "UPDATE useraccount SET status = 'inactive' WHERE accountid = ?")
 public class Useraccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,8 +23,9 @@ public class Useraccount {
 	private String password;
 	
 	private String role;
-	
+
 	private String status = "active" ;
+
 
 	public Integer getAccountid() {
 		return accountid;
@@ -63,8 +63,9 @@ public class Useraccount {
 		return status;
 	}
 
-	public void setStatus(String satus) {
-		this.status = satus;
+	public void setStatus(String status) {
+		this.status = status;
+
 	}
 
 	//--------------//
@@ -96,6 +97,5 @@ public class Useraccount {
 			member.setAccount(this);
 		}
 	}
-
 
 }

@@ -86,6 +86,7 @@ public class AdminPurchaseCourse {
 
             PurchaseCoachDTO dto = new PurchaseCoachDTO(
                     coach.getCoachid(),
+                    coach.getCoachno(),
                     coach.getName()
             );
 

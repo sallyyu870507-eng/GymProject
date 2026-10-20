@@ -1,25 +1,26 @@
 package tw.gymproject.entity;
 
 import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.annotations.SQLDelete;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Table(name = "member")
-@SQLDelete(sql = "UPDATE member SET status = 'inactive' WHERE memberid = ?")
-
+////如果要執行delete但希望SQL執行非DELETE的指令可以在這邊加上要客製的指令
+//@SQLDelete(sql = "UPDATE member SET status = 'inactive' WHERE memberid = ?")
 @Entity
 public class Member {
 	@Id
@@ -35,7 +36,6 @@ public class Member {
 	@DateTimeFormat(pattern = "yyyy-MM-dd") //以免自動轉換失效
 	private LocalDate birthday;
 	private String status = "active" ;
-	
 	
 	public Integer getMemberid() {
 		return memberid;
@@ -120,9 +120,3 @@ public class Member {
 	}
 	
 }
-
-
-
-
-
-

@@ -220,6 +220,62 @@
 		        <p style="color: red;" id="registerMessage"></p>
 		    </form>
 		</dialog>
+		<!-- 新增購課彈窗 -->
+		<dialog id="purchaseDialog">
+
+		    <h2>新增會員購課</h2>
+
+		    <p>
+		        購課會員：
+		        <strong id="purchaseMemberName"></strong>
+		    </p>
+
+		    <!-- 選擇課程 -->
+		    <div>
+		        <label for="purchaseCourse">選擇課程：</label>
+
+		        <select id="purchaseCourse" required>
+		            <option value="">請選擇課程</option>
+		        </select>
+		    </div>
+
+		    <br>
+
+		    <!-- 選擇教練 -->
+		    <div>
+		        <label for="purchaseCoach">選擇教練：</label>
+
+		        <select id="purchaseCoach" disabled required>
+		            <option value="">請先選擇課程</option>
+		        </select>
+		    </div>
+
+		    <hr>
+
+		    <p>
+		        單堂價格：
+		        <span id="purchaseUnitPrice">NT$ 0</span>
+		    </p>
+
+		    <p>購買堂數：10 堂（固定）</p>
+
+		    <h3>
+		        購買總金額：
+		        <span id="purchaseTotalAmount">NT$ 0</span>
+		    </h3>
+
+		    <p id="purchaseMessage" style="color: red;"></p>
+
+		    <button type="button" id="submitPurchaseBtn">
+		        確認購課
+		    </button>
+
+		    <button type="button" id="closePurchaseBtn">
+		        取消
+		    </button>
+
+		</dialog>
+		
 		<br/><br/>
 		<div id="editMemberPanel" style="display: none;">
 
@@ -400,9 +456,17 @@
 			//	const renewBtn = document.createElement("button");
 			//	renewBtn.textContent = "購課";
 							
+			const purchaseBtn = document.createElement("button");
+			purchaseBtn.textContent = "購課";
+			purchaseBtn.type = "button";
+			purchaseBtn.disabled = member.status?.trim() !== "active";
+			purchaseBtn.addEventListener("click", () => {
+			    openPurchaseDialog(member.memberid, member.name);
+			});
 			//在操作區加入按鈕
 			actionTd.append(editBtn, 
-							statusBtn
+							statusBtn,
+							purchaseBtn
 					);
 			
 			// 將所有 td 加入 tr
@@ -692,6 +756,316 @@
 	    editingMemberId = null;
 	});
 	
+	let purchasingMemberId = null;
+	let purchaseCourses = [];
+	const PURCHASE_SESSIONS = 10;
+	async function openPurchaseDialog(memberid, memberName) {
+
+	    purchasingMemberId = memberid;
+
+	    const dialog = document.getElementById("purchaseDialog");
+
+	    // 顯示購課會員名稱
+	    document.getElementById("purchaseMemberName")
+	        .textContent = memberName;
+
+	    // 重置上一筆資料
+	    document.getElementById("purchaseCourse").innerHTML =
+	        '<option value="">請選擇課程</option>';
+
+	    document.getElementById("purchaseCoach").innerHTML =
+	        '<option value="">請先選擇課程</option>';
+
+	    document.getElementById("purchaseCoach").disabled = true;
+
+	    document.getElementById("purchaseUnitPrice")
+	        .textContent = "NT$ 0";
+
+	    document.getElementById("purchaseTotalAmount")
+	        .textContent = "NT$ 0";
+
+	    document.getElementById("purchaseMessage")
+	        .textContent = "";
+
+	    document.getElementById("submitPurchaseBtn").disabled = true;
+
+	    // 開啟彈窗
+	    dialog.showModal();
+
+	    // 載入可購買課程
+	    await loadPurchaseCourses();
+	}
+	async function loadPurchaseCourses() {
+
+	    const courseSelect =
+	        document.getElementById("purchaseCourse");
+
+	    const message =
+	        document.getElementById("purchaseMessage");
+
+	    try {
+
+	        const response = await fetch(
+	            "/api/admin/purchases/courses"
+	        );
+
+	        if (response.status === 401) {
+	            window.location.href = "/login.html";
+	            return;
+	        }
+
+	        if (response.status === 403) {
+	            message.textContent = "沒有查詢課程的權限";
+	            return;
+	        }
+
+	        if (!response.ok) {
+	            throw new Error("取得課程失敗");
+	        }
+
+	        purchaseCourses = await response.json();
+
+	        // 清空選單
+	        courseSelect.innerHTML =
+	            '<option value="">請選擇課程</option>';
+
+	        // 根據 DTO 建立選項
+	        purchaseCourses.forEach(course => {
+
+	            const option = document.createElement("option");
+
+	            option.value = course.courseid;
+	            option.textContent = course.coursename;
+
+	            courseSelect.appendChild(option);
+	        });
+
+	        if (purchaseCourses.length === 0) {
+	            message.textContent = "目前沒有可購買的課程";
+	        }
+
+	    } catch (error) {
+
+	        console.error("取得課程失敗：", error);
+
+	        message.textContent = "載入課程失敗";
+	    }
+	}
+	document.getElementById("purchaseCourse")
+	.addEventListener("change", async function () {
+
+	    const courseid = this.value;
+
+	    const coachSelect =
+	        document.getElementById("purchaseCoach");
+
+	    const message =
+	        document.getElementById("purchaseMessage");
+
+	    const submitBtn =
+	        document.getElementById("submitPurchaseBtn");
+
+	    // 重置教練選單
+	    coachSelect.innerHTML =
+	        '<option value="">請選擇教練</option>';
+
+	    coachSelect.disabled = true;
+	    submitBtn.disabled = true;
+	    message.textContent = "";
+
+	    if (!courseid) {
+
+	        document.getElementById("purchaseUnitPrice")
+	            .textContent = "NT$ 0";
+
+	        document.getElementById("purchaseTotalAmount")
+	            .textContent = "NT$ 0";
+
+	        return;
+	    }
+
+	    // 找出剛剛 GET 取得的課程
+	    const selectedCourse = purchaseCourses.find(
+	        course => String(course.courseid) === courseid
+	    );
+
+	    if (!selectedCourse) return;
+
+	    // 顯示單堂價格
+	    const price = Number(selectedCourse.price);
+
+	    document.getElementById("purchaseUnitPrice")
+	        .textContent = `NT$ ${price.toLocaleString("zh-TW")}`;
+
+	    // 顯示10堂總金額
+	    document.getElementById("purchaseTotalAmount")
+	        .textContent =
+	            `NT$ ${(price * PURCHASE_SESSIONS).toLocaleString("zh-TW")}`;
+
+	    try {
+
+	        const response = await fetch(
+	            `/api/admin/purchases/courses/${courseid}/coaches`
+	        );
+
+	        if (response.status === 401) {
+	            window.location.href = "/login.html";
+	            return;
+	        }
+
+	        if (response.status === 403) {
+	            message.textContent = "沒有查詢教練的權限";
+	            return;
+	        }
+
+	        if (!response.ok) {
+	            throw new Error("取得教練失敗");
+	        }
+
+	        const coaches = await response.json();
+
+	        // 避免快速切換課程時，舊請求覆蓋新課程的教練
+	        if (document.getElementById("purchaseCourse").value
+	                !== courseid) {
+	            return;
+	        }
+
+	        coaches.forEach(coach => {
+
+	            const option = document.createElement("option");
+
+	            option.value = coach.coachid;
+
+	            // 因為之前有同名教練，附上ID方便區分
+	            option.textContent =
+	                `${coach.coachname}（：${coach.coachno}）`;
+
+	            coachSelect.appendChild(option);
+	        });
+
+	        if (coaches.length === 0) {
+	            message.textContent = "此課程目前沒有可授課教練";
+	            return;
+	        }
+
+	        coachSelect.disabled = false;
+
+	    } catch (error) {
+
+	        console.error("取得教練失敗：", error);
+	        message.textContent = "載入教練失敗";
+	    }
+	});
+	//有選擇教練才可以送出
+	document.getElementById("purchaseCoach")
+	.addEventListener("change", function () {
+
+	    document.getElementById("submitPurchaseBtn").disabled =
+	        !this.value;
+	});
+	document.getElementById("submitPurchaseBtn")
+	.addEventListener("click", async function () {
+
+	    if (purchasingMemberId === null) return;
+
+	    const courseid =
+	        document.getElementById("purchaseCourse").value;
+
+	    const coachid =
+	        document.getElementById("purchaseCoach").value;
+
+	    const message =
+	        document.getElementById("purchaseMessage");
+
+	    if (!courseid || !coachid) {
+	        message.textContent = "請選擇課程與教練";
+	        return;
+	    }
+
+	    if (!confirm("確定要新增這筆購課紀錄嗎？")) {
+	        return;
+	    }
+
+	    // 防止重複點擊
+	    this.disabled = true;
+	    message.textContent = "";
+
+	    try {
+
+	        const response = await fetch(
+	            `/api/admin/purchases/${purchasingMemberId}/purchases`,
+	            {
+	                method: "POST",
+	                headers: {
+	                    "Content-Type": "application/json"
+	                },
+	                body: JSON.stringify({
+	                    courseid: Number(courseid),
+	                    coachid: Number(coachid)
+	                })
+	            }
+	        );
+
+	        if (response.status === 401) {
+	            window.location.href = "/login.html";
+	            return;
+	        }
+
+	        if (response.status === 403) {
+	            message.textContent = "沒有新增購課的權限";
+	            return;
+	        }
+
+	        const result = await response.json();
+
+	        // 新增成功
+	        if (response.ok && result.success) {
+
+	            alert("購課成功");
+
+	            document.getElementById("purchaseDialog").close();
+
+	            purchasingMemberId = null;
+
+	            // 重新取得會員列表
+	            loadMember(currentPage);
+
+	            return;
+	        }
+
+	        // DTO或業務驗證錯誤
+	        if (result.errors) {
+	            message.textContent =
+	                Object.values(result.errors).join("、");
+	        } else {
+	            message.textContent =
+	                result.message || "新增購課失敗";
+	        }
+
+	    } catch (error) {
+
+	        console.error("新增購課失敗：", error);
+
+	        message.textContent = "伺服器連線失敗";
+
+	    } finally {
+
+	        // 失敗時允許再次送出
+	        this.disabled = false;
+	    }
+	});
+	document.getElementById("closePurchaseBtn")
+	.addEventListener("click", () => {
+
+	    document.getElementById("purchaseDialog").close();
+
+	    purchasingMemberId = null;
+	});
+	document.getElementById("purchaseDialog")
+	.addEventListener("close", () => {
+	    purchasingMemberId = null;
+	});
 		</script>
+		
 	</body>
 </html>
