@@ -67,7 +67,6 @@ public class AccountService {
 		
 		//裝到變數內較清楚，後面與member表資料連接用
 		Useraccount savedUseraccount = repository.save(account);
-		System.out.println(savedUseraccount);
 		
 		//建立會員資料
 		Member member = new Member();
@@ -87,7 +86,6 @@ public class AccountService {
 		savedMember.setMemberno(membercode);
 		
 		memberRepository.save(savedMember);
-		System.out.println("生成編號加入資料表:" +savedMember.getMemberno());
 
 		return true; //註冊成功
 	}
@@ -174,8 +172,6 @@ public class AccountService {
 		//設定當前分頁該顯示的會員的分頁條件
 		Pageable pageable = PageRequest.of(page, size, Sort.by("memberid").ascending());//建立分頁條件
 		//把分頁條件交給repository去執行撈entity的工作
-		String searchText = keyword == null ? "" : keyword.trim();
-		System.out.println("searchText:" + searchText);
 		Page<Member> memberPage =
 		        memberRepository.searchMembers(keyword,
 								                status,

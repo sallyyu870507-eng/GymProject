@@ -1,6 +1,5 @@
 package tw.gymproject.interceptor;
 
-import org.hibernate.internal.build.AllowSysOut;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -36,7 +35,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 			HttpServletResponse response,
 			Object handler)
 			throws Exception {
-		System.out.println("--------開始執行interceptor");
 		HttpSession session = request.getSession(false);//有就給我, 沒有就null
 		
 		LoginResultDTO user = null ;
@@ -68,9 +66,6 @@ public class LoginInterceptor implements HandlerInterceptor {
 		}	
 		String role = user.getRole();
 		
-		 System.out.println("URI = " + uri);
-		 System.out.println("ROLE = " + role); //除錯查看
-		 
 //預防有人登入後直接改網址想進入他人的頁面，已實作導回自己角色的頁面		 
 		if((uri.startsWith("/admin") || uri.startsWith("/api/admin")) && !"admin".equals(role)) {//判斷有沒有權限進入這些頁面
 			if (uri.startsWith("/api/")) { //沒有權限，看他是想跑去API還是jtml頁面，若想進入API就顯示權限不足，若想進頁面就送回自己的角色頁面
