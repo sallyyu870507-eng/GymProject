@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(
-        name = "attendance",
+        name = "attendance", schema = "dbo",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "UQ_attendance_bookingid",
@@ -30,13 +30,16 @@ public class Attendance {
     @Column(name = "checkintime")
     private LocalDateTime checkintime;
 
-    @Column(name = "attendancestatus", nullable = false)
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "attendancestatus", nullable = false, length = 50)
     private String attendancestatus;
 
-    @Column(name = "workoutfocus")
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "workoutfocus", length = 50)
     private String workoutfocus;
 
-    @Column(name = "note")
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "note", length = 100)
     private String note;
 
     @Column(name = "updatetime")

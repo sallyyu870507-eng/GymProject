@@ -10,7 +10,7 @@ import tw.gymproject.dto.renewal.RenewalOverviewResponse;
 import tw.gymproject.dto.renewal.RenewalWorkbenchResponse;
 import tw.gymproject.entity.FollowUp;
 import tw.gymproject.entity.Member;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.entity.Renewal;
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ForbiddenException;
@@ -84,7 +84,7 @@ public class RenewalOverviewService {
                 asOfDateTime.toLocalDate();
 
         // 2. 查方案
-        MemberCourse plan = memberCourseRepo
+        Membercourse plan = memberCourseRepo
                 .findOverviewById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
@@ -181,7 +181,7 @@ public class RenewalOverviewService {
     }
 
     // 堂數異常屬於資料完整性問題，不自動修正
-    private void validateSessions(MemberCourse plan) {
+    private void validateSessions(Membercourse plan) {
         Integer total = plan.getTotalsessions();
         Integer remaining = plan.getRemainingsessions();
 
@@ -243,7 +243,7 @@ public class RenewalOverviewService {
     }
 
     private RenewalOverviewResponse.CourseInfo buildCourseInfo(
-            MemberCourse plan
+            Membercourse plan
     ) {
         RenewalOverviewResponse.CourseInfo info =
                 new RenewalOverviewResponse.CourseInfo();
@@ -280,7 +280,7 @@ public class RenewalOverviewService {
 
     private RenewalWorkbenchResponse.CourseActivity
     buildCourseActivity(
-            MemberCourse plan,
+            Membercourse plan,
             Integer coachId,
             LocalDate asOfDate
     ) {
@@ -394,7 +394,7 @@ public class RenewalOverviewService {
                 continue;
             }
 
-            MemberCourse target =
+            Membercourse target =
                     renewal.getNewMemberCourse();
 
             RenewalWorkbenchResponse.OutgoingRenewal item =

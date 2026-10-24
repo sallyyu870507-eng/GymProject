@@ -1,8 +1,10 @@
-package tw.gymproject.dao;
+package tw.gymproject.repository;
 
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,13 +16,13 @@ import tw.gymproject.entity.Useraccount;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer>{
 
-    Optional<Member> findByAccount_Accountid(Integer accountid); //Optional只能是0個或1個
-
-    //只抓某種狀態的會員
-    List<Member> findByStatus(String status);
-
-    //這邊只抓出剩餘課堂數、課程名稱，會員資料從Entity去抓之後分頁比較準
-    String SQL_MEMBCOUR ="""
+	Optional<Member> findByAccount_Accountid(Integer accountid); //Optional只能是0個或1個
+		
+	//只抓某種狀態的會員
+	List<Member> findByStatus(String status);
+	//使用原生SQL
+	//這邊只抓出剩餘課堂數、課程名稱，會員資料從Entity去抓之後分頁比較準
+	String SQL_MEMBCOUR ="""
 			    SELECT	mc.memberid,
 				        c.coursename,
 				        mc.remainingsessions
@@ -28,13 +30,36 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
 			    INNER JOIN course c
 			    ON mc.courseid = c.courseid
 			    WHERE mc.memberid IN (:memberIds)
+			    AND mc.remainingsessions > 0
 			""";
+	
+	@Query(value = SQL_MEMBCOUR, nativeQuery=true)
+	List<Object[]> findMemberCourses(
+			@Param("memberIds") List<Integer> memberid); //Service要給的參數
+	
+	//會員搜尋框
+	//使用JPQL
+	@Query("""
+		    SELECT m FROM Member m
+		    WHERE (:status = 'all' OR m.status = :status)
+		    AND (
+		        m.name LIKE CONCAT('%', :keyword, '%')
+                OR m.memberno LIKE CONCAT('%', :keyword, '%')
+		        OR m.phone LIKE CONCAT('%', :keyword, '%')
+		    )
+		    """)
+	Page<Member> searchMembers(
+	    @Param("keyword") String keyword,
+	    @Param("status") String status,
+	    Pageable pageable
+	);
 
-    @Query(value = SQL_MEMBCOUR, nativeQuery=true)
-    List<Object[]> findMemberCourses(
-            @Param("memberIds") List<Integer> memberid); //Service要給的參數
-
-
+	//給會員查詢分類狀態用
+	Page<Member> findByStatus(
+		    String status,
+		    Pageable pageable
+		);
+	
 }
 
 

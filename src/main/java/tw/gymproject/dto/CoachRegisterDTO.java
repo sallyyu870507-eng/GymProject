@@ -9,22 +9,22 @@ import lombok.Data;
 
 @Data
 public class CoachRegisterDTO {
-    @NotBlank(message = "使用者名稱不能為空")
-    @Size(min = 4, max = 50)
-    private String username;
-    @NotBlank(message = "姓名不能為空")
-    private String name;
-    @NotBlank(message = "密碼不能為空")
-    @Size(min = 4, max = 50)
-    private String password;
-
-    private String gender;
-    @Pattern(regexp = "^09\\d{8}$")
-    private String phone;
-    @Email
-    private String email;
-
-    private String specialty;
-
-
+	@NotBlank(message = "使用者名稱不能為空")
+	@Size(min = 4, max = 50)
+	private String username;
+	@NotBlank(message = "姓名不能為空")
+	private String name;
+	@NotBlank(message = "密碼不能為空")
+	@Size(min = 4, max = 50)
+	private String password;
+	
+	private String gender;
+	@Pattern(regexp = "^09\\d{8}$")
+	private String phone;
+	@Email
+	private String email;
+	
+	private String specialty;
+	
+	
 }

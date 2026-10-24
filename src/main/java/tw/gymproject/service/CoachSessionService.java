@@ -3,11 +3,11 @@ package tw.gymproject.service;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
-import tw.gymproject.dao.CoachRepository;
 import tw.gymproject.dto.LoginResultDTO;
 import tw.gymproject.entity.Coach;
 import tw.gymproject.exception.ForbiddenException;
 import tw.gymproject.exception.UnauthorizedException;
+import tw.gymproject.repository.CoachRepository;
 
 @Service
 public class CoachSessionService {

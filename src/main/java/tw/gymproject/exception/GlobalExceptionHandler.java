@@ -1,295 +1,102 @@
 package tw.gymproject.exception;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import java.time.LocalDateTime;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-/*
-400 BusinessException
-400 Request / JSON 格式錯誤
-403 ForbiddenException
-404 ResourceNotFoundException
-409 ConflictException
-500 Exception
-*/
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    // =========================================================
-    // 400:業務規則錯誤
-    // 例如：
-    // status = HELLO
-    // InBody 資料不完整
-    // InBody 數值不合法
-    // 新增堂數 <= 0
-    // =========================================================
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<Map<String, Object>>
-    handleBusinessException(
-            BusinessException ex
-    ) {
-
-        Map<String, Object> body =
-                new LinkedHashMap<>();
-
-        body.put(
-                "timestamp",
-                LocalDateTime.now()
-        );
-
-        body.put(
-                "status",
-                HttpStatus.BAD_REQUEST.value()
-        );
-
-        body.put(
-                "error",
-                "Bad Request"
-        );
-
-        body.put(
-                "message",
-                ex.getMessage()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(body);
-    }
-
-
-    // =========================================================
-    // 400:Request 參數 / JSON 格式錯誤
-    // 例如：
-    // ?date=abc
-    // JSON 格式寫壞
-    // date 參數沒有傳
-    // =========================================================
     @ExceptionHandler({
+            BusinessException.class,
+            IllegalArgumentException.class,
+            MethodArgumentNotValidException.class,
             MethodArgumentTypeMismatchException.class,
             HttpMessageNotReadableException.class,
-            MissingServletRequestParameterException.class
+            MissingServletRequestParameterException.class,
+            ConstraintViolationException.class
     })
-    public ResponseEntity<Map<String, Object>>
-    handleBadRequest(
-            Exception ex
-    ) {
-
-        Map<String, Object> body =
-                new LinkedHashMap<>();
-
-        body.put(
-                "timestamp",
-                LocalDateTime.now()
-        );
-
-        body.put(
-                "status",
-                HttpStatus.BAD_REQUEST.value()
-        );
-
-        body.put(
-                "error",
-                "Bad Request"
-        );
-
-        body.put(
-                "message",
-                "請求參數或 JSON 格式錯誤"
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(body);
+    public ResponseEntity<Map<String, Object>> handleBadRequest(Exception ex) {
+        String message = ex instanceof MethodArgumentNotValidException validation
+                ? validation.getBindingResult().getFieldErrors().stream()
+                        .findFirst()
+                        .map(error -> error.getDefaultMessage())
+                        .orElse("請求資料不正確")
+                : ex.getMessage();
+        return error(HttpStatus.BAD_REQUEST, "Bad Request", safeMessage(message, "請求資料不正確"));
     }
 
-    // 401：尚未登入或登入已失效
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<Map<String, Object>> handleUnauthorized(
-            UnauthorizedException ex
-    ) {
-        Map<String, Object> body = new LinkedHashMap<>();
-
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.UNAUTHORIZED.value());
-        body.put("error", "Unauthorized");
-        body.put("message", ex.getMessage());
-
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(body);
+    public ResponseEntity<Map<String, Object>> handleUnauthorized(UnauthorizedException ex) {
+        return error(HttpStatus.UNAUTHORIZED, "Unauthorized", safeMessage(ex.getMessage(), "尚未登入或登入已失效"));
     }
 
-
-    // =========================================================
-    // 403:沒有操作權限
-    // 例如：
-    // coach 1 想查看 / 修改 coach 2 的學員
-    // 403 Forbidden
-    // ✅ 程式邏輯已完成
-    // ⏳ 目前 DB 無 coachId ≠ 1 的資料，尚未實測
-    // =========================================================
     @ExceptionHandler(ForbiddenException.class)
-    public ResponseEntity<Map<String, Object>>
-    handleForbidden(
-            ForbiddenException ex
-    ) {
-
-        Map<String, Object> body =
-                new LinkedHashMap<>();
-
-        body.put(
-                "timestamp",
-                LocalDateTime.now()
-        );
-
-        body.put(
-                "status",
-                HttpStatus.FORBIDDEN.value()
-        );
-
-        body.put(
-                "error",
-                "Forbidden"
-        );
-
-        body.put(
-                "message",
-                ex.getMessage()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.FORBIDDEN)
-                .body(body);
+    public ResponseEntity<Map<String, Object>> handleForbidden(ForbiddenException ex) {
+        return error(HttpStatus.FORBIDDEN, "Forbidden", safeMessage(ex.getMessage(), "沒有操作權限"));
     }
 
-
-    // =========================================================
-    // 404:查不到資料
-    // 例如：
-    // Booking ID 不存在
-    // MemberCourse ID 不存在
-    // =========================================================
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<Map<String, Object>>
-    handleResourceNotFound(
-            ResourceNotFoundException ex
-    ) {
-
-        Map<String, Object> body =
-                new LinkedHashMap<>();
-
-        body.put(
-                "timestamp",
-                LocalDateTime.now()
-        );
-
-        body.put(
-                "status",
-                HttpStatus.NOT_FOUND.value()
-        );
-
-        body.put(
-                "error",
-                "Not Found"
-        );
-
-        body.put(
-                "message",
-                ex.getMessage()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(body);
+    @ExceptionHandler({
+            ResourceNotFoundException.class,
+            EntityNotFoundException.class,
+            NoResourceFoundException.class
+    })
+    public ResponseEntity<Map<String, Object>> handleNotFound(Exception ex) {
+        return error(HttpStatus.NOT_FOUND, "Not Found", "找不到指定的資源");
     }
 
-    // =========================================================
-    // 409:目前資料狀態與請求衝突
-    // 例如：
-    // 已取消 Booking 不能更新出席
-    // 剩餘堂數不足
-    // 未來若有並行更新衝突，也可以放這裡
-    // =========================================================
-    @ExceptionHandler(ConflictException.class)
-    public ResponseEntity<Map<String, Object>>
-    handleConflict(
-            ConflictException ex
-    ) {
-
-        Map<String, Object> body =
-                new LinkedHashMap<>();
-
-        body.put(
-                "timestamp",
-                LocalDateTime.now()
-        );
-
-        body.put(
-                "status",
-                HttpStatus.CONFLICT.value()
-        );
-
-        body.put(
-                "error",
-                "Conflict"
-        );
-
-        body.put(
-                "message",
-                ex.getMessage()
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(body);
+    @ExceptionHandler({ConflictException.class, DuplicateUsernameException.class})
+    public ResponseEntity<Map<String, Object>> handleConflict(Exception ex) {
+        return error(HttpStatus.CONFLICT, "Conflict", safeMessage(ex.getMessage(), "資料衝突"));
     }
 
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {
+        HttpStatusCode status = ex.getStatusCode();
+        String message = ex.getReason();
+        if (status.is5xxServerError()) {
+            log.error("Request failed with status {}", status.value(), ex);
+            message = "系統發生未預期錯誤";
+        }
+        return error(status, status.toString(), safeMessage(message, "請求無法完成"));
+    }
 
-    // =========================================================
-    // 500:真正沒有預期到的系統錯誤
-    // 前面都沒有接住，才會進到這裡
-    // =========================================================
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>>
-    handleException(
-            Exception ex
-    ) {
+    public ResponseEntity<Map<String, Object>> handleUnexpected(Exception ex) {
+        log.error("Unexpected request failure", ex);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "系統發生未預期錯誤");
+    }
 
-        Map<String, Object> body =
-                new LinkedHashMap<>();
+    private ResponseEntity<Map<String, Object>> error(
+            HttpStatusCode status,
+            String error,
+            String message) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("success", false);
+        body.put("status", status.value());
+        body.put("error", error);
+        body.put("message", message);
+        return ResponseEntity.status(status).body(body);
+    }
 
-        body.put(
-                "timestamp",
-                LocalDateTime.now()
-        );
-
-        body.put(
-                "status",
-                HttpStatus.INTERNAL_SERVER_ERROR.value()
-        );
-
-        body.put(
-                "error",
-                "Internal Server Error"
-        );
-
-        body.put(
-                "message",
-                "系統發生未預期錯誤"
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(body);
+    private String safeMessage(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
     }
 }

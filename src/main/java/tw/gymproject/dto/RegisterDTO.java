@@ -12,27 +12,35 @@ import lombok.Data;
 
 @Data
 public class RegisterDTO {
-    //用來接註冊前端傳進來的資料，接著分別存到account和member的entity，
-    @NotBlank(message = "使用者名稱至少四字元")
-    @Size(min = 4, max = 50)
-    private String username;
+//用來接註冊前端傳進來的資料，接著分別存到account和member的entity，
+	@NotBlank(message = "使用者名稱不能為空")
+	@Pattern(
+		    regexp = "^[A-Za-z0-9]{4,20}$",
+		    message = "帳號必須為4~20位英文字母或數字"
+		)
+	private String username;
+	
+	@NotBlank(message = "密碼不能為空")
+	@Size(min = 4, max = 50 , message = "密碼至少為四字元")
+	private String password;
 
-    @NotBlank(message = "密碼至少四字元")
-    @Size(min = 4, max = 50)
-    private String password;
+	@NotBlank(message = "姓名不能為空")
+	private String name;
+	@NotBlank(message = "請選擇性別")
+	@Pattern(regexp = "^(male|female)$", message = "性別須為男或女")
+	private String gender;
+	
+	@Pattern(regexp = "^09\\d{8}$" , message = "手機號碼格式錯誤")
+	@NotBlank(message = "手機不能為空")
+	private String phone;
+	
+	@Email
+	private String email;
+	
+	@Past(message = "生日須早於今日")
+	@NotNull(message = "請填寫生日")
+	private LocalDate birthday;
+	
 
-    @NotBlank(message = "姓名不能為空")
-    private String name;
-    private String gender;
-
-    @Pattern(regexp = "^09\\d{8}$" , message = "手機號碼格式錯誤")
-    @NotBlank
-    private String phone;
-    @Email
-    private String email;
-
-    @Past
-    @NotNull(message = "請填寫生日")
-    private LocalDate birthday;
-
+	
 }

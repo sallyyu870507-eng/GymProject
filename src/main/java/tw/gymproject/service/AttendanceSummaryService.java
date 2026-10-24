@@ -5,7 +5,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import tw.gymproject.dto.renewal.AttendanceSummaryResponse;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ForbiddenException;
 import tw.gymproject.exception.ResourceNotFoundException;
@@ -61,7 +61,7 @@ public class AttendanceSummaryService {
         }
 
         // 2. 查方案
-        MemberCourse plan = memberCourseRepo
+        Membercourse plan = memberCourseRepo
                 .findOverviewById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(

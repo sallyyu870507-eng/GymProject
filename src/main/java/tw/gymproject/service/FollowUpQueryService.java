@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tw.gymproject.dto.renewal.FollowUpResponse;
 import tw.gymproject.dto.renewal.FollowupPageResponse;
 import tw.gymproject.entity.FollowUp;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ForbiddenException;
 import tw.gymproject.exception.ResourceNotFoundException;
@@ -152,7 +152,7 @@ public class FollowUpQueryService {
     }
 
     // 共用：確認方案存在且屬於登入教練
-    private MemberCourse requireAuthorizedPlan(
+    private Membercourse requireAuthorizedPlan(
             Integer coachId,
             Integer memberCourseId
     ) {
@@ -168,7 +168,7 @@ public class FollowUpQueryService {
             );
         }
 
-        MemberCourse plan = memberCourseRepo
+        Membercourse plan = memberCourseRepo
                 .findOverviewById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(

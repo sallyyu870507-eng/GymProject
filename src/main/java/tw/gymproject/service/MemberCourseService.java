@@ -3,7 +3,7 @@ package tw.gymproject.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.exception.ConflictException;
 import tw.gymproject.exception.ResourceNotFoundException;
 import tw.gymproject.repository.MemberCourseRepo;
@@ -19,12 +19,12 @@ public class MemberCourseService {
         this.memberCourseRepo = memberCourseRepo;
     }
 
-    public MemberCourse getById(Integer memberCourseId) {
+    public Membercourse getById(Integer memberCourseId) {
         return memberCourseRepo
                 .findById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
-                                "找不到 MemberCourse：" + memberCourseId
+                                "找不到 Membercourse：" + memberCourseId
                         )
                 );
     }
@@ -32,7 +32,7 @@ public class MemberCourseService {
     // 扣 1 堂，並同步方案狀態。
     @Transactional
     public void decreaseSession(Integer memberCourseId) {
-        MemberCourse memberCourse = getById(memberCourseId);
+        Membercourse memberCourse = getById(memberCourseId);
 
         validateSessions(memberCourse);
 
@@ -56,7 +56,7 @@ public class MemberCourseService {
     // 補回 1 堂，並同步方案狀態。
     @Transactional
     public void increaseSession(Integer memberCourseId) {
-        MemberCourse memberCourse = getById(memberCourseId);
+        Membercourse memberCourse = getById(memberCourseId);
 
         validateSessions(memberCourse);
 
@@ -73,7 +73,7 @@ public class MemberCourseService {
         memberCourse.setStatus("active");
     }
 
-    private void validateSessions(MemberCourse memberCourse) {
+    private void validateSessions(Membercourse memberCourse) {
         Integer total = memberCourse.getTotalsessions();
         Integer remaining = memberCourse.getRemainingsessions();
 

@@ -74,16 +74,16 @@ public class AttendanceDetailResponse {
     @Data
     public static class CourseInfo {
 
-        // MemberCourse.membercourseid
+        // Membercourse.membercourseid
         private Integer memberCourseId;
 
-        // MemberCourse.course.coursename
+        // Membercourse.course.coursename
         private String courseName;
 
-        // MemberCourse.totalsessions
+        // Membercourse.totalsessions
         private Integer totalSessions;
 
-        // MemberCourse.remainingsessions
+        // Membercourse.remainingsessions
         private Integer remainingSessions;
 
         /*

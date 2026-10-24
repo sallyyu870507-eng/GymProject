@@ -1,75 +1,437 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>FitBook-教練</title>
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('/api/user',
-                {credentials:'include'})
-                .then(response => {
-                    if (!response.ok) {
-                        window.location.href = '/login.html';
-                        return;
-                    }
-                    return response.json();
-                })
-                .then(user => {
-                    if (user) {
-                        document.getElementById('loginName').textContent = user.name;
-                    }
-                })
-                .catch(error => {
-                    console.error('取得登入者資料失敗：', error);
-                });
-        })
+	<head>
+		<meta charset="UTF-8">
+		<title>FitBook-教練</title>
+		<script>
+		window.addEventListener('DOMContentLoaded', () => {
+			fetch('/api/user',
+			{credentials:'include'})	
+			    .then(response => {
+			        if (!response.ok) {
+			            window.location.href = '/login.html';
+			            return;
+			        }
+			        return response.json();
+			    })
+			    .then(user => {
+			        if (user) {
+			            document.getElementById('loginName').textContent = user.name;
+			        }
+			    })
+			    .catch(error => {
+			        console.error('取得登入者資料失敗：', error);
+			    });
+})
+		document.addEventListener("DOMContentLoaded", () => {
+		    loadMember();
+		});
 
-        window.addEventListener('DOMContentLoaded', () => {
-            //已登入但沒權限的帳號會被拒絕然後拋出權限代碼給前端
-            fetch('/api/coach/members')
-                .then(response => {
-                    if (response.status === 401) { //沒登入
-                        window.location.href = '/login.html';
-                        return null;
-                    }
-                    if (response.status === 403) { //有登入但沒權限被forbidden
-                        alert('沒有權限');
-                        return null;
-                    }
+		
+		window.addEventListener("DOMContentLoaded", ()=>{
+				document.getElementById("searchBtn")
+				.addEventListener("click", () => {
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP錯誤：${response.status}`);
-                    }
+				    loadMember(0);
 
-                    return response.json();
-                })
-                .then(data => {
+				});
+				//再輸入框按enter也可以觸發
+				document.getElementById("memberSearch")
+				.addEventListener("keydown", (event) => {
 
-                    if (data == null) {
-                        return;
-                    }
+				    if (event.key === "Enter") {
+				        loadMember(0);
+				    }
 
-                    console.log(data);
-                    // 之後在這裡把會員資料塞進表格
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+				});
+				//清空搜尋框
+				document.getElementById("reset")
+				.addEventListener("click", () => {
+				
+					document.getElementById("memberSearch").value = ""
+				    loadMember(0);
 
-        });
-    </script>
-    <style>
-        h1 {background-color: skyblue;}
+				});
 
-    </style>
+			});
+		
+		</script>
+		<style>
+		h1 {background-color: skyblue;}	
+		
+		</style>
+		
+	</head>
+	<body>
+		<h1>教練，<span id="loginName"></span>您好！</h1>
+			<br>
+		<form action="/logout" method="POST">
+		    <button type="submit">登出系統</button>
+		</form>
+		<hr/>
+		<button id="reset">重新載入</button>
 
-</head>
-<body>
-<h1>教練，<span id="loginName"></span>您好！</h1>
-<br>
-<form action="/logout" method="POST">
-    <button type="submit">登出系統</button>
-</form>
+		<input
+		    type="text"
+		    id="memberSearch"
+		    placeholder="請輸入會員姓名"
+		>
+		<button id="searchBtn">搜尋</button>
+		
+		<br/><br/>
+		<div id="editMemberPanel" style="display: none;">
 
-</body>
+		    <h3>編輯會員</h3>
+
+		    <label>姓名</label>
+		    <input type="text" id="editName">
+
+		    <label>電話</label>
+		    <input type="tel" id="editPhone">
+
+		    <label>Email</label>
+		    <input type="email" id="editEmail">
+
+		    <p id="editError" style="color: red;"></p>
+
+		    <button type="button" id="saveEdit">
+		        儲存修改
+		    </button>
+
+		    <button type="button" id="cancelEdit">
+		        取消
+		    </button>
+
+		</div>
+		<table style="width: 100%;">
+		    <thead>
+		        <tr>
+		            <th>會員編號</th>
+		            <th>姓名</th>
+		            <th>性別</th>
+		            <th>電話</th>
+		            <th>課程剩餘堂數</th>
+		            <th>操作</th>
+		        </tr>
+		    </thead>
+
+		    <tbody id="memberTableBody"></tbody>
+		</table>
+
+		<div>
+		    <button id="prevPageBtn"> <!--呼叫換頁功能-->
+		        上一頁
+		    </button>
+
+		    <span id="pageInfo"></span>
+
+		    <button id="nextPageBtn">
+		        下一頁
+		    </button>
+		</div>
+		
+		
+		<script>
+			//已登入但沒權限的帳號會被拒絕然後拋出權限代碼給前端
+			//會員清單載入功能
+			//先在全域給予預設值，讓所有功能都能存取
+				let currentPage = 0;
+				let totalPages = 0;
+				const pageSize = 10;
+				
+				async function loadMember(page = 0){
+					
+					try {
+						const keyword =
+							document.getElementById("memberSearch").value.trim();
+					//用URLSearchParams建立可操作的參數，會自動轉換文字編碼!!
+						const params = new URLSearchParams({
+						    page: page,
+						    size: pageSize,
+						    keyword: keyword
+						});
+						const response = await fetch(
+						    `/api/coach/members?${params.toString()}`
+					);
+					
+					if (response.status === 401) { //沒登入
+					                window.location.href = '/login.html';
+					                return;
+			           	}
+			        if (response.status === 403) { //有登入但沒權限被forbidden
+			                alert('沒有權限'); 
+							//呼叫api/user找出role,送使用者去該去的頁面
+							const userResponse = await fetch("/api/user");
+
+							if (!userResponse.ok) {
+							    window.location.href = "/login.html";
+							    return;
+							}
+
+							const user = await userResponse.json();
+
+							switch (user.role) {
+							    case "admin":
+							        window.location.href = "/admin.html";
+							        break;
+
+							    case "coach":
+							        window.location.href = "/coach.html";
+							        break;
+
+							    case "member":
+							        window.location.href = "/member.html";
+							        break;
+
+							    default:
+							        window.location.href = "/login.html";
+							}
+							return;
+			            }
+
+			            if (!response.ok) {
+							const errorText = await response.text();
+							console.log("HTTP狀態:"+response.status);
+							console.log("後端內容:"+ errorText);
+			                throw new Error(`HTTP錯誤：${response.status}`);
+			            }
+								
+					const data = await response.json();
+					console.log(data); //將後端傳回來的response拿出來console看
+					const members = data.members;
+					document.getElementById("memberTableBody").innerText=""; //帶入前先清空
+					
+					//用迴圈一筆一筆寫入
+					members.forEach(member=>{
+						const tr = document.createElement("tr");
+						
+						const memberNoTd = document.createElement("td");
+						memberNoTd.textContent = member.memberno;
+						const nameTd = document.createElement("td");
+						nameTd.textContent = member.name;
+						const genderTd = document.createElement("td");
+						genderTd.textContent = member.gender;
+						const phoneTd = document.createElement("td");
+						phoneTd.textContent = member.phone;
+						
+						const coursesTd = document.createElement("td");
+						if (member.courses.length === 0){
+							coursesTd.textContent = "無課程";
+						}else{
+							//課程是第二層物件
+							member.courses.forEach(course=>{
+								const div = document.createElement("div");
+								
+								div.textContent = `${course.coursename} : ${course.remainingsessions}堂 |`;
+								coursesTd.appendChild(div);
+							});
+						}
+						const actionTd = document.createElement("td");		
+						
+						const editBtn = document.createElement("button");
+						editBtn.textContent = "查看/編輯";
+						editBtn.type = "button";
+						editBtn.addEventListener("click", () => {
+						    editMember(member.memberid); //綁訂每個會員的編輯按鈕都是跟著自己的memberid
+						});
+						
+						//	const renewBtn = document.createElement("button");
+						//	renewBtn.textContent = "購課";
+						//在操作區加入按鈕
+						actionTd.append(editBtn);
+																
+						// 將所有 td 加入 tr
+						        tr.append(
+						            memberNoTd,
+						            nameTd,
+						            genderTd,
+						            phoneTd,
+						            coursesTd,
+						            actionTd
+						        );
+						
+						editBtn.addEventListener("click", () => {
+							    console.log("編輯會員 ID：" + member.memberid);
+							    // 這邊再加入編輯的按鈕設定
+							    // openEditMember(member.memberid);
+						});
+						
+							const tbody = document.getElementById('memberTableBody');
+						        // 將 tr 加入 tbody
+						        tbody.appendChild(tr);
+						    });
+							
+						    // 9. 更新分頁資訊
+						    currentPage = data.currentPage;  //0為第一頁
+						    totalPages = data.totalPages;
+
+						    document.getElementById("pageInfo").textContent =
+						        `第 ${currentPage + 1} / ${totalPages} 頁`;
+
+						    document.getElementById("prevPageBtn").disabled =
+						        !data.hasPrev;  //本身從controller傳回來的就是boolean值
+
+						    document.getElementById("nextPageBtn").disabled =
+						        !data.hasNext;
+
+						} catch (error) {
+
+						    console.error("載入會員失敗：", error);
+						    alert("會員資料載入失敗");
+						}
+			}
+						
+		//換頁功能，讓上下頁按鈕呼叫
+				function changePage(direction){
+				//console.log('changePage');
+				const newPage = currentPage + direction;
+				
+				if(newPage<0 || newPage >= totalPages){
+					return;
+				}
+				loadMember(newPage);
+			}
+				
+				document.getElementById('prevPageBtn')
+				.addEventListener("click", ()=>{
+						changePage(-1);
+				});
+				document.getElementById('nextPageBtn')
+				.addEventListener("click", ()=>{
+						changePage(1);
+				});	
+				//編輯會員先取得原本的會員資料
+				let editingMemberId = null; //先讓準備儲存的會員id為空，後面再植入變數
+				async function editMember(memberid) {
+					try {
+				    const response = await fetch(
+				        `/api/coach/members/${memberid}`
+				    );
+
+					if (response.status === 401) {
+					    window.location.href = "/login";
+					    return;
+					}
+
+					if (response.status === 403) {
+					    alert("沒有權限");
+					    return;
+					}
+
+					if (!response.ok) {
+					    throw new Error("取得會員資料失敗");
+					}
+
+				    const member = await response.json();
+
+				    // 保存目前正在編輯的會員
+				    editingMemberId = memberid;
+
+				    // 將資料填入編輯表單
+				    document.getElementById("editName").value = member.name;
+				    document.getElementById("editPhone").value = member.phone;
+				    document.getElementById("editEmail").value = member.email;
+
+				    // 顯示編輯表單
+				    document.getElementById("editMemberPanel").style.display = "block";
+					
+				} catch (error) {
+					    console.error(error);
+					    alert("無法取得會員資料");
+					}
+				}
+				//儲存修改的會員
+				document.getElementById("saveEdit")
+				.addEventListener("click", async () => {
+
+				    if (editingMemberId === null) return;
+
+				    // 取得表單資料
+				    const data = {
+				        name: document.getElementById("editName").value.trim(),
+				        phone: document.getElementById("editPhone").value.trim(),
+				        email: document.getElementById("editEmail").value.trim()
+				    };
+
+				    const errorElement = document.getElementById("editError");
+				    errorElement.textContent = "";
+
+				    try {
+				        const response = await fetch(
+				            `/api/coach/members/update/${editingMemberId}`,
+				            {
+				                method: "PUT",
+				                headers: {
+				                    "Content-Type": "application/json"
+				                },
+				                body: JSON.stringify(data)
+				            }
+				        );
+
+				        if (response.status === 401) {
+				            window.location.href = "/login";
+				            return;
+				        }
+
+				        if (response.status === 403) {
+				            errorElement.textContent = "沒有修改權限";
+				            return;
+				        }
+
+				        const result = await response.json();
+
+				        //更新成功
+				        if (response.ok && result.success) { 
+							//一個是HTTP的成功代碼另一個是DTO的驗證有沒有符合資料格式
+
+				            alert("會員資料更新成功");
+
+				            document.getElementById("editMemberPanel")
+				                .style.display = "none";
+
+				            editingMemberId = null;
+
+				            // 重新載入會員列表
+				            loadMember(currentPage);
+
+				            return;
+				        }
+
+				        // DTO驗證失敗
+				        if (result.errors) {
+
+				            errorElement.textContent =
+				                Object.values(result.errors).join("、");
+
+				            return;
+				        }
+
+				        // 其他錯誤
+				        errorElement.textContent =
+				            result.message || "更新失敗";
+
+				    } catch (error) {
+
+				        console.error(error);
+				        errorElement.textContent = "伺服器連線失敗";
+				    }
+
+				});
+
+				//取消按鈕
+				document.getElementById("cancelEdit")
+				.addEventListener("click", () => {
+
+				    document.getElementById("editMemberPanel")
+				        .style.display = "none";
+
+				    document.getElementById("editError").textContent = "";
+
+				    editingMemberId = null;
+				});
+
+		
+		</script>
+		
+	</body>
 </html>

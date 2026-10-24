@@ -1,101 +1,65 @@
 package tw.gymproject.entity;
 
-import org.hibernate.annotations.SQLDelete;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Nationalized;
 
 @Entity
-@Table(name = "useraccount")
+@Table(name = "useraccount", schema = "dbo")
 @SQLDelete(sql = "UPDATE useraccount SET status = 'inactive' WHERE accountid = ?")
+@Getter
+@Setter
 public class Useraccount {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer accountid;
 
-	private String username; //暫定為電話號碼
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "accountid")
+    private Integer accountid;
 
-	private String password;
+    @Nationalized
+    @Column(name = "username", nullable = false, length = 50)
+    private String username;
 
-	private String role;
+    @JsonIgnore
+    @Nationalized
+    @Column(name = "password", nullable = false, length = 200)
+    private String password;
 
-	private String status = "active" ;
+    @Nationalized
+    @Column(name = "role", nullable = false, length = 50)
+    private String role;
 
-	public Integer getAccountid() {
-		return accountid;
-	}
+    @Nationalized
+    @Column(name = "status", nullable = false, length = 50)
+    private String status = "active";
 
-	public void setAccountid(Integer accountid) {
-		this.accountid = accountid;
-	}
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    private Coach coach;
 
-	public String getUsername() {
-		return username;
-	}
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    private Member member;
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    public void setCoach(Coach coach) {
+        this.coach = coach;
+        if (coach != null) {
+            coach.setAccount(this);
+        }
+    }
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String satus) {
-		this.status = satus;
-	}
-
-	//--------------//
-	@OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-	private Coach coach;
-
-	@OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-	private Member member;
-
-	public Coach getCoach() {
-		return coach;
-	}
-
-	public void setCoach(Coach coach) {
-		this.coach = coach;
-		if(coach != null) {
-			//在coach端也建立account的資料，雙向
-			coach.setAccount(this);
-		}
-	}
-
-	public Member getMember() {
-		return member;
-	}
-
-	public void setMember(Member member) {
-		this.member = member;
-		if(member != null) {
-			member.setAccount(this);
-		}
-	}
-
-
+    public void setMember(Member member) {
+        this.member = member;
+        if (member != null) {
+            member.setAccount(this);
+        }
+    }
 }

@@ -12,7 +12,7 @@ import tw.gymproject.entity.CoachCourse;
 import tw.gymproject.entity.CoachCourseId;
 import tw.gymproject.entity.Course;
 import tw.gymproject.entity.Member;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.entity.Renewal;
 
 import tw.gymproject.exception.BusinessException;
@@ -123,7 +123,7 @@ public class RenewalCreateService {
             Integer sourceMemberCourseId,
             NormalizedRequest request
     ) {
-        MemberCourse source = requireAuthorizedSource(
+        Membercourse source = requireAuthorizedSource(
                 coachId,
                 accountId,
                 sourceMemberCourseId
@@ -228,7 +228,7 @@ public class RenewalCreateService {
         }
 
         // 第一筆寫入：建立新方案。
-        MemberCourse newPlan = new MemberCourse();
+        Membercourse newPlan = new Membercourse();
 
         newPlan.setMember(member);
         newPlan.setCoach(source.getCoach());
@@ -239,7 +239,7 @@ public class RenewalCreateService {
         newPlan.setRemainingsessions(request.addedSessions());
         newPlan.setStatus("active");
 
-        MemberCourse savedPlan =
+        Membercourse savedPlan =
                 memberCourseRepo.saveAndFlush(newPlan);
 
         // 第二筆寫入：建立原方案與新方案的續約關係。
@@ -271,7 +271,7 @@ public class RenewalCreateService {
         );
     }
 
-    private MemberCourse requireAuthorizedSource(
+    private Membercourse requireAuthorizedSource(
             Integer coachId,
             Integer accountId,
             Integer memberCourseId
@@ -288,7 +288,7 @@ public class RenewalCreateService {
             );
         }
 
-        MemberCourse source = memberCourseRepo
+        Membercourse source = memberCourseRepo
                 .findOverviewById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
@@ -302,7 +302,7 @@ public class RenewalCreateService {
     }
 
     private void validateOwnership(
-            MemberCourse source,
+            Membercourse source,
             Integer coachId,
             Integer accountId
     ) {
@@ -329,7 +329,7 @@ public class RenewalCreateService {
     }
 
     private void validateSource(
-            MemberCourse source,
+            Membercourse source,
             LocalDate today
     ) {
         String status = cleanStatus(source.getStatus());
@@ -477,8 +477,8 @@ public class RenewalCreateService {
     }
 
     private RenewalCreateResponse toResponse(
-            MemberCourse source,
-            MemberCourse newPlan,
+            Membercourse source,
+            Membercourse newPlan,
             Renewal renewal
     ) {
         RenewalCreateResponse response =

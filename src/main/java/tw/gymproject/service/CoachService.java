@@ -5,13 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
-import tw.gymproject.dao.AccountRepository;
-import tw.gymproject.dao.CoachRepository;
-import tw.gymproject.dao.MemberRepository;
 import tw.gymproject.dto.CoachRegisterDTO;
 import tw.gymproject.dto.RegisterDTO;
 import tw.gymproject.entity.Coach;
 import tw.gymproject.entity.Useraccount;
+import tw.gymproject.repository.AccountRepository;
+import tw.gymproject.repository.CoachRepository;
 
 @Transactional
 @Service
@@ -19,12 +18,10 @@ public class CoachService {
 
 
     private final AccountRepository repository ;
-    private final MemberRepository memberRepository;
     private final CoachRepository coachRepository;
 
-    public CoachService(AccountRepository repository,MemberRepository memberRepository,CoachRepository coachRepository) {
+    public CoachService(AccountRepository repository, CoachRepository coachRepository) {
         this.repository=repository;
-        this.memberRepository=memberRepository;
         this.coachRepository=coachRepository;
     }
 
@@ -40,7 +37,6 @@ public class CoachService {
             account.setStatus("active");
 
             Useraccount savedAccCoach = repository.save(account);
-            System.out.println(savedAccCoach.getUsername());
             //--教練個資
             Coach coach = new Coach();
             coach.setAccount(savedAccCoach);  //直接帶入剛剛存好的帳號資料

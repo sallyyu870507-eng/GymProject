@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import tw.gymproject.dto.renewal.FollowUpCreateRequest;
 import tw.gymproject.dto.renewal.FollowUpResponse;
 import tw.gymproject.entity.FollowUp;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ForbiddenException;
 import tw.gymproject.exception.ResourceNotFoundException;
@@ -133,7 +133,7 @@ public class FollowUpCreateService {
             Integer memberCourseId,
             NormalizedRequest request
     ) {
-        MemberCourse plan = requireAuthorizedPlan(
+        Membercourse plan = requireAuthorizedPlan(
                 coachId,
                 accountId,
                 memberCourseId
@@ -160,7 +160,7 @@ public class FollowUpCreateService {
         return toResponse(saved);
     }
 
-    private MemberCourse requireAuthorizedPlan(
+    private Membercourse requireAuthorizedPlan(
             Integer coachId,
             Integer accountId,
             Integer memberCourseId
@@ -177,7 +177,7 @@ public class FollowUpCreateService {
             );
         }
 
-        MemberCourse plan = memberCourseRepo
+        Membercourse plan = memberCourseRepo
                 .findOverviewById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(

@@ -1,91 +1,91 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>FitBook-Login</title>
-    <script>
-        // 登入後再開分頁時維持登入狀態，分頁一打開先去問後端是否登入過
-        window.addEventListener('DOMContentLoaded', () => {
-            fetch('/api/user', {
-                method: 'GET',
-                credentials: 'include' // 帶著 Cookie 去對
-            })
-                .then(response => {
-                    if (response.ok) {
-                        return response.json();
-                    }
-                    throw new Error('未登入');
-                })
-                .then(data => {
-                    // 如果後端說已經登入過了，直接由前端 JS 幫他跳轉到對應頁面
-                    if (data && data.role) {
-                        switch (data.role) {
-                            case "admin":
-                                window.location.href = '/admin.html';
-                                break;
-                            case "coach":
-                                window.location.href = '/coach.html';
-                                break;
-                            case "member":
-                                window.location.href = '/member.html';
-                                break;
-                        }
-                    }
-                })
-                .catch(() => {
-                    // 如果沒登入（抓不到 Session 或回傳 401），就留在 login.html 讓使用者乖乖輸入帳密
-                    console.log('尚未登入，請輸入帳密');
-                });
-        });
+	<head>
+		<meta charset="UTF-8">
+		<title>FitBook-Login</title>
+		<script>
+		// 登入後再開分頁時維持登入狀態，分頁一打開先去問後端是否登入過
+		window.addEventListener('DOMContentLoaded', () => {
+		    fetch('/api/user', {
+		        method: 'GET',
+		        credentials: 'include' // 帶著 Cookie 去對
+		    })
+		    .then(response => {
+		        if (response.ok) {
+		            return response.json();
+		        }
+		        throw new Error('未登入');
+		    })
+		    .then(data => {
+		        // 如果後端說已經登入過了，直接由前端 JS 幫他跳轉到對應頁面
+		        if (data && data.role) {
+		            switch (data.role) {
+		                case "admin":
+		                    window.location.href = '/admin.html';
+		                    break;
+		                case "coach":
+		                    window.location.href = '/coach.html';
+		                    break;
+		                case "member":
+		                    window.location.href = '/member.html';
+		                    break;
+		            }
+		        }
+		    })
+		    .catch(() => {
+		        // 如果沒登入（抓不到 Session 或回傳 401），就留在 login.html 讓使用者乖乖輸入帳密
+		        console.log('尚未登入，請輸入帳密');
+		    });
+		});
 
+	
 
+	</script>
+		
+	</head>
+	<body>
+	
+		<h1>登入</h1>
+		<form action="/login" method="POST">
+			<div>
+				帳號: <input type="text" required name="username">
+			</div>		
+			<div>
+				密碼: <input type="password" required name="password">
+			</div>
+<br>
+		    <button type="submit">登入</button>
+		</form>
+		<span id="errorMessage" style="color: red;"></span>
 
-    </script>
-
-</head>
-<body>
-
-<h1>登入</h1>
-<form action="/login" method="POST">
-    <div>
-        帳號: <input type="text" required name="username">
-    </div>
-    <div>
-        密碼: <input type="password" required name="password">
-    </div>
-    <br>
-    <button type="submit">登入</button>
-</form>
-<span id="errorMessage" style="color: red;"></span>
-
-<!--
-<button type="button"
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#addMemberModal">
-    新增會員
-</button>
--->
-
-
-<script>
-    //用JS做二次防線的顯示
-    const params = new URLSearchParams(window.location.search); //抓到當下的URL網址
-    const error = params.get('error'); //從網址取出error的值
-    const errorMessage = document.getElementById('errorMessage') //準備在哪裡show出訊息
-
-    if(error === 'invalid'){
-        errorMessage.textContent = '帳號/密碼錯誤';
-    }
-    if(error === 'inactive'){
-        errorMessage.textContent = '帳號已停用';
-    }
-    if(error === 'usernameEmpty'){
-        errorMessage.textContent = '請填入帳號(手機)';
-    }
-    if(error === 'passworrdEmpty'){
-        errorMessage.textContent = '請輸入密碼';
-    }
-</script>
-</body>
+	<!--
+	<button type="button"
+	        class="btn btn-primary"
+	        data-bs-toggle="modal"
+	        data-bs-target="#addMemberModal">
+	    新增會員
+	</button>
+	-->
+	
+	
+	<script>
+		//用JS做二次防線的顯示
+		const params = new URLSearchParams(window.location.search); //抓到當下的URL網址
+		const error = params.get('error'); //從網址取出error的值
+		const errorMessage = document.getElementById('errorMessage') //準備在哪裡show出訊息
+					
+		if(error === 'invalid'){
+			errorMessage.textContent = '帳號/密碼錯誤';
+		}
+		if(error === 'inactive'){
+			errorMessage.textContent = '帳號已停用';
+		}
+		if(error === 'usernameEmpty'){
+			errorMessage.textContent = '請填入帳號(手機)';
+		}	
+		if(error === 'passworrdEmpty'){
+			errorMessage.textContent = '請輸入密碼';
+		}	
+	</script>
+	</body>
 </html>

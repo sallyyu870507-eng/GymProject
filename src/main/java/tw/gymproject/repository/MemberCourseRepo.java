@@ -5,32 +5,32 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface MemberCourseRepo
-        extends JpaRepository<MemberCourse, Integer> {
+        extends JpaRepository<Membercourse, Integer> {
 
     // 某教練全部方案
-    List<MemberCourse> findByCoach_Coachid(Integer coachid);
+    List<Membercourse> findByCoach_Coachid(Integer coachid);
 
     // 某教練剩餘堂數小於或等於指定值
-    List<MemberCourse> findByCoach_CoachidAndRemainingsessionsLessThanEqual(
+    List<Membercourse> findByCoach_CoachidAndRemainingsessionsLessThanEqual(
             Integer coachid,
             Integer remainingsessions
     );
 
     // 某教練剩餘堂數等於指定值
-    List<MemberCourse> findByCoach_CoachidAndRemainingsessions(
+    List<Membercourse> findByCoach_CoachidAndRemainingsessions(
             Integer coachid,
             Integer remainingsessions
     );
 
     // 某教練、指定方案狀態
-    List<MemberCourse> findByCoach_CoachidAndStatus(
+    List<Membercourse> findByCoach_CoachidAndStatus(
             Integer coachid,
             String status
     );
@@ -40,10 +40,10 @@ public interface MemberCourseRepo
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
             select mc
-            from MemberCourse mc
+            from Membercourse mc
             where mc.membercourseid = :memberCourseId
             """)
-    Optional<MemberCourse> findByIdForUpdate(
+    Optional<Membercourse> findByIdForUpdate(
             @Param("memberCourseId") Integer memberCourseId
     );
 
@@ -54,7 +54,7 @@ public interface MemberCourseRepo
                 mc.course.courseid as courseId,
                 mc.coach.coachid as coachId,
                 min(mc.purchasedate) as firstPurchaseDate
-            from MemberCourse mc
+            from Membercourse mc
             where mc.coach.coachid = :coachId
               and mc.purchasedate <= :asOfDate
             group by
@@ -70,7 +70,7 @@ public interface MemberCourseRepo
     // 讀取指定方案的工作台資料，限制為登入教練的方案
     @Query("""
             select mc
-            from MemberCourse mc
+            from Membercourse mc
             join fetch mc.member
             join fetch mc.course
             join fetch mc.coach
@@ -79,7 +79,7 @@ public interface MemberCourseRepo
             order by mc.purchasedate desc,
                      mc.membercourseid desc
             """)
-    List<MemberCourse> findWorkbenchPlansByIds(
+    List<Membercourse> findWorkbenchPlansByIds(
             @Param("coachId") Integer coachId,
             @Param("planIds") List<Integer> planIds
     );
@@ -99,13 +99,13 @@ public interface MemberCourseRepo
     // 方案詳情：同時取得會員、課程與教練
     @Query("""
             select mc
-            from MemberCourse mc
+            from Membercourse mc
             join fetch mc.member
             join fetch mc.course
             join fetch mc.coach
             where mc.membercourseid = :memberCourseId
             """)
-    Optional<MemberCourse> findOverviewById(
+    Optional<Membercourse> findOverviewById(
             @Param("memberCourseId") Integer memberCourseId
     );
 }

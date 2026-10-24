@@ -1,45 +1,87 @@
 package tw.gymproject.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
-
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Nationalized;
 
 @Entity
-@Table(name = "member")
-@Data
+@Table(name = "member", schema = "dbo")
+@Getter
+@Setter
 public class Member {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "memberid")
-	private Integer memberid;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "memberid")
+    private Integer memberid;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "accountid", nullable = false, unique = true)
-	private Useraccount account;
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountid", nullable = false, unique = true)
+    private Useraccount account;
 
-	@Column(name = "memberno", nullable = false)
-	private String memberno;
+    @Nationalized
+    @Column(name = "memberno", nullable = false, length = 20)
+    private String memberno;
 
-	@Column(name = "name", nullable = false)
-	private String name;
+    @Nationalized
+    @Column(name = "name", nullable = false, length = 50)
+    private String name;
 
-	@Column(name = "gender", nullable = false)
-	private String gender;
+    @Nationalized
+    @Column(name = "gender", nullable = false, length = 10)
+    private String gender;
 
-	@Column(name = "phone", nullable = false)
-	private String phone;
+    @Nationalized
+    @Column(name = "phone", nullable = false, length = 50)
+    private String phone;
 
-	@Column(name = "email", nullable = false)
-	private String email;
+    @Nationalized
+    @Column(name = "email", nullable = false, length = 100)
+    private String email;
 
-	@Column(name = "birthday", nullable = false)
-	private LocalDate birthday;
+    @Column(name = "birthday", nullable = false)
+    private LocalDate birthday;
 
-	@Column(name = "status", nullable = false)
-	private String status;
+    @Nationalized
+    @Column(name = "avatarurl", length = 500)
+    private String avatarurl;
 
-	@Column(name = "avatarurl")
-	private String avatarurl;
+    @Nationalized
+    @Column(name = "status", nullable = false, length = 20)
+    private String status = "active";
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
+    private List<Membercourse> membercourses = new ArrayList<>();
+
+    public List<Membercourse> getMembercourse() {
+        return membercourses;
+    }
+
+    public void setMembercourse(List<Membercourse> membercourse) {
+        this.membercourses = membercourse;
+    }
+
+    public void addcourse(Membercourse course) {
+        if (course != null) {
+            membercourses.add(course);
+            course.setMember(this);
+        }
+    }
 }

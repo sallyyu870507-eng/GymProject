@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class MemberCourseDTO {
-
-    private String coursename;
-    private Integer remainingsessions;
-
+	private Integer courseid;
+	private String coursename;
+	private Integer remainingsessions;
+	
 
 }

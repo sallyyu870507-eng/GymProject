@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "inbodyrecords")
+@Table(name = "inbodyrecords", schema = "dbo")
 @Data
 public class InBodyRecord {
 

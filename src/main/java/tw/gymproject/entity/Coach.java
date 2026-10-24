@@ -1,113 +1,64 @@
 package tw.gymproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Nationalized;
 
 @Entity
-@Table(name="coach")
+@Table(name = "coach", schema = "dbo")
+@Getter
+@Setter
 public class Coach {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer coachid;
 
-	private String coachno;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "coachid")
+    private Integer coachid;
 
-	private String name;
+    @Nationalized
+    @Column(name = "coachno", nullable = false, length = 20)
+    private String coachno;
 
-	private String gender;
+    @Nationalized
+    @Column(name = "name", nullable = false, length = 50)
+    private String name;
 
-	private String phone;
+    @Nationalized
+    @Column(name = "gender", nullable = false, length = 10)
+    private String gender;
 
-	private String email;
+    @Nationalized
+    @Column(name = "phone", nullable = false, length = 50)
+    private String phone;
 
-	private String specialty;
+    @Nationalized
+    @Column(name = "email", nullable = false, length = 100)
+    private String email;
 
-	private String status;
+    @Nationalized
+    @Column(name = "specialty", nullable = false, length = 100)
+    private String specialty;
 
-	public Integer getCoachid() {
-		return coachid;
-	}
+    @Nationalized
+    @Column(name = "status", nullable = false, length = 20)
+    private String status;
 
-	public void setCoachid(Integer coachid) {
-		this.coachid = coachid;
-	}
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountid", nullable = false, unique = true)
+    private Useraccount account;
 
-
-	public String getCoachno() {
-		return coachno;
-	}
-
-	public void setCoachno(String coachno) {
-		this.coachno = coachno;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getGender() {
-		return gender;
-	}
-
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getSpecialty() {
-		return specialty;
-	}
-
-	public void setSpecialty(String specialty) {
-		this.specialty = specialty;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-
-	//---------//
-	@OneToOne
-	@JoinColumn(name="accountid", nullable = false, unique = true)
-	private Useraccount account;
-
-	public Useraccount getAccount() {
-		return account;
-	}
-
-	public void setAccount(Useraccount account) {
-		this.account = account;
-	}
-
-
-
+    public Integer getAccountid() {
+        return account == null ? null : account.getAccountid();
+    }
 }

@@ -28,7 +28,7 @@ import tw.gymproject.dto.inbody.InBodyResponse;
 import tw.gymproject.entity.Attendance;
 import tw.gymproject.entity.Booking;
 import tw.gymproject.entity.InBodyRecord;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 
 
 import tw.gymproject.repository.AttendanceRepo;
@@ -127,11 +127,11 @@ public class AttendanceService {
 
         // 4. 鎖定方案。
         // 不同預約若屬於同一方案，也必須依序調整堂數。
-        MemberCourse memberCourse = memberCourseRepo
+        Membercourse memberCourse = memberCourseRepo
                 .findByIdForUpdate(memberCourseId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
-                                "找不到 MemberCourse：" + memberCourseId
+                                "找不到 Membercourse：" + memberCourseId
                         )
                 );
 
@@ -335,7 +335,7 @@ public class AttendanceService {
     // =========================================================
     private void handleInBody(
             Attendance attendance,
-            MemberCourse memberCourse,
+            Membercourse memberCourse,
             String status,
             InBodyRequest request,
             LocalDate classDate
@@ -384,7 +384,7 @@ public class AttendanceService {
         // 關聯 Attendance
         record.setAttendance(attendance);
 
-        // Member 由 MemberCourse 取得
+        // Member 由 Membercourse 取得
         record.setMember(
                 memberCourse.getMember()
         );
@@ -582,8 +582,8 @@ public class AttendanceService {
                             )
                             .orElse("PENDING");
 
-            // MemberCourse
-            MemberCourse memberCourse =
+            // Membercourse
+            Membercourse memberCourse =
                     booking.getMembercourse();
 
             // 建 AttendanceCardResponse
@@ -613,7 +613,7 @@ public class AttendanceService {
                             .getEndtime()
             );
 
-            // MemberCourse.membercourseid
+            // Membercourse.membercourseid
             card.setMemberCourseId(
                     memberCourse.getMembercourseid()
             );
@@ -642,7 +642,7 @@ public class AttendanceService {
                             .getCoursename()
             );
 
-            // MemberCourse.remainingsessions
+            // Membercourse.remainingsessions
             card.setRemainingSessions(
                     memberCourse.getRemainingsessions()
             );
@@ -767,11 +767,11 @@ public class AttendanceService {
                 );
 
 
-        // 2. 取得 MemberCourse
-        MemberCourse memberCourse =
+        // 2. 取得 Membercourse
+        Membercourse memberCourse =
                 booking.getMembercourse();
 
-        // 3. 確認這筆 MemberCourse 屬於目前教練
+        // 3. 確認這筆 Membercourse 屬於目前教練
         // 目前 Controller 測試階段可以傳 coachId = 1。
         // 未來改由登入身分取得。
 
@@ -854,7 +854,7 @@ public class AttendanceService {
         response.setMember(memberInfo);
 
 
-        // 7. 找這個 MemberCourse 的 Attendance 歷史
+        // 7. 找這個 Membercourse 的 Attendance 歷史
         List<Attendance> attendanceHistory =
                 attendanceRepo
                         .findByBooking_Membercourse_MembercourseidOrderByBooking_Schedule_ClassdateDesc(
@@ -1046,7 +1046,7 @@ public class AttendanceService {
 
 
         // 10. History
-        // 同一個 MemberCourse
+        // 同一個 Membercourse
         // 排除目前這次 Booking
         // 最多最近 5 筆
         List<AttendanceHistoryResponse> history =

@@ -29,19 +29,19 @@ public class AttendanceCardResponse {
     // Booking.membercourse.membercourseid
     private Integer memberCourseId;
 
-    // MemberCourse.member.memberid
+    // Membercourse.member.memberid
     private Integer memberId;
 
-    // MemberCourse.member.name
+    // Membercourse.member.name
     private String memberName;
 
-    // MemberCourse.member.avatarurl
+    // Membercourse.member.avatarurl
     private String avatarUrl;
 
-    // MemberCourse.course.coursename
+    // Membercourse.course.coursename
     private String courseName;
 
-    // MemberCourse.remainingsessions
+    // Membercourse.remainingsessions
     private Integer remainingSessions;
 
     // Booking.bookingstatus

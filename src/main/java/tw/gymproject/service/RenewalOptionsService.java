@@ -10,7 +10,7 @@ import tw.gymproject.dto.renewal.RenewalOptionsResponse;
 import tw.gymproject.entity.CoachCourse;
 import tw.gymproject.entity.Course;
 import tw.gymproject.entity.Member;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ForbiddenException;
 import tw.gymproject.exception.ResourceNotFoundException;
@@ -80,7 +80,7 @@ public class RenewalOptionsService {
         }
 
         // 2. 查原方案
-        MemberCourse source = memberCourseRepo
+        Membercourse source = memberCourseRepo
                 .findOverviewById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(
@@ -264,7 +264,7 @@ public class RenewalOptionsService {
 
     // 不自動修正異常資料
     private void validateSource(
-            MemberCourse source,
+            Membercourse source,
             LocalDate today
     ) {
         Integer total = source.getTotalsessions();

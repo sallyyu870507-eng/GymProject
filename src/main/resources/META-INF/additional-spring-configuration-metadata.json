@@ -1,0 +1,12 @@
+{"properties": [
+  {
+    "name": "spring.mvc.view.resolver.suffix",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.mvc.view.resolver.suffix'"
+  },
+  {
+    "name": "spring.mvc.view.resolver.prefix",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.mvc.view.resolver.prefix'"
+  }
+]}

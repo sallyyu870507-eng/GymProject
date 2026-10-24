@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tw.gymproject.dto.renewal.RenewalWorkbenchResponse;
 import tw.gymproject.dto.renewal.RenewalWorkbenchResponse.*;
 import tw.gymproject.entity.FollowUp;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.entity.Renewal;
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.repository.AttendanceRepo;
@@ -172,7 +172,7 @@ public class RenewalWorkbenchService {
 
         if (!planIds.isEmpty()) {
             // 6. 載入本頁方案與會員、課程
-            List<MemberCourse> plans =
+            List<Membercourse> plans =
                     memberCourseRepo.findWorkbenchPlansByIds(
                             coachId,
                             planIds
@@ -201,7 +201,7 @@ public class RenewalWorkbenchService {
                     loadOutgoingRenewals(coachId);
 
             // 11. Entity → DTO
-            for (MemberCourse plan : plans) {
+            for (Membercourse plan : plans) {
                 Integer planId = plan.getMembercourseid();
 
                 ActivityKey key = new ActivityKey(
@@ -411,7 +411,7 @@ public class RenewalWorkbenchService {
             Integer sourceId =
                     renewal.getMemberCourse().getMembercourseid();
 
-            MemberCourse target =
+            Membercourse target =
                     renewal.getNewMemberCourse();
 
             OutgoingRenewal item = new OutgoingRenewal();
@@ -511,7 +511,7 @@ public class RenewalWorkbenchService {
         return tags;
     }
 
-    private void validateSessions(MemberCourse plan) {
+    private void validateSessions(Membercourse plan) {
         Integer total = plan.getTotalsessions();
         Integer remaining = plan.getRemainingsessions();
 

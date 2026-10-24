@@ -1,11 +1,23 @@
 package tw.gymproject.entity;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import org.hibernate.annotations.Nationalized;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Table(name = "course")
-@Data
+@Table(name = "course", schema = "dbo")
+@Getter
+@Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Course {
 
     @Id
@@ -13,21 +25,25 @@ public class Course {
     @Column(name = "courseid")
     private Integer courseid;
 
-    @Column(name = "coursename", nullable = false)
+    @Nationalized
+    @Column(name = "coursename", nullable = false, length = 100)
     private String coursename;
 
-    @Column(name = "coursetype", nullable = false)
+    @Nationalized
+    @Column(name = "coursetype", nullable = false, length = 50)
     private String coursetype;
 
-    @Column(name = "description", nullable = false)
+    @Nationalized
+    @Column(name = "description", nullable = false, columnDefinition = "nvarchar(max)")
     private String description;
 
     @Column(name = "durationmin", nullable = false)
-    private Integer durationmin;
+    private Integer durationmin = 60;
 
-    @Column(name = "price", nullable = false)
-    private Integer price;
+    @Column(name = "price", nullable = false, precision = 10, scale = 2)
+    private BigDecimal price;
 
+    @Nationalized
     @Column(name = "status", nullable = false, length = 20)
-    private String status;
+    private String status = "active";
 }

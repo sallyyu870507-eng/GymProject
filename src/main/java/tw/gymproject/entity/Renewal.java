@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "renewal")
+@Table(name = "renewal", schema = "dbo")
 @Data
 public class Renewal {
 
@@ -18,7 +18,7 @@ public class Renewal {
     // 來源方案：從哪一筆方案辦理續約
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membercourseid", nullable = false)
-    private MemberCourse memberCourse;
+    private Membercourse memberCourse;
 
 
     // 新方案：這次續約建立的方案
@@ -28,7 +28,7 @@ public class Renewal {
             nullable = false,
             unique = true
     )
-    private MemberCourse newMemberCourse;
+    private Membercourse newMemberCourse;
 
     @Column(name = "renewaldate")
     private LocalDateTime renewaldate;
@@ -39,9 +39,11 @@ public class Renewal {
     @Column(name = "amount")
     private Integer amount;
 
-    @Column(name = "paymentmethod")
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "paymentmethod", length = 50)
     private String paymentmethod;
 
-    @Column(name = "note")
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "note", length = 500)
     private String note;
 }

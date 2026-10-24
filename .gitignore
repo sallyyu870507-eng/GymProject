@@ -1,16 +1,5 @@
-# Compiled class file
+# Java and Maven build output
 *.class
-
-# Log file
-*.log
-
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
 *.jar
 *.war
 *.nar
@@ -18,33 +7,33 @@
 *.zip
 *.tar.gz
 *.rar
+/target/
+/bin/
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+# Logs and temporary files
+*.log
+*.ctxt
+.mtj.tmp/
 hs_err_pid*
 replay_pid*
-/bin/
-/target/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-
-# Eclipse workspace metadata
+# IDE and Eclipse metadata
+.idea/
+*.iml
 .metadata/
-
-# Maven build
-target/
-
-# Eclipse temporary files
 .lock
 .location
 
+# Frontend dependencies and build output
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.vite/
 
-# IntelliJ
-.idea/
-*.iml
-
-# Maven
-target/
-
-
-# Local Spring Boot configuration
+# Local-only Spring configuration
 /src/main/resources/application-local.properties
 
+# Local persistence descriptors
+/src/main/resources/META-INF/persistence.xml

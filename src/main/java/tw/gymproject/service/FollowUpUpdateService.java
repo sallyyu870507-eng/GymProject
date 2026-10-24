@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tw.gymproject.dto.renewal.FollowUpResponse;
 import tw.gymproject.dto.renewal.FollowUpUpdateRequest;
 import tw.gymproject.entity.FollowUp;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ConflictException;
 import tw.gymproject.exception.ForbiddenException;
@@ -211,7 +211,7 @@ public class FollowUpUpdateService {
             );
         }
 
-        MemberCourse plan = memberCourseRepo
+        Membercourse plan = memberCourseRepo
                 .findOverviewById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(

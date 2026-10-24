@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import tw.gymproject.dto.renewal.InBodyPageResponse;
-import tw.gymproject.entity.MemberCourse;
+import tw.gymproject.entity.Membercourse;
 import tw.gymproject.exception.BusinessException;
 import tw.gymproject.exception.ForbiddenException;
 import tw.gymproject.exception.ResourceNotFoundException;
@@ -96,7 +96,7 @@ public class InBodyQueryService {
         }
 
         // 2. 查方案並確認教練權限
-        MemberCourse plan = memberCourseRepo
+        Membercourse plan = memberCourseRepo
                 .findOverviewById(memberCourseId)
                 .orElseThrow(
                         () -> new ResourceNotFoundException(

@@ -6,7 +6,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "followup")
+@Table(name = "followup", schema = "dbo")
 @Data
 public class FollowUp {
 
@@ -17,21 +17,23 @@ public class FollowUp {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "membercourseid", nullable = false)
-    private MemberCourse memberCourse;
+    private Membercourse memberCourse;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coachid", nullable = false)
     private Coach coach;
 
-    @Column(name = "status")
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "status", length = 20)
     private String status;
 
-    @Column(name = "note")
+    @Column(name = "note", columnDefinition = "nvarchar(max)")
     private String note;
 
     @Column(name = "createdate")
     private LocalDateTime createdate;
 
-    @Column(name = "contactmethod")
+    @org.hibernate.annotations.Nationalized
+    @Column(name = "contactmethod", length = 20)
     private String contactmethod;
 }

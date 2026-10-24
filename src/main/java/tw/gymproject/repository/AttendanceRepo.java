@@ -13,7 +13,7 @@ import java.util.Optional;
 AttendanceRepo 處理
 某一筆 Booking 對應哪一筆 Attendance
 +
-某個 MemberCourse / Member 的歷史出席紀錄
+某個 Membercourse / Member 的歷史出席紀錄
  */
 public interface AttendanceRepo extends JpaRepository<Attendance,Integer> {
 
@@ -23,7 +23,7 @@ public interface AttendanceRepo extends JpaRepository<Attendance,Integer> {
     );
 
 
-    // 查某個 MemberCourse 的歷史出席，依上課日期由新到舊
+    // 查某個 Membercourse 的歷史出席，依上課日期由新到舊
     List<Attendance>
     findByBooking_Membercourse_MembercourseidOrderByBooking_Schedule_ClassdateDesc(
             Integer membercourseid

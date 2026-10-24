@@ -7,15 +7,16 @@ import lombok.Data;
 
 @Data
 public class MemberListDTO {
-
-    private Integer memberid;
-    private String memberno;//
-    private String name;
-    private String gender;
-    private String phone;
-
-    //代表每一位會員可以有多筆剩餘課堂
-    private List<MemberCourseDTO> courses;
+	private Integer accountid;
+	private Integer memberid;
+	private String memberno;
+	private String name;
+	private String gender;
+	private String phone;
+	private String status;
+	
+	//代表每一位會員可以有多筆剩餘課堂
+	private List<MemberCourseDTO> courses;
 
 
 }

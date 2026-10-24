@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class LoginDTO {
-    @NotBlank(message = "請填入使用者名稱")
-    private String username;
-    @NotBlank(message = "密碼不可為空")
-    private String password;
+	@NotBlank(message = "請填入使用者名稱")
+	private String username;
+	@NotBlank(message = "密碼不可為空")
+	private String password;
 
 }
