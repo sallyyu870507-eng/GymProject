@@ -88,7 +88,7 @@ public class RenewalCreateService {
                 normalizeRequest(request);
 
         String requestPath =
-                "/api/renewal/"
+                "/api/coach/renewal/"
                         + sourceMemberCourseId
                         + "/renewals";
 

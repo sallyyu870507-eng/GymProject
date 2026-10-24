@@ -31,6 +31,25 @@ import AttendanceDetail
 import "./AttendancePage.css";
 
 
+function getTaipeiToday(): string {
+    const parts = new Intl.DateTimeFormat(
+        "en-CA",
+        {
+            timeZone: "Asia/Taipei",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }
+    ).formatToParts(new Date());
+
+    const values = Object.fromEntries(
+        parts.map(part => [part.type, part.value])
+    );
+
+    return `${values.year}-${values.month}-${values.day}`;
+}
+
+
 export default function AttendancePage() {
 
     // ========================================
@@ -41,7 +60,7 @@ export default function AttendancePage() {
         date,
         setDate
     ] =
-        useState("2026-09-27");
+        useState(getTaipeiToday);
 
 
     // ========================================
@@ -126,6 +145,8 @@ export default function AttendancePage() {
     ] =
         useState(false);
 
+    const [formDirty, setFormDirty] = useState(false);
+
 
     const [
         saveMessage,
@@ -149,6 +170,41 @@ export default function AttendancePage() {
     const detailRequestIdRef =
         useRef(0);
 
+    const listRequestIdRef =
+        useRef(0);
+
+    const currentDateRef =
+        useRef(date);
+
+    const selectedBookingIdRef =
+        useRef<number | null>(selectedBookingId);
+
+    const selectionVersionRef =
+        useRef(0);
+
+
+    function handleDateChange(nextDate: string) {
+        if (!nextDate || nextDate === currentDateRef.current) return;
+
+        if (formDirty && !window.confirm("出席表單有尚未儲存的內容，確定捨棄並切換日期嗎？")) return;
+
+        currentDateRef.current = nextDate;
+        selectedBookingIdRef.current = null;
+        selectionVersionRef.current += 1;
+        listRequestIdRef.current += 1;
+        detailRequestIdRef.current += 1;
+
+        setDate(nextDate);
+        setAttendanceList(null);
+        setSelectedBookingId(null);
+        setSelectedDetail(null);
+        setDetailError(null);
+        setDetailLoading(false);
+        setSaveMessage(null);
+        setSaveError(null);
+        setFormDirty(false);
+    }
+
 
     // ========================================
     // 日期改變
@@ -156,6 +212,8 @@ export default function AttendancePage() {
     // ========================================
 
     useEffect(() => {
+
+        const requestId = ++listRequestIdRef.current;
 
         async function loadAttendanceList() {
 
@@ -183,36 +241,12 @@ export default function AttendancePage() {
                 const data =
                     await getAttendanceList(date);
 
-
+                if (requestId !== listRequestIdRef.current) return;
                 setAttendanceList(data);
 
-
-                const firstPendingCard =
-                    data.classes.find(
-                        card =>
-                            card.bookingStatus
-                                .toUpperCase()
-                            !== "CANCELLED"
-                            &&
-                            card.attendanceStatus
-                            === "PENDING"
-                    );
-
-
-                if (firstPendingCard) {
-
-                    setSelectedBookingId(
-                        firstPendingCard.bookingId
-                    );
-
-                } else {
-
-                    setSelectedBookingId(null);
-
-                }
-
-
             } catch (error) {
+
+                if (requestId !== listRequestIdRef.current) return;
 
                 console.error(
                     "載入 Attendance List 失敗：",
@@ -226,8 +260,7 @@ export default function AttendancePage() {
 
 
             } finally {
-
-                setLoading(false);
+                if (requestId === listRequestIdRef.current) setLoading(false);
 
             }
         }
@@ -350,6 +383,27 @@ export default function AttendancePage() {
         bookingId: number
     ) {
 
+        const isCurrentSelection = selectedBookingIdRef.current === bookingId;
+        if (formDirty && !window.confirm("出席表單有尚未儲存的內容，確定捨棄並切換課程嗎？")) return;
+
+        if (isCurrentSelection) {
+            selectedBookingIdRef.current = null;
+            selectionVersionRef.current += 1;
+            detailRequestIdRef.current += 1;
+            setSelectedBookingId(null);
+            setSelectedDetail(null);
+            setDetailError(null);
+            setDetailLoading(false);
+            setSaveMessage(null);
+            setSaveError(null);
+            setFormDirty(false);
+            return;
+        }
+
+        selectedBookingIdRef.current = bookingId;
+        selectionVersionRef.current += 1;
+        detailRequestIdRef.current += 1;
+
         setSaveMessage(null);
 
         setSaveError(null);
@@ -358,6 +412,10 @@ export default function AttendancePage() {
         setSelectedBookingId(
             bookingId
         );
+        setSelectedDetail(null);
+        setDetailError(null);
+        setDetailLoading(true);
+        setFormDirty(false);
     }
 
 
@@ -382,6 +440,8 @@ export default function AttendancePage() {
 
         const bookingId =
             selectedBookingId;
+        const savedDate = date;
+        const selectionVersion = selectionVersionRef.current;
 
 
         setSaving(true);
@@ -398,6 +458,10 @@ export default function AttendancePage() {
                 request
             );
 
+            if (currentDateRef.current === savedDate && selectionVersionRef.current === selectionVersion) {
+                setFormDirty(false);
+            }
+
         } catch (error) {
 
             console.error(
@@ -406,9 +470,9 @@ export default function AttendancePage() {
             );
 
 
-            setSaveError(
-                "出席資料更新失敗，請稍後再試"
-            );
+            if (currentDateRef.current === savedDate && selectionVersionRef.current === selectionVersion) {
+                setSaveError("出席資料更新失敗，請稍後再試");
+            }
 
 
             setSaving(false);
@@ -418,6 +482,8 @@ export default function AttendancePage() {
 
 
         try {
+
+            if (currentDateRef.current !== savedDate || selectionVersionRef.current !== selectionVersion) return;
 
             const [
                 refreshedList,
@@ -430,25 +496,30 @@ export default function AttendancePage() {
                     )
                 ]);
 
+            if (currentDateRef.current !== savedDate || selectionVersionRef.current !== selectionVersion) return;
+
+            const retainedCard = refreshedList.classes.find(
+                card => card.bookingId === bookingId && card.bookingStatus.toUpperCase() !== "CANCELLED"
+            );
+
 
             setAttendanceList(
                 refreshedList
             );
 
-
-            setSelectedDetail(
-                refreshedDetail
-            );
-
-
-            setDetailVersion(
-                version => version + 1
-            );
-
-
-            setSaveMessage(
-                "出席資料更新成功"
-            );
+            if (retainedCard) {
+                setSelectedDetail(refreshedDetail);
+                setDetailVersion(version => version + 1);
+                setSaveMessage("出席資料更新成功");
+            } else {
+                selectedBookingIdRef.current = null;
+                selectionVersionRef.current += 1;
+                detailRequestIdRef.current += 1;
+                setSelectedBookingId(null);
+                setSelectedDetail(null);
+                setDetailError(null);
+                setSaveMessage("出席資料更新成功；此課程已不在目前列表");
+            }
 
 
         } catch (error) {
@@ -459,9 +530,9 @@ export default function AttendancePage() {
             );
 
 
-            setSaveError(
-                "資料已更新，但重新載入最新資料失敗，請重新整理頁面"
-            );
+            if (currentDateRef.current === savedDate && selectionVersionRef.current === selectionVersion) {
+                setSaveError("資料已更新，但重新載入最新資料失敗，請重新整理頁面");
+            }
 
 
         } finally {
@@ -484,7 +555,7 @@ export default function AttendancePage() {
 
                 <AttendanceHeader
                     date={date}
-                    onDateChange={setDate}
+                    onDateChange={handleDateChange}
                 />
 
 
@@ -538,9 +609,10 @@ export default function AttendancePage() {
 
                                     <div>
 
-                                        <h2>
-                                            今日課程列表
-                                        </h2>
+                                        <div className="attendance-section-title-row">
+                                            <h2>今日課程列表</h2>
+                                            <span className="attendance-course-hint">點選課程以處理出席</span>
+                                        </div>
 
                                         <p>
                                             共{" "}
@@ -587,9 +659,7 @@ export default function AttendancePage() {
                                                                         ===
                                                                         card.bookingId
                                                                     }
-                                                                    onSelect={
-                                                                        handleSelectBooking
-                                                                    }
+                                                                    onSelect={handleSelectBooking}
                                                                 />
                                                             )
                                                         )
@@ -602,69 +672,23 @@ export default function AttendancePage() {
                             </section>
 
 
-                            {
-                                selectedBookingId
-                                === null
-                                &&
-                                attendanceList
-                                    .classes
-                                    .length
-                                > 0
-                                && (
-                                    <div className="attendance-page-state">
-                                        請選擇一堂課查看出席明細
-                                    </div>
-                                )
-                            }
-
-
-                            {
-                                detailLoading && (
-                                    <div className="attendance-page-state">
-                                        出席明細載入中...
-                                    </div>
-                                )
-                            }
-
-
-                            {
-                                detailError && (
-                                    <div className="attendance-page-error">
-                                        {detailError}
-                                    </div>
-                                )
-                            }
-
-
-                            {
-                                !detailLoading
-                                &&
-                                !detailError
-                                &&
-                                selectedDetail
-                                && (
-                                    <AttendanceDetail
-                                        detail={
-                                            selectedDetail
-                                        }
-                                        detailVersion={
-                                            detailVersion
-                                        }
-                                        onSave={
-                                            handleSaveAttendance
-                                        }
-                                        saving={
-                                            saving
-                                        }
-                                        saveMessage={
-                                            saveMessage
-                                        }
-                                        saveError={
-                                            saveError
-                                        }
-                                    />
-                                )
-                            }
+                            {selectedBookingId !== null && (
+                                <div id="attendance-selection-panel">
+                                    {detailLoading && <div className="attendance-page-state" role="status">出席明細載入中...</div>}
+                                    {detailError && <div className="attendance-page-error" role="alert">{detailError}</div>}
+                                    {!detailLoading && !detailError && selectedDetail && (
+                                        <AttendanceDetail
+                                            detail={selectedDetail}
+                                            detailVersion={detailVersion}
+                                            onSave={handleSaveAttendance}
+                                            saving={saving}
+                                            saveMessage={saveMessage}
+                                            saveError={saveError}
+                                            onDirtyChange={setFormDirty}
+                                        />
+                                    )}
+                                </div>
+                            )}
 
                         </>
                     )

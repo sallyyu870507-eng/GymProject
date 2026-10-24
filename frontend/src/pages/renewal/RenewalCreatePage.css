@@ -1,0 +1,33 @@
+.renewal-new-inner { min-width: 0; }
+.renewal-new-inner .renewal-create-topbar { justify-content: flex-start; }
+.renewal-new-inner .renewal-create-subtitle { margin: 7px 0 0; color: #748194; }
+.renewal-new-form { display: grid; grid-template-columns: minmax(220px, .9fr) minmax(260px, 1fr) minmax(300px, 1.15fr); align-items: start; gap: 17px; margin-top: 18px; }
+.renewal-new-card { min-width: 0; padding: 21px 20px; border: 1px solid #e7ebf0; border-radius: 13px; background: #fff; }
+.renewal-new-card h2 { margin: 0 0 18px; color: #344256; }
+.renewal-new-info { display: grid; gap: 5px; padding: 11px 12px; border-bottom: 1px solid #edf0f3; background: #fafbfc; }
+.renewal-new-info:first-of-type { border-radius: 8px 8px 0 0; }
+.renewal-new-info:last-of-type { border: 0; border-radius: 0 0 8px 8px; }
+.renewal-new-info span { color: #8793a2; font-size: 12px; }
+.renewal-new-info strong { color: #344256; font-size: 14px; font-weight: 600; overflow-wrap: anywhere; }
+.renewal-new-number { display: flex; align-items: center; gap: 10px; }
+.renewal-new-number input { flex: 1 1 auto; }
+.renewal-new-number > span { color: #748194; font-weight: 500; }
+.renewal-new-hint { display: block; margin-top: -11px; color: #8793a2; font-size: 12px; font-weight: 400; line-height: 1.55; }
+.renewal-new-card > .renewal-new-hint { margin: 5px 0 0; }
+.renewal-new-card .renewal-create-field input[readonly] { background: #f6f7f9; }
+.renewal-new-footer { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 15px 18px; border: 1px solid #f8c69f; border-radius: 10px; background: #fff7f0; }
+.renewal-new-footer p { margin: 0; color: #77502e; font-size: 13px; line-height: 1.6; }
+.renewal-new-footer > div { display: flex; flex: 0 0 auto; gap: 9px; }
+.renewal-new-footer button { border: 1px solid #dbe1e8; border-radius: 8px; padding: 10px 17px; color: #46556a; background: #fff; font: inherit; font-weight: 650; cursor: pointer; }
+.renewal-new-footer button[type="submit"] { border-color: #f97316; color: #fff; background: #f97316; }
+.renewal-new-footer button:disabled { cursor: not-allowed; opacity: .55; }
+.renewal-new-disabled-reason { margin-top: 15px; border: 1px solid #f0c8a9; border-radius: 9px; padding: 13px 15px; color: #71441f; background: #fff9f2; }
+.renewal-new-unknown { display: grid; gap: 8px; margin-top: 15px; border: 1px solid #f0c8a9; border-radius: 9px; padding: 15px; color: #71441f; background: #fff9f2; }
+.renewal-new-unknown p { margin: 0; line-height: 1.55; }
+.renewal-new-unknown a { color: #b44f10; font-weight: 650; text-underline-offset: 3px; }
+.renewal-new-unknown button { justify-self: start; border: 1px solid #e4a273; border-radius: 7px; padding: 8px 11px; color: #9b470f; background: #fff; font: inherit; font-weight: 650; cursor: pointer; }
+.renewal-new-unknown small { color: #896945; }
+.renewal-new-form [aria-invalid="true"] { border-color: #d9534f; }
+.renewal-new-form .renewal-create-field input:focus-visible, .renewal-new-form .renewal-create-field select:focus-visible, .renewal-new-form .renewal-create-field textarea:focus-visible { outline: 3px solid #ffc096; outline-offset: 2px; }
+@media (max-width: 980px) { .renewal-new-form { grid-template-columns: repeat(2, minmax(0, 1fr)); } .renewal-new-card:first-of-type { grid-column: 1 / -1; } }
+@media (max-width: 650px) { .renewal-new-form { grid-template-columns: minmax(0, 1fr); } .renewal-new-card:first-of-type, .renewal-new-footer { grid-column: auto; } .renewal-new-footer { align-items: stretch; flex-direction: column; } .renewal-new-footer > div { justify-content: flex-end; } }

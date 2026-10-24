@@ -26,7 +26,6 @@ public class WebConfig implements WebMvcConfigurer {
                         "/admin/**",
                         "/admim",
                         "/api/coach/**",
-                        "/api/attendance/**",
                         "/coach/**",
                         "/coach",
                         "/member/**",

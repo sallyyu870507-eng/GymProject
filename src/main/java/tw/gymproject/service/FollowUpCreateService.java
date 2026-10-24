@@ -98,7 +98,7 @@ public class FollowUpCreateService {
 
         // 使用後端組合的標準路徑作為提交保護範圍。
         String requestPath =
-                "/api/renewal/"
+                "/api/coach/renewal/"
                         + memberCourseId
                         + "/followups";
 

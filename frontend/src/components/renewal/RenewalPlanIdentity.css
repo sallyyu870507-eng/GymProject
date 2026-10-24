@@ -1,0 +1,30 @@
+.renewal-plan-identity-title-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin: 20px 0 18px; }
+.renewal-plan-identity-title-group { min-width: 0; }
+.renewal-plan-identity-back { display: inline-flex; align-items: center; gap: 9px; border: 0; padding: 0; color: #f97316; background: transparent; font: inherit; font-size: var(--renewal-navigation-text-size, 16px); font-weight: 650; cursor: pointer; }
+.renewal-plan-identity-back:disabled { cursor: not-allowed; opacity: .55; }
+.renewal-plan-identity-back:focus-visible { outline: 3px solid #ffc096; outline-offset: 3px; }
+.renewal-plan-name { overflow-wrap: anywhere; margin: 15px 0 0; color: #101828; font-size: var(--renewal-plan-title-size, 22px); font-weight: 600; line-height: 1.4; }
+.renewal-plan-member-strip { display: flex; align-items: center; min-width: 0; min-height: 88px; padding: 14px 22px; border: 1px solid #e2e8f0; border-radius: 13px; background: #fff; }
+.renewal-plan-avatar { display: grid; width: 64px; height: 64px; flex: 0 0 64px; place-items: center; border-radius: 50%; object-fit: cover; }
+.renewal-plan-avatar-fallback { color: #c75b17; background: #fff0e5; font-size: 24px; font-weight: 750; }
+.renewal-plan-strip-name { min-width: max-content; padding: 0 24px; color: #101828; font-size: 21px; }
+.renewal-plan-strip-item { display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; min-height: 38px; padding: 0 20px; border-left: 1px solid #dbe2ea; color: #182b49; font-size: 16px; white-space: nowrap; }
+.renewal-plan-strip-email { flex: 1 1 auto; justify-content: flex-start; }
+.renewal-plan-member-icon { display: block; width: 24px; height: 24px; flex: 0 0 24px; color: #47566c; }
+.renewal-plan-member-icon-gender { width: 29px; height: 29px; flex-basis: 29px; }
+
+@media (max-width: 960px) {
+    .renewal-plan-identity-title-row { align-items: flex-start; flex-direction: column; gap: 14px; }
+    .renewal-plan-member-strip { flex-wrap: wrap; gap: 8px 0; }
+    .renewal-plan-strip-email { flex: 1 1 100%; justify-content: flex-start; border-left: 0; padding-left: 6px; overflow-wrap: anywhere; }
+}
+
+@media (max-width: 760px) {
+    .renewal-plan-identity-title-row { align-items: stretch; flex-direction: column; gap: 16px; margin-top: 16px; }
+    .renewal-plan-name { margin-top: 11px; }
+    .renewal-plan-member-strip { flex-wrap: wrap; gap: 10px 0; padding: 14px; }
+    .renewal-plan-avatar { width: 52px; height: 52px; flex-basis: 52px; }
+    .renewal-plan-strip-name { padding: 0 14px; font-size: 18px; }
+    .renewal-plan-strip-item { justify-content: flex-start; min-height: 34px; padding: 0 11px; font-size: 14px; white-space: normal; }
+    .renewal-plan-strip-email { flex: 1 1 100%; border-left: 0; padding-left: 6px; overflow-wrap: anywhere; }
+}

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 /*
-GET /api/attendance/{bookingId}
+GET /api/coach/attendance/{bookingId}
 
 最近出席歷史
 目前規格：

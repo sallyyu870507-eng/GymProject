@@ -74,7 +74,7 @@ public class AttendanceService {
 
     // =========================================================
     // 1. 更新 Attendance
-    //PUT /api/attendance/{bookingId}
+    //PUT /api/coach/attendance/{bookingId}
     // =========================================================
     @Transactional
     public AttendanceDetailResponse updateAttendance(
@@ -508,7 +508,7 @@ public class AttendanceService {
 
     // =========================================================
     // 6. 取得某日 Attendance 工作台
-    // GET /api/attendance?date=YYYY-MM-DD
+    // GET /api/coach/attendance?date=YYYY-MM-DD
     // =========================================================
 
     @Transactional(readOnly = true)
@@ -743,7 +743,7 @@ public class AttendanceService {
 
     // =========================================================
     // 7. 取得單一 Attendance Detail
-    // GET /api/attendance/{bookingId}
+    // GET /api/coach/attendance/{bookingId}
     // =========================================================
 
     @Transactional(readOnly = true)

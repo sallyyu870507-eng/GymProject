@@ -24,6 +24,8 @@ interface AttendanceDetailProps {
     saveMessage: string | null;
 
     saveError: string | null;
+
+    onDirtyChange: (dirty: boolean) => void;
 }
 
 
@@ -75,7 +77,8 @@ export default function AttendanceDetail(
         onSave,
         saving,
         saveMessage,
-        saveError
+        saveError,
+        onDirtyChange
     }: AttendanceDetailProps
 ) {
 
@@ -244,6 +247,7 @@ export default function AttendanceDetail(
                         saving={saving}
                         saveMessage={saveMessage}
                         saveError={saveError}
+                        onDirtyChange={onDirtyChange}
                     />
 
                 </div>

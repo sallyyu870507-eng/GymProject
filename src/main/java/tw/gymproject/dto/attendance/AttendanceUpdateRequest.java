@@ -4,7 +4,7 @@ import lombok.Data;
 import tw.gymproject.dto.inbody.InBodyRequest;
 
 /*
-PUT /api/attendance/{bookingId}
+PUT /api/coach/attendance/{bookingId}
 
 教練按儲存時，
 React 傳給 Spring Boot 的資料

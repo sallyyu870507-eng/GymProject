@@ -8,7 +8,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 /*
-GET /api/attendance/{bookingId}
+GET /api/coach/attendance/{bookingId}
 
 回傳：
 bookingId

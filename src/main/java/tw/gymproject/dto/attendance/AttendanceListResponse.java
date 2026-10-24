@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 /*
-GET /api/attendance?date=YYYY-MM-DD
+GET /api/coach/attendance?date=YYYY-MM-DD
 
 整個出席工作台的 Response
 */

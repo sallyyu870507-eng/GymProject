@@ -17,7 +17,7 @@ import java.time.LocalDate;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/attendance")
+@RequestMapping("/api/coach/attendance")
 public class AttendanceController {
 
     private static final Set<String> LIST_QUERY_PARAMS =

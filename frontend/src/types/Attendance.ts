@@ -21,7 +21,7 @@ export type AttendanceUpdateStatus =
 
 
 // ==============================
-// GET /api/attendance?date=...
+// GET /api/coach/attendance?date=...
 // Attendance List
 // ==============================
 
@@ -81,7 +81,7 @@ export interface InBodyResponse {
 
 
 // ==============================
-// GET /api/attendance/{bookingId}
+// GET /api/coach/attendance/{bookingId}
 // Attendance Detail
 // ==============================
 
@@ -140,7 +140,7 @@ export interface AttendanceDetailResponse {
 
 
 // ==============================
-// PUT /api/attendance/{bookingId}
+// PUT /api/coach/attendance/{bookingId}
 // ==============================
 
 export interface AttendanceUpdateRequest {

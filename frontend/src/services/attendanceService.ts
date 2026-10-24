@@ -5,7 +5,7 @@ import type {
 } from "../types/Attendance";
 
 // ========================================
-// GET /api/attendance?date=YYYY-MM-DD
+// GET /api/coach/attendance?date=YYYY-MM-DD
 // 取得指定日期出席工作台
 // ========================================
 
@@ -14,7 +14,8 @@ export async function getAttendanceList(
 ): Promise<AttendanceListResponse> {
 
     const response = await fetch(
-        `/api/attendance?date=${date}`
+        `/api/coach/attendance?date=${encodeURIComponent(date)}`,
+        { credentials: "include" }
     );
 
     if (!response.ok) {
@@ -28,7 +29,7 @@ export async function getAttendanceList(
 
 
 // ========================================
-// GET /api/attendance/{bookingId}
+// GET /api/coach/attendance/{bookingId}
 // 取得單一 Booking 的出席明細
 // ========================================
 
@@ -37,7 +38,8 @@ export async function getAttendanceDetail(
 ): Promise<AttendanceDetailResponse> {
 
     const response = await fetch(
-        `/api/attendance/${bookingId}`
+        `/api/coach/attendance/${bookingId}`,
+        { credentials: "include" }
     );
 
     if (!response.ok) {
@@ -50,7 +52,7 @@ export async function getAttendanceDetail(
 }
 
 // ========================================
-// PUT /api/attendance/{bookingId}
+// PUT /api/coach/attendance/{bookingId}
 // 更新出席狀態、備註、訓練重點與 InBody
 // ========================================
 
@@ -60,9 +62,10 @@ export async function updateAttendance(
 ): Promise<AttendanceDetailResponse> {
 
     const response = await fetch(
-        `/api/attendance/${bookingId}`,
+        `/api/coach/attendance/${bookingId}`,
         {
             method: "PUT",
+            credentials: "include",
 
             headers: {
                 "Content-Type": "application/json"

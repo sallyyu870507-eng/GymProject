@@ -1,3 +1,5 @@
+import type { KeyboardEvent } from "react";
+
 import type {
     AttendanceCard as AttendanceCardType
 } from "../../types/Attendance";
@@ -130,9 +132,27 @@ export default function AttendanceCard(
             isCancelled
         );
 
+    function selectCard() {
+        if (!isCancelled) onSelect(card.bookingId);
+    }
+
+    function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
+        if (isCancelled) return;
+        if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            selectCard();
+        }
+    }
+
 
     return (
         <article
+            role={isCancelled ? undefined : "button"}
+            tabIndex={isCancelled ? undefined : 0}
+            aria-pressed={isCancelled ? undefined : selected}
+            aria-expanded={isCancelled ? undefined : selected}
+            aria-controls={selected ? "attendance-selection-panel" : undefined}
+            aria-disabled={isCancelled || undefined}
             className={
                 `attendance-card
                 ${
@@ -149,14 +169,8 @@ export default function AttendanceCard(
 
             // CANCELLED → 完全沒有 click 行為
             // 正常卡 → 點擊後回報 bookingId
-            onClick={
-                isCancelled
-                    ? undefined
-                    : () =>
-                        onSelect(
-                            card.bookingId
-                        )
-            }
+            onClick={selectCard}
+            onKeyDown={handleKeyDown}
         >
 
             {/* =========================

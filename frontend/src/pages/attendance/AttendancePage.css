@@ -1,33 +1,29 @@
 /* =========================================================
    Attendance Theme
 
-   開發階段：
-   使用藍色 + 中性色。
-
-   未來 UIUX 要改品牌配色時，
-   優先只修改這裡的 CSS Variables。
+   Attendance module colors follow the renewal module palette.
    ========================================================= */
 
 :root {
 
     /* Page / Card */
-    --attendance-page-bg: #f5f7fb;
+    --attendance-page-bg: #f5f7fa;
     --attendance-card-bg: #ffffff;
 
     /* Primary */
-    --attendance-primary: #1677ff;
-    --attendance-primary-hover: #0958d9;
-    --attendance-primary-soft: #eaf3ff;
+    --attendance-primary: #f97316;
+    --attendance-primary-hover: #e96610;
+    --attendance-primary-soft: #fff0e5;
     --attendance-primary-text: #ffffff;
 
     /* Text */
-    --attendance-text-main: #172033;
-    --attendance-text-secondary: #667085;
-    --attendance-text-light: #98a2b3;
+    --attendance-text-main: #263445;
+    --attendance-text-secondary: #8793a2;
+    --attendance-text-light: #a0a9b5;
 
     /* Border */
-    --attendance-border: #e4e7ec;
-    --attendance-border-strong: #d0d5dd;
+    --attendance-border: #e6eaf0;
+    --attendance-border-strong: #d9dfe7;
 
     /* Shadow */
     --attendance-shadow:
@@ -207,17 +203,16 @@
 
 .attendance-date-picker {
     position: relative;
-
     display: flex;
 
     align-items: center;
     justify-content: center;
+    gap: 9px;
 
     min-width: 190px;
     height: 40px;
 
-    padding:
-            0 14px;
+    padding: 0;
 
     box-sizing: border-box;
 
@@ -246,17 +241,58 @@
 }
 
 
-.attendance-date-picker input {
-    position: absolute;
-
-    inset: 0;
-
+.attendance-date-trigger {
+    display: flex;
     width: 100%;
     height: 100%;
-
-    opacity: 0;
-
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    border: 0;
+    border-radius: inherit;
+    padding: 0 14px;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+    font-weight: inherit;
     cursor: pointer;
+}
+
+.attendance-date-trigger:focus-visible {
+    outline: 3px solid var(--attendance-primary);
+    outline-offset: 2px;
+}
+
+.attendance-date-native-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.attendance-date-native-fallback {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: inherit;
+    padding: 0 12px;
+    color: inherit;
+    background: transparent;
+    font: inherit;
+}
+
+.attendance-date-picker svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    color: var(--attendance-primary);
+}
+
+.attendance-date-picker:focus-within {
+    outline: 3px solid var(--attendance-primary-soft);
+    outline-offset: 2px;
 }
 
 
@@ -517,6 +553,19 @@
             var(--attendance-text-secondary);
 }
 
+.attendance-section-title-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+}
+
+.attendance-course-hint {
+    color: var(--attendance-text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+}
+
 
 /* =========================================================
    UI-B
@@ -574,6 +623,11 @@
 
     transform:
             translateY(-1px);
+}
+
+.attendance-card:focus-visible {
+    outline: 3px solid var(--attendance-primary);
+    outline-offset: 3px;
 }
 
 
@@ -1118,6 +1172,7 @@
    ========================================================= */
 
 .attendance-history-panel {
+    min-width: 0;
     padding: 20px;
 }
 
@@ -1171,24 +1226,45 @@
     text-decoration: underline;
 }
 
+.attendance-history-more:focus-visible {
+    outline: 3px solid var(--attendance-primary);
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
 
 .attendance-history-list {
     display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 
 .attendance-history-item {
-    padding:
-            16px 0;
+    position: relative;
+    margin-left: 7px;
+    border-left: 1px solid var(--attendance-border);
+    padding: 3px 0 15px 16px;
+}
 
-    border-bottom:
-            1px solid
-            var(--attendance-border);
+.attendance-history-item::before {
+    position: absolute;
+    top: 7px;
+    left: -5px;
+    width: 9px;
+    height: 9px;
+    border: 2px solid var(--attendance-primary);
+    border-radius: 50%;
+    background: var(--attendance-card-bg);
+    content: "";
 }
 
 
 .attendance-history-item:last-child {
-    border-bottom: none;
+    border-left-color: transparent;
+    padding-bottom: 2px;
 }
 
 
@@ -1209,6 +1285,12 @@
             var(--attendance-text-main);
 }
 
+.attendance-history-item-top time {
+    color: var(--attendance-text-main);
+    font-size: 13px;
+    font-weight: 650;
+}
+
 
 .attendance-history-content {
     margin-top: 9px;
@@ -1221,14 +1303,16 @@
 
 
 .attendance-history-workout {
-    display: flex;
-
-    gap: 8px;
-
+    display: -webkit-box;
+    overflow: hidden;
+    margin: 7px 0 0;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
     font-size: 13px;
-
+    line-height: 1.5;
     color:
             var(--attendance-text-main);
+    overflow-wrap: anywhere;
 }
 
 
@@ -1339,7 +1423,6 @@
 
 /* =========================================================
    History Drawer
-   目前先保留舊版
    ========================================================= */
 
 .history-drawer-backdrop {
@@ -1364,7 +1447,10 @@
 
     height: 100%;
 
+    display: flex;
+    flex-direction: column;
     overflow-y: auto;
+    overscroll-behavior: contain;
 
     padding: 24px;
 
@@ -1393,6 +1479,8 @@
 
 .history-drawer-header h2 {
     margin: 0;
+    color: var(--attendance-text-main);
+    font-size: 19px;
 }
 
 
@@ -1410,6 +1498,22 @@
             var(--attendance-card-bg);
 
     cursor: pointer;
+}
+
+.history-drawer-header button:focus-visible {
+    outline: 3px solid var(--attendance-primary);
+    outline-offset: 2px;
+}
+
+.history-drawer-limit {
+    margin: 0 0 10px;
+    color: var(--attendance-text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.attendance-history-drawer-list {
+    flex: 0 0 auto;
 }
 
 
@@ -1520,6 +1624,12 @@
 /* Course Card → 1 column */
 @media (max-width: 620px) {
 
+    .attendance-section-title-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+    }
+
     .attendance-card-list {
         grid-template-columns: 1fr;
     }
@@ -1609,6 +1719,14 @@
         gap: 3px;
     }
 
+}
+
+@media (max-width: 600px) {
+    .history-drawer {
+        width: 100vw;
+        max-width: none;
+        padding: 18px 16px;
+    }
 }
 
 

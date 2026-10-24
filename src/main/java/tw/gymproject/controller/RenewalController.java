@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/api/renewal")
+@RequestMapping("/api/coach/renewal")
 public class RenewalController {
 
     private static final Set<String> ALLOWED_QUERY_PARAMS =

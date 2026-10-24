@@ -1,4 +1,6 @@
 import {
+    useEffect,
+    useRef,
     useState
 } from "react";
 
@@ -27,6 +29,8 @@ interface AttendanceEditFormProps {
     saveMessage: string | null;
 
     saveError: string | null;
+
+    onDirtyChange: (dirty: boolean) => void;
 }
 
 
@@ -36,7 +40,8 @@ export default function AttendanceEditForm(
         onSave,
         saving,
         saveMessage,
-        saveError
+        saveError,
+        onDirtyChange
     }: AttendanceEditFormProps
 ) {
 
@@ -130,6 +135,26 @@ export default function AttendanceEditForm(
             ?? ""
         );
 
+    const initialValues = useRef({
+        status: detail.attendance.status === "PENDING" ? "" : detail.attendance.status,
+        workoutFocus: detail.attendance.workoutFocus ?? "",
+        note: detail.attendance.note ?? "",
+        weight: detail.attendance.inBody?.weight?.toString() ?? "",
+        bodyFatPct: detail.attendance.inBody?.bodyFatPct?.toString() ?? "",
+        muscleMass: detail.attendance.inBody?.muscleMass?.toString() ?? ""
+    });
+
+    const isDirty = status !== initialValues.current.status
+        || workoutFocus !== initialValues.current.workoutFocus
+        || note !== initialValues.current.note
+        || weight !== initialValues.current.weight
+        || bodyFatPct !== initialValues.current.bodyFatPct
+        || muscleMass !== initialValues.current.muscleMass;
+
+    useEffect(() => {
+        onDirtyChange(isDirty);
+    }, [isDirty, onDirtyChange]);
+
 
     /* =========================================================
        Validation Error
@@ -154,6 +179,33 @@ export default function AttendanceEditForm(
     function handleStatusChange(
         newStatus: AttendanceUpdateStatus
     ) {
+
+        if (newStatus === status) {
+            return;
+        }
+
+        const isLeavingPresent = newStatus !== "PRESENT";
+        const hasTrainingOrInBody = [
+            workoutFocus,
+            weight,
+            bodyFatPct,
+            muscleMass
+        ].some(value => value.trim() !== "");
+
+        if (isLeavingPresent && hasTrainingOrInBody) {
+            const confirmed = window.confirm(
+                "改為請假或未出席後，儲存時將清除本次訓練重點\n與 InBody 資料，是否繼續？"
+            );
+
+            if (!confirmed) {
+                return;
+            }
+
+            setWorkoutFocus("");
+            setWeight("");
+            setBodyFatPct("");
+            setMuscleMass("");
+        }
 
         setStatus(
             newStatus

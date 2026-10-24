@@ -6,7 +6,7 @@ import java.time.LocalTime;
 
 /*
 API：
-GET /api/attendance?date=YYYY-MM-DD
+GET /api/coach/attendance?date=YYYY-MM-DD
 
 用途：
 今日課程 / 學員出席卡片

@@ -4,7 +4,7 @@ import lombok.Data;
 
 /*
 API：
-GET /api/attendance?date=YYYY-MM-DD
+GET /api/coach/attendance?date=YYYY-MM-DD
 
 用途：
 出席管理頁上方統計卡
