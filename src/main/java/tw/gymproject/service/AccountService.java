@@ -60,10 +60,10 @@ public class AccountService {
 		
 		 //註冊、建立帳號
 		Useraccount account = new Useraccount();
-		account.setUsername(dto.getUsername());
+		account.setUsername(dto.getUsername().trim());
 		account.setPassword(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt()));
 		account.setRole("member");
-		//account.setStatus("active");已經在設定active預設值
+		account.setStatus("active");
 		
 		//裝到變數內較清楚，後面與member表資料連接用
 		Useraccount savedUseraccount = repository.save(account);
@@ -76,7 +76,7 @@ public class AccountService {
 		member.setPhone(dto.getPhone());
 		member.setEmail(dto.getEmail());
 		member.setBirthday(dto.getBirthday());
-		//member.setStatus("active");
+		member.setStatus("active");
 		
 		Member savedMember = memberRepository.save(member);
 		//System.out.println("還沒有編號:" + savedMember);
@@ -219,8 +219,11 @@ public class AccountService {
 			MemberListDTO memberListDTO = memberMap.get(memberId); //取得指定id會員元素
 			MemberCourseDTO memberCourseDTO = new MemberCourseDTO();
 			
-			memberCourseDTO.setCoursename((String)rowObjects[1]);
-			memberCourseDTO.setRemainingsessions(((Number)rowObjects[2]).intValue());
+			memberCourseDTO.setCourseid(((Number) rowObjects[1]).intValue());
+			memberCourseDTO.setCoursename((String)rowObjects[2]);
+			memberCourseDTO.setCoachid(((Number)rowObjects[3]).intValue());
+			memberCourseDTO.setName((String) rowObjects[4]);
+			memberCourseDTO.setRemainingsessions(((Number)rowObjects[5]).intValue());
 			
 			memberListDTO.getCourses().add(memberCourseDTO); 
 			//用加的，如果直接set，每跑一次迴圈上一圈的內容就會被新的覆蓋掉			

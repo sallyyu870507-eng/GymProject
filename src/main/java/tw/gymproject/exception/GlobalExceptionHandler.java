@@ -34,12 +34,21 @@ public class GlobalExceptionHandler {
             ConstraintViolationException.class
     })
     public ResponseEntity<Map<String, Object>> handleBadRequest(Exception ex) {
-        String message = ex instanceof MethodArgumentNotValidException validation
-                ? validation.getBindingResult().getFieldErrors().stream()
+        String message;
+         if( ex instanceof MethodArgumentNotValidException validation){
+            message = validation.getBindingResult().getFieldErrors().stream()
                         .findFirst()
                         .map(error -> error.getDefaultMessage())
-                        .orElse("請求資料不正確")
-                : ex.getMessage();
+                        .orElse("請求資料不正確");
+        }else if (ex instanceof HttpMessageNotReadableException) {
+            message = "請求內容格式不正確";
+        } else if (ex instanceof MethodArgumentTypeMismatchException) {
+            message = "參數格式不正確";
+        } else if (ex instanceof MissingServletRequestParameterException) {
+            message = "缺少必要參數";
+        } else {
+            message = ex.getMessage();
+        }
         return error(HttpStatus.BAD_REQUEST, "Bad Request", safeMessage(message, "請求資料不正確"));
     }
 
@@ -52,17 +61,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleForbidden(ForbiddenException ex) {
         return error(HttpStatus.FORBIDDEN, "Forbidden", safeMessage(ex.getMessage(), "沒有操作權限"));
     }
-
+//404
     @ExceptionHandler({
             ResourceNotFoundException.class,
             EntityNotFoundException.class,
             NoResourceFoundException.class
     })
     public ResponseEntity<Map<String, Object>> handleNotFound(Exception ex) {
-        return error(HttpStatus.NOT_FOUND, "Not Found", "找不到指定的資源");
+        return error(HttpStatus.NOT_FOUND, "Not Found", safeMessage(ex.getMessage(), "找不到指定的資源"));
     }
-
-    @ExceptionHandler({ConflictException.class, DuplicateUsernameException.class})
+//409
+    @ExceptionHandler({ConflictException.class, DuplicateUsernameException.class,IllegalStateException.class})
     public ResponseEntity<Map<String, Object>> handleConflict(Exception ex) {
         return error(HttpStatus.CONFLICT, "Conflict", safeMessage(ex.getMessage(), "資料衝突"));
     }

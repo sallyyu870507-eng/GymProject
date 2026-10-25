@@ -11,12 +11,12 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
+// import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Nationalized;
 
 @Entity
 @Table(name = "useraccount", schema = "dbo")
-@SQLDelete(sql = "UPDATE useraccount SET status = 'inactive' WHERE accountid = ?")
+// @SQLDelete(sql = "UPDATE useraccount SET status = 'inactive' WHERE accountid = ?")
 @Getter
 @Setter
 public class Useraccount {
@@ -41,8 +41,8 @@ public class Useraccount {
 
     @Nationalized
     @Column(name = "status", nullable = false, length = 50)
-    private String status = "active";
-
+    private String status;
+//----------//
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     private Coach coach;
 

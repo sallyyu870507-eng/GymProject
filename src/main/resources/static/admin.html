@@ -438,7 +438,7 @@
 				member.courses.forEach(course=>{
 					const div = document.createElement("div");
 					
-					div.textContent = `${course.coursename} : ${course.remainingsessions}堂 |`;
+					div.textContent = `${course.coursename} : ${course.remainingsessions}堂 | ${course.name}`;
 					coursesTd.appendChild(div);
 				});
 			}
