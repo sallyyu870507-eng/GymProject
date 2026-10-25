@@ -20,7 +20,7 @@ import tw.gymproject.service.AccountService;
 import tw.gymproject.service.CoachMemberService;
 
 @RestController
-@RequestMapping("/api/coach/members")
+@RequestMapping("/api/coaches/members")
 public class CoachMemberController {
 //放教練頁面的學員管理功能
 	

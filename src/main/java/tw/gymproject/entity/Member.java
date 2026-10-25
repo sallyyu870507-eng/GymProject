@@ -35,7 +35,7 @@ public class Member {
 	
 	@DateTimeFormat(pattern = "yyyy-MM-dd") //以免自動轉換失效
 	private LocalDate birthday;
-	private String status = "active" ;
+	private String status;
 	
 	public Integer getMemberid() {
 		return memberid;

@@ -39,6 +39,15 @@ public class GlobalExceptionHandler {
                         "message", ex.getMessage()
                     ));
     }
+    //停用已停用的會員回傳HTTP 400 Bad Request
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<Map<String, Object>> handleIIllegalState(IllegalStateException ex) {
+    	return ResponseEntity.badRequest()
+    			.body(Map.of(
+    					"success", false,
+    					"message", ex.getMessage()
+    					));
+    }
     //找不到資源的例外處理404
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<Map<String, Object>> handleResourceNotFound(

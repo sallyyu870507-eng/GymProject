@@ -151,7 +151,7 @@
 						    keyword: keyword
 						});
 						const response = await fetch(
-						    `/api/coach/members?${params.toString()}`
+						    `/api/coaches/members?${params.toString()}`
 					);
 					
 					if (response.status === 401) { //沒登入
@@ -305,7 +305,7 @@
 				async function editMember(memberid) {
 					try {
 				    const response = await fetch(
-				        `/api/coach/members/${memberid}`
+				        `/api/coaches/members/${memberid}`
 				    );
 
 					if (response.status === 401) {
@@ -358,7 +358,7 @@
 
 				    try {
 				        const response = await fetch(
-				            `/api/coach/members/update/${editingMemberId}`,
+				            `/api/coaches/members/update/${editingMemberId}`,
 				            {
 				                method: "PUT",
 				                headers: {

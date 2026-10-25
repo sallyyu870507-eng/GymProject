@@ -52,9 +52,9 @@ public class LoginInterceptor implements HandlerInterceptor {
 		        // API 請求：回傳 401 給 JavaScript讓前端去轉畫面
 				response.setStatus(
 			            HttpServletResponse.SC_UNAUTHORIZED
-			        );  //401
-		        response.setContentType("application/json;charset=UTF-8");
-
+			        );  //前端拿到401
+//		        response.setContentType("application/json;charset=UTF-8");
+//如果要給前端JSON訊息要自己寫
 //		        response.getWriter().write(
 //		            "{\"success\":false,\"message\":\"登入已過期，請重新登入\"}"
 //		        );

@@ -24,7 +24,7 @@ public class Useraccount {
 	
 	private String role;
 
-	private String status = "active" ;
+	private String status;
 
 
 	public Integer getAccountid() {
