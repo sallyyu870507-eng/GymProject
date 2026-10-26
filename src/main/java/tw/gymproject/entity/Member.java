@@ -18,6 +18,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Nationalized;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Entity
 @Table(name = "member", schema = "dbo")
@@ -56,6 +57,7 @@ public class Member {
     private String email;
 
     @Column(name = "birthday", nullable = false)
+	@DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
     @Nationalized
@@ -64,7 +66,7 @@ public class Member {
 
     @Nationalized
     @Column(name = "status", nullable = false, length = 20)
-    private String status = "active";
+    private String status;
 
     @JsonIgnore
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)

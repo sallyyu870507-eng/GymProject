@@ -9,27 +9,31 @@ import tw.gymproject.interceptor.LoginInterceptor;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    private final LoginInterceptor loginInterceptor;
-
-    public WebConfig(LoginInterceptor loginInterceptor) {
-        this.loginInterceptor = loginInterceptor;
-    }
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor)
-                .addPathPatterns(
-                        "/api/admin/**",
-                        "/admin/**",
-                        "/admin",
-                        "/api/coach/**",
-                        "/coach/**",
-                        "/coach",
-                        "/member/**",
-                        "/member",
-                        "/admin.html",
-                        "/coach.html",
-                        "/member.html"
-                );
-    }
+	//把interceptor帶入備用
+	
+	private final LoginInterceptor loginInterceptor;
+	
+	public WebConfig(LoginInterceptor loginInterceptor) {
+	    this.loginInterceptor = loginInterceptor;
+	}
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) { //把網址註冊進來
+		registry.addInterceptor(loginInterceptor)
+        .addPathPatterns(
+        		"/api/admin/**", //admin
+                "/admin/**", //admin
+                "/coach/**", //coach
+                "/coaches/**", //coach
+                "/member/**", //member
+                "/admin.html",
+                "/coach.html",
+                "/member.html",
+                "/api/coach/**",
+                "/api/coaches/**", //admin*
+                "/api/courses/**", //admin*
+                "/api/student/**", //member
+                "/members/**", //member
+                "/booking/**" //member
+        );
+	}
 }

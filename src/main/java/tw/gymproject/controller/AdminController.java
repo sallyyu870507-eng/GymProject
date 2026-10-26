@@ -14,13 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.service.annotation.PutExchange;
 
 import jakarta.validation.Valid;
 import tw.gymproject.dto.MemberUpdateDTO;
 import tw.gymproject.dto.RegisterDTO;
 import tw.gymproject.service.AccountService;
-import tw.gymproject.service.CoachMemberService;
 
 @RestController  //同時包含requestbody回傳JSON格式和controller
 @RequestMapping("/api/admin/members")
@@ -29,11 +27,9 @@ public class AdminController {
 		
 	//引入寫業務邏輯的Service
 	private final  AccountService service;
-	private final CoachMemberService coachService;
 
-	AdminController(AccountService service, CoachMemberService coachService) {
+	AdminController(AccountService service) {
 		this.service = service;
-		this.coachService = coachService;
 	}
 	//新增會員(註冊)
 	@PostMapping
