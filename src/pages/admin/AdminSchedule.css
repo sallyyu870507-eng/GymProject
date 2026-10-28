@@ -1,0 +1,508 @@
+/* =====================================================
+   Admin Schedule
+   Compact Version
+===================================================== */
+
+
+/* =========================
+   整頁
+========================= */
+
+.admin-schedule {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+
+/* =========================
+   標題
+========================= */
+
+.admin-schedule-title {
+  margin: 0 0 24px;
+
+  color: #102A43;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  text-align: left;
+}
+
+
+/* =========================
+   主白卡
+========================= */
+
+.admin-schedule-card {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 26px;
+
+  background-color: #FFFFFF;
+
+  border: 1px solid #D9E2EC;
+
+  border-radius: 16px;
+
+  box-shadow:
+    0 8px 24px
+    rgba(15, 23, 42, 0.05);
+}
+
+
+/* =====================================================
+   日期工具列
+===================================================== */
+
+.admin-schedule-toolbar {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-bottom: 24px;
+}
+
+
+.admin-date-button,
+.admin-today-button {
+  min-height: 44px;
+
+  padding: 0 20px;
+
+  border-radius: 9px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.admin-date-button {
+  background-color: #FFFFFF;
+
+  border:
+    1px solid #9FB3C8;
+
+  color: #102A43;
+}
+
+
+.admin-date-button:hover {
+  background-color: #F0F4F8;
+}
+
+
+.admin-date-box {
+  min-height: 44px;
+
+  padding: 0 22px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: #F0F4F8;
+
+  border:
+    1px solid #BCCCDC;
+
+  border-radius: 9px;
+
+  color: #102A43;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+
+.admin-today-button {
+  background-color: #3E6F9E;
+
+  border:
+    1px solid #3E6F9E;
+
+  color: #FFFFFF;
+}
+
+
+.admin-today-button:hover {
+  background-color: #2F5F8F;
+
+  border-color: #2F5F8F;
+}
+
+
+/* =====================================================
+   課表外框
+===================================================== */
+
+.admin-schedule-table {
+  width: 100%;
+
+  overflow-x: auto;
+
+  background-color: #FFFFFF;
+
+  border:
+    1px solid #D9E2EC;
+
+  border-radius: 14px;
+}
+
+
+/* =====================================================
+   表頭
+===================================================== */
+
+.admin-schedule-header {
+  display: grid;
+
+  min-width: max-content;
+
+  background-color: #F0F4F8;
+
+  border-bottom:
+    1px solid #D9E2EC;
+}
+
+
+.time-header,
+.coach-header {
+  min-height: 52px;
+
+  box-sizing: border-box;
+
+  padding:
+    12px 14px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #102A43;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  border-right:
+    1px solid #D9E2EC;
+}
+
+
+.coach-header:last-child {
+  border-right: none;
+}
+
+
+/* =====================================================
+   每一列
+   重點：縮小高度
+===================================================== */
+
+.admin-schedule-row {
+  display: grid;
+
+  min-width: max-content;
+
+  min-height: 52px;
+
+  border-bottom:
+    1px solid #D9E2EC;
+}
+
+
+.admin-schedule-row:last-child {
+  border-bottom: none;
+}
+
+
+/* =====================================================
+   時間
+===================================================== */
+
+.time-cell {
+  min-height: 52px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: #F8FAFC;
+
+  border-right:
+    1px solid #D9E2EC;
+
+  color: #102A43;
+
+  font-size: 15px;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   課表格子
+===================================================== */
+
+.schedule-cell {
+  min-height: 52px;
+
+  box-sizing: border-box;
+
+  padding: 6px 10px;
+
+  display: flex;
+
+  align-items: center;
+
+  background-color: #FFFFFF;
+
+  border-right:
+    1px solid #D9E2EC;
+}
+
+
+.schedule-cell:last-child {
+  border-right: none;
+}
+
+
+/* =====================================================
+   已預約卡片
+   Compact
+===================================================== */
+
+.admin-booking-card {
+  width: 100%;
+
+  min-height: 42px;
+
+  box-sizing: border-box;
+
+  padding:
+    7px 14px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+  
+    align-items: flex-start;
+
+  gap: 3px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #EAF4FF,
+      #DCEEFF
+    );
+
+  border-left:
+    4px solid #2F80C9;
+
+  border-radius: 7px;
+}
+
+
+/* =========================
+   第一列
+   學員 + 課程
+========================= */
+
+.booking-main-line {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+
+  white-space: nowrap;
+}
+
+
+.booking-member {
+  color: #102A43;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.booking-separator {
+  color: #9FB3C8;
+
+  font-size: 13px;
+}
+
+
+.booking-course-name {
+  overflow: hidden;
+
+  color: #486581;
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+}
+
+
+/* =========================
+   第二列時間
+========================= */
+
+.booking-time-line {
+  display: flex;
+  align-items: center;
+
+  gap: 4px;
+
+  color: #627D98;
+
+  font-size: 12px;
+
+  text-align: left;
+
+  justify-content: flex-start;
+}
+
+
+/* =====================================================
+   空閒
+===================================================== */
+
+.admin-open-card {
+  width: 100%;
+
+  min-height: 42px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: #F0F4F8;
+
+  border-radius: 7px;
+
+  color: #829AB1;
+
+  font-size: 13px;
+}
+
+
+/* =====================================================
+   沒有排班
+===================================================== */
+
+.admin-no-schedule {
+  width: 100%;
+
+  min-height: 42px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #9FB3C8;
+
+  font-size: 15px;
+}
+
+
+/* =====================================================
+   狀態訊息
+===================================================== */
+
+.admin-message {
+  padding:
+    50px 20px;
+
+  color: #627D98;
+
+  text-align: center;
+}
+
+
+.admin-message.error {
+  color: #DC2626;
+}
+
+
+/* =====================================================
+   Scrollbar
+===================================================== */
+
+.admin-schedule-table::-webkit-scrollbar {
+  height: 7px;
+}
+
+
+.admin-schedule-table::-webkit-scrollbar-track {
+  background-color: #F0F4F8;
+}
+
+
+.admin-schedule-table::-webkit-scrollbar-thumb {
+  background-color: #9FB3C8;
+
+  border-radius: 999px;
+}
+
+
+/* =====================================================
+   RWD
+===================================================== */
+
+@media (max-width: 900px) {
+
+  .admin-schedule-card {
+    padding: 20px;
+  }
+
+
+  .admin-schedule-toolbar {
+    flex-wrap: wrap;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .admin-schedule-title {
+    font-size: 24px;
+  }
+
+
+  .admin-schedule-card {
+    padding: 14px;
+  }
+
+
+  .admin-schedule-toolbar {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+
+  .admin-date-button,
+  .admin-date-box,
+  .admin-today-button {
+    width: 100%;
+  }
+
+}

@@ -1,397 +1,628 @@
 import { useEffect, useState } from 'react'
 
+import './CoachDashboard.css'
+
+
 function CoachDashboard() {
 
-  const [dashboard, setDashboard] = useState(null)
+  const [selectedDate, setSelectedDate] =
+    useState(
+      new Date()
+        .toLocaleDateString('en-CA')
+    )
 
-  const [schedules, setSchedules] = useState([])
+  const [dashboard, setDashboard] =
+    useState({
+      todayCourseCount: 0,
+      todayStudentCount: 0
+    })
 
-  const [error, setError] = useState('')
+  const [schedules, setSchedules] =
+    useState([])
 
+  const [loading, setLoading] =
+    useState(true)
+
+  const [error, setError] =
+    useState('')
+
+
+  // =========================
+  // 取得教練 Dashboard
+  // =========================
 
   useEffect(() => {
 
-    const today =
-      new Date().toLocaleDateString('en-CA')
+    const loadDashboard =
+      fetch(
+        `http://localhost:8080/coaches/dashboard?date=${selectedDate}`,
+        {
+          method: 'GET',
+          credentials: 'include'
+        }
+      )
+        .then(response => {
+
+          if (!response.ok) {
+            throw new Error(
+              '取得統計資料失敗'
+            )
+          }
+
+          return response.json()
+        })
 
 
-    /* ================================
-       第一支 API：教練首頁統計
-    ================================= */
+    const loadSchedules =
+      fetch(
+        `http://localhost:8080/coaches/schedules?date=${selectedDate}`,
+        {
+          method: 'GET',
+          credentials: 'include'
+        }
+      )
+        .then(response => {
 
-    fetch(
-      `http://localhost:8080/coaches/dashboard?date=${today}`,
-      {
-        method: 'GET',
-        credentials: 'include'
-      }
-    )
+          if (!response.ok) {
+            throw new Error(
+              '取得課表失敗'
+            )
+          }
 
-      .then(async response => {
+          return response.json()
+        })
 
-        if (!response.ok) {
 
-          const message =
-            await response.text()
+    setLoading(true)
+    setError('')
 
-          throw new Error(message)
+
+    Promise.all([
+      loadDashboard,
+      loadSchedules
+    ])
+      .then(
+        ([
+          dashboardData,
+          scheduleData
+        ]) => {
+
+          setDashboard(
+            dashboardData
+          )
+
+          setSchedules(
+            scheduleData
+          )
 
         }
-
-        return response.json()
-
-      })
-
-      .then(data => {
-
-        console.log('教練首頁統計:', data)
-
-        setDashboard(data)
-
-      })
-
+      )
       .catch(error => {
 
         console.error(
-          '取得教練首頁統計失敗:',
+          '取得教練資料失敗：',
           error
         )
 
         setError(
-          '沒有教練權限，請先登入教練帳號'
+          '無法取得教練課表資料'
         )
 
       })
+      .finally(() => {
+
+        setLoading(false)
+
+      })
+
+  }, [selectedDate])
 
 
+  // =========================
+  // 今日學員
+  // 依照課表整理
+  // =========================
 
-    /* ================================
-       第二支 API：今日已預約課表
-    ================================= */
+  const studentRows =
+    schedules.map(
+      (schedule, index) => ({
+        index:
+          index + 1,
 
-    fetch(
-      `http://localhost:8080/coaches/schedules?date=${today}`,
-      {
-        method: 'GET',
-        credentials: 'include'
-      }
+        studentname:
+          schedule.studentname,
+
+        coursename:
+          schedule.coursename,
+
+        starttime:
+          schedule.starttime,
+
+        endtime:
+          schedule.endtime,
+
+        scheduleid:
+          schedule.scheduleid
+      })
     )
 
-      .then(async response => {
-
-        if (!response.ok) {
-
-          const message =
-            await response.text()
-
-          throw new Error(message)
-
-        }
-
-        return response.json()
-
-      })
-
-      .then(data => {
-
-        console.log(
-          '今日課表:',
-          data
-        )
-
-        setSchedules(data)
-
-      })
-
-      .catch(error => {
-
-        console.error(
-          '取得今日課表失敗:',
-          error
-        )
-
-      })
-
-
-  }, [])
-
-
-
-  /* ================================
-     沒有教練權限
-  ================================= */
-
-  if (error) {
-
-    return (
-      <div className="coach-dashboard">
-
-        <h2>
-          無法進入教練頁面
-        </h2>
-
-        <p>
-          {error}
-        </p>
-
-      </div>
-    )
-
-  }
-
-
-
-  /* ================================
-     正常教練頁面
-  ================================= */
 
   return (
+
     <div className="coach-dashboard">
 
 
-      {/* 頁面標題 */}
+      {/* =========================
+          頁面標題
+      ========================= */}
 
-      <h2>
-        今日教學課表
+      <h2 className="coach-dashboard-title">
+
+        我的課表
+
       </h2>
 
 
-
       {/* =========================
-          上方統計卡片
-      ========================== */}
+          白色主卡片
+      ========================= */}
 
-      <div className="dashboard-cards">
-
-
-        <div className="dashboard-card">
-
-          <p>
-            今日課程數
-          </p>
-
-          <h3>
-            {
-              dashboard
-                ? dashboard.todayCourseCount
-                : 0
-            }
-          </h3>
-
-        </div>
-
-
-        <div className="dashboard-card">
-
-          <p>
-            今日學員數
-          </p>
-
-          <h3>
-            {
-              dashboard
-                ? dashboard.todayStudentCount
-                : 0
-            }
-          </h3>
-
-        </div>
-
-
-      </div>
-
-
-
-      {/* =========================
-          下方雙欄區域
-      ========================== */}
-
-      <div className="coach-content-grid">
+      <div className="coach-dashboard-card">
 
 
         {/* =========================
-            左邊：今日課表
-        ========================== */}
+            日期查詢
+        ========================= */}
 
-        <div className="schedule-section">
+        <div className="coach-date-row">
 
-          <h3>
-            今日課表
-          </h3>
+          <label htmlFor="coach-date">
 
+            查詢日期
 
-          <div className="schedule-list">
-
-            {
-              schedules.length === 0
-                ? (
-                  <p>
-                    今天沒有已預約課程
-                  </p>
-                )
-                : (
-                  schedules.map(schedule => (
-
-                    <div
-                      className="schedule-card"
-                      key={schedule.scheduleid}
-                    >
-
-                      <div className="schedule-time">
-
-                        <strong>
-                          {
-                            schedule.starttime.substring(
-                              0,
-                              5
-                            )
-                          }
-                        </strong>
-
-                        <span>
-                          -
-                        </span>
-
-                        <strong>
-                          {
-                            schedule.endtime.substring(
-                              0,
-                              5
-                            )
-                          }
-                        </strong>
-
-                      </div>
+          </label>
 
 
-                      <div className="schedule-info">
+          <input
+            id="coach-date"
 
-                        <h4>
-                          {schedule.coursename}
-                        </h4>
+            type="date"
 
-                        <p>
-                          學員：
-                          {schedule.studentname}
-                        </p>
-
-                      </div>
-
-                    </div>
-
-                  ))
-                )
+            value={
+              selectedDate
             }
+
+            onChange={event =>
+              setSelectedDate(
+                event.target.value
+              )
+            }
+          />
+
+        </div>
+
+
+        {/* Loading */}
+
+        {loading && (
+
+          <div className="coach-message">
+
+            載入中...
 
           </div>
 
-        </div>
+        )}
 
 
+        {/* Error */}
 
-        {/* =========================
-            右邊：今日學員
-        ========================== */}
+        {error && (
 
-        <div className="student-section">
+          <div className="coach-message error">
 
-          <h3>
-            今日學員
-          </h3>
+            {error}
 
+          </div>
 
-          <table className="student-table">
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  學員
-                </th>
-
-                <th>
-                  時間
-                </th>
-
-                <th>
-                  課程
-                </th>
-
-              </tr>
-
-            </thead>
+        )}
 
 
-            <tbody>
+        {!loading && !error && (
 
-              {
-                schedules.map(schedule => (
-
-                  <tr
-                    key={schedule.scheduleid}
-                  >
-
-                    <td>
-                      {schedule.studentname}
-                    </td>
+          <>
 
 
-                    <td>
+            {/* =========================
+                上方統計卡片
+            ========================= */}
 
+            <div className="dashboard-cards">
+
+
+              {/* 今日課程數 */}
+
+              <div className="dashboard-card course-count-card">
+
+                <div className="dashboard-icon orange-icon">
+
+                  📅
+
+                </div>
+
+
+                <div className="dashboard-card-content">
+
+                  <p>
+                    今日課程數
+                  </p>
+
+                  <div className="dashboard-number-row">
+
+                    <strong>
                       {
-                        schedule.starttime.substring(
-                          0,
-                          5
-                        )
+                        dashboard.todayCourseCount
+                        ?? 0
                       }
+                    </strong>
 
-                      {' - '}
+                    <span>
+                      堂
+                    </span>
 
+                  </div>
+
+                </div>
+
+
+                <div className="dashboard-watermark">
+
+                  📅
+
+                </div>
+
+              </div>
+
+
+              {/* 今日學生數 */}
+
+              <div className="dashboard-card student-count-card">
+
+                <div className="dashboard-icon blue-icon">
+
+                  👥
+
+                </div>
+
+
+                <div className="dashboard-card-content">
+
+                  <p>
+                    今日學生數
+                  </p>
+
+                  <div className="dashboard-number-row">
+
+                    <strong>
                       {
-                        schedule.endtime.substring(
-                          0,
-                          5
-                        )
+                        dashboard.todayStudentCount
+                        ?? 0
                       }
+                    </strong>
 
-                    </td>
+                    <span>
+                      位
+                    </span>
 
+                  </div>
 
-                    <td>
-                      {schedule.coursename}
-                    </td>
-
-                  </tr>
-
-                ))
-              }
-
-            </tbody>
-
-          </table>
+                </div>
 
 
-          {
-            schedules.length === 0 && (
+                <div className="dashboard-watermark">
 
-              <p>
-                今天沒有學員
-              </p>
+                  👥
 
-            )
-          }
+                </div>
+
+              </div>
+
+            </div>
 
 
-        </div>
+            {/* =========================
+                下方雙欄
+            ========================= */}
 
+            <div className="coach-content-grid">
+
+
+              {/* =========================
+                  今日課表
+              ========================= */}
+
+              <section className="schedule-section">
+
+
+                <div className="section-header">
+
+                  <span className="section-icon">
+
+                    📅
+
+                  </span>
+
+                  <h3>
+
+                    今日課表
+
+                  </h3>
+
+                </div>
+
+
+                {schedules.length === 0 ? (
+
+                  <div className="empty-coach-data">
+
+                    今日尚無預約課程
+
+                  </div>
+
+                ) : (
+
+                  <div className="schedule-list">
+
+
+                    {schedules.map(
+                      schedule => (
+
+                        <div
+                          className="schedule-card"
+
+                          key={
+                            schedule.scheduleid
+                          }
+                        >
+
+
+                          <div className="schedule-left">
+
+
+                            <div className="schedule-time">
+
+                              {
+                                schedule.starttime
+                                  ?.slice(0, 5)
+                              }
+
+                              {' - '}
+
+                              {
+                                schedule.endtime
+                                  ?.slice(0, 5)
+                              }
+
+                            </div>
+
+
+                            <span className="schedule-status">
+
+                              已預約
+
+                            </span>
+
+                          </div>
+
+
+                          <div className="schedule-divider" />
+
+
+                          <div className="schedule-info">
+
+                            <h4>
+
+                              {
+                                schedule.coursename
+                              }
+
+                            </h4>
+
+
+                            <p>
+
+                              <span>
+                                👤
+                              </span>
+
+                              學員：
+
+                              {
+                                schedule.studentname
+                              }
+
+                            </p>
+
+                          </div>
+
+
+                          <div className="schedule-arrow">
+
+                            ›
+
+                          </div>
+
+                        </div>
+
+                      )
+                    )}
+
+                  </div>
+
+                )}
+
+              </section>
+
+
+              {/* =========================
+                  今日學員
+              ========================= */}
+
+              <section className="student-section">
+
+
+                <div className="section-header">
+
+                  <span className="section-icon">
+
+                    👥
+
+                  </span>
+
+                  <h3>
+
+                    今日學員
+
+                  </h3>
+
+                </div>
+
+
+                {studentRows.length === 0 ? (
+
+                  <div className="empty-coach-data">
+
+                    今日尚無學員
+
+                  </div>
+
+                ) : (
+
+                  <div className="student-table-wrapper">
+
+                    <table className="student-table">
+
+
+                      <thead>
+
+                        <tr>
+
+                          <th className="student-number-column">
+                            #
+                          </th>
+
+                          <th>
+                            學員姓名
+                          </th>
+
+                          <th>
+                            課程名稱
+                          </th>
+
+                          <th>
+                            上課時段
+                          </th>
+
+                        </tr>
+
+                      </thead>
+
+
+                      <tbody>
+
+                        {studentRows.map(
+                          student => (
+
+                            <tr
+                              key={
+                                student.scheduleid
+                              }
+                            >
+
+
+                              <td className="student-number">
+
+                                {
+                                  student.index
+                                }
+
+                              </td>
+
+
+                              <td>
+
+                                <div className="student-name-cell">
+
+                                  <div className="student-avatar">
+
+                                    👤
+
+                                  </div>
+
+                                  <strong>
+
+                                    {
+                                      student.studentname
+                                    }
+
+                                  </strong>
+
+                                </div>
+
+                              </td>
+
+
+                              <td>
+
+                                {
+                                  student.coursename
+                                }
+
+                              </td>
+
+
+                              <td>
+
+                                {
+                                  student.starttime
+                                    ?.slice(0, 5)
+                                }
+
+                                {' - '}
+
+                                {
+                                  student.endtime
+                                    ?.slice(0, 5)
+                                }
+
+                              </td>
+
+                            </tr>
+
+                          )
+                        )}
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+                )}
+
+              </section>
+
+            </div>
+
+          </>
+
+        )}
 
       </div>
 
-
     </div>
   )
-
 }
+
 
 export default CoachDashboard

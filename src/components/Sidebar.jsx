@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 
 import logo from '../assets/logo.png'
+
 import './Sidebar.css'
 
 
@@ -37,9 +38,13 @@ const menuByRole = {
 
 
 function Sidebar({
+
   role = 'member',
+
   activeItem = 'home',
+
   onNavigate
+
 }) {
 
   // =========================
@@ -57,11 +62,12 @@ function Sidebar({
 
 
   // =========================
-  // Sidebar 要顯示哪個角色選單
+  // 現在的角色
   // =========================
 
   const currentRole =
     loginRole || role
+
 
   const menuItems =
     menuByRole[currentRole]
@@ -70,7 +76,6 @@ function Sidebar({
 
   // =========================
   // 取得目前登入者
-  // GET /api/user
   // =========================
 
   useEffect(() => {
@@ -79,7 +84,6 @@ function Sidebar({
       'http://localhost:8080/api/user',
       {
         method: 'GET',
-
         credentials: 'include'
       }
     )
@@ -106,13 +110,11 @@ function Sidebar({
         )
 
 
-        // 取得登入者姓名
         setUserName(
           data.name || ''
         )
 
 
-        // 取得真正登入角色
         if (data.role) {
 
           setLoginRole(
@@ -136,30 +138,32 @@ function Sidebar({
 
 
   // =========================
-  // 點選 Sidebar Menu
+  // Sidebar 點擊
   // =========================
 
-  const handleClick = itemKey => {
+  const handleClick =
+    itemKey => {
 
-    if (onNavigate) {
+      if (onNavigate) {
 
-      onNavigate(
-        itemKey
-      )
+        onNavigate(
+          itemKey
+        )
+
+      }
 
     }
 
-  }
-
 
   // =========================
-  // 顯示歡迎文字
+  // 歡迎文字
   // =========================
 
   const getWelcomeText = () => {
 
-    // 會員
-    if (currentRole === 'member') {
+    if (
+      currentRole === 'member'
+    ) {
 
       if (userName) {
 
@@ -172,8 +176,9 @@ function Sidebar({
     }
 
 
-    // 教練
-    if (currentRole === 'coach') {
+    if (
+      currentRole === 'coach'
+    ) {
 
       if (userName) {
 
@@ -186,8 +191,9 @@ function Sidebar({
     }
 
 
-    // 管理員
-    if (currentRole === 'admin') {
+    if (
+      currentRole === 'admin'
+    ) {
 
       return '你好，管理員'
 
@@ -201,82 +207,73 @@ function Sidebar({
 
   // =========================
   // 登出
-  // POST /logout
   // =========================
 
-  const handleLogout = async () => {
+  const handleLogout =
+    async () => {
 
-    // 防止連續點擊
-    if (isLoggingOut) {
-
-      return
-
-    }
-
-
-    try {
-
-      setIsLoggingOut(true)
-
-
-      const response =
-        await fetch(
-          'http://localhost:8080/logout',
-          {
-            method: 'POST',
-
-            credentials: 'include'
-          }
-        )
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          '登出失敗'
-        )
-
+      if (isLoggingOut) {
+        return
       }
 
 
-      // =====================
-      // 登出成功
-      // 回登入頁面
-      // =====================
+      try {
 
-      window.location.href =
-        'http://localhost:8080/login'
+        setIsLoggingOut(true)
 
 
-    } catch (error) {
-
-      console.error(
-        '登出失敗：',
-        error
-      )
-
-
-      alert(
-        '登出失敗，請稍後再試'
-      )
+        const response =
+          await fetch(
+            'http://localhost:8080/logout',
+            {
+              method: 'POST',
+              credentials: 'include'
+            }
+          )
 
 
-    } finally {
+        if (!response.ok) {
 
-      setIsLoggingOut(false)
+          throw new Error(
+            '登出失敗'
+          )
+
+        }
+
+
+        window.location.href =
+          'http://localhost:8080/login'
+
+
+      } catch (error) {
+
+        console.error(
+          '登出失敗：',
+          error
+        )
+
+
+        alert(
+          '登出失敗，請稍後再試'
+        )
+
+
+      } finally {
+
+        setIsLoggingOut(false)
+
+      }
 
     }
 
-  }
-
-
-  // =========================
-  // 畫面
-  // =========================
 
   return (
 
-    <aside className="sidebar">
+    <aside
+      className={
+        `sidebar sidebar-${currentRole}`
+      }
+    >
 
 
       {/* =========================
@@ -290,16 +287,19 @@ function Sidebar({
           alt="Power Gym Logo"
           className="logo"
         />
-		
-		<div className="brand-name">
-		  力量健身
-		</div>
+
+
+        <div className="brand-name">
+
+          力量健身
+
+        </div>
 
       </div>
 
 
       {/* =========================
-          登入者資訊
+          登入者
       ========================= */}
 
       <div className="role-area">
@@ -314,49 +314,52 @@ function Sidebar({
 
 
       {/* =========================
-          Sidebar Menu
+          Menu
       ========================= */}
 
       <nav className="menu">
 
-        {menuItems.map(item => (
+        {menuItems.map(
+          item => (
 
-          <button
+            <button
 
-            key={item.key}
-
-            className={
-              activeItem === item.key
-
-                ? 'menu-item active'
-
-                : 'menu-item'
-            }
-
-            onClick={() =>
-              handleClick(
+              key={
                 item.key
-              )
-            }
-          >
+              }
 
-            {item.label}
+              className={
+                activeItem ===
+                item.key
 
-          </button>
+                  ? 'menu-item active'
 
-        ))}
+                  : 'menu-item'
+              }
+
+              onClick={() =>
+                handleClick(
+                  item.key
+                )
+              }
+            >
+
+              {item.label}
+
+            </button>
+
+          )
+        )}
 
       </nav>
 
 
       {/* =========================
-          Sidebar 底部
+          Bottom
       ========================= */}
 
       <div className="sidebar-bottom">
 
-
-        {/* 登出 */}
 
         <button
 
@@ -380,8 +383,6 @@ function Sidebar({
         </button>
 
 
-        {/* Footer */}
-
         <div className="sidebar-footer">
 
           <p>
@@ -389,16 +390,12 @@ function Sidebar({
           </p>
 
           <span>
-
             持續運動，讓改變成為日常
-
           </span>
 
         </div>
 
-
       </div>
-
 
     </aside>
 

@@ -1,167 +1,31 @@
 import { useEffect, useState } from 'react'
 
+import './AdminSchedule.css'
+
+
 function AdminSchedule() {
 
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toLocaleDateString('en-CA')
-  )
-
-  const [schedules, setSchedules] = useState([])
-
-  const [coaches, setCoaches] = useState([])
-
-  const [error, setError] = useState('')
-
-
-  useEffect(() => {
-
-    setError('')
-
-
-    /* ================================
-       第一支 API：取得全部教練
-    ================================= */
-
-    fetch(
-      'http://localhost:8080/admin/schedules/coaches',
-      {
-        method: 'GET',
-        credentials: 'include'
-      }
+  const [selectedDate, setSelectedDate] =
+    useState(
+      new Date()
+        .toLocaleDateString('en-CA')
     )
 
-      .then(async response => {
+  const [schedules, setSchedules] =
+    useState([])
 
-        if (!response.ok) {
+  const [loading, setLoading] =
+    useState(true)
 
-          const message =
-            await response.text()
-
-          throw new Error(message)
-
-        }
-
-        return response.json()
-
-      })
-
-      .then(data => {
-
-        console.log(
-          '全部教練:',
-          data
-        )
-
-        setCoaches(data)
-
-      })
-
-      .catch(error => {
-
-        console.error(
-          '取得教練清單失敗:',
-          error
-        )
-
-        setError(error.message)
-
-      })
+  const [error, setError] =
+    useState('')
 
 
+  // =========================
+  // 固定連續時間軸
+  // =========================
 
-    /* ================================
-       第二支 API：指定日期全館課表
-    ================================= */
-
-    fetch(
-      `http://localhost:8080/admin/schedules/day?date=${selectedDate}`,
-      {
-        method: 'GET',
-        credentials: 'include'
-      }
-    )
-
-      .then(async response => {
-
-        if (!response.ok) {
-
-          const message =
-            await response.text()
-
-          throw new Error(message)
-
-        }
-
-        return response.json()
-
-      })
-
-      .then(data => {
-
-        console.log(
-          '管理員全館課表:',
-          data
-        )
-
-        setSchedules(data)
-
-      })
-
-      .catch(error => {
-
-        console.error(
-          '取得管理員課表失敗:',
-          error
-        )
-
-        setError(error.message)
-
-      })
-
-  }, [selectedDate])
-
-
-
-  /* ================================
-     日期切換
-  ================================= */
-
-  function changeDate(days) {
-
-    const date =
-      new Date(`${selectedDate}T00:00:00`)
-
-    date.setDate(
-      date.getDate() + days
-    )
-
-    setSelectedDate(
-      date.toLocaleDateString('en-CA')
-    )
-
-  }
-
-
-
-  /* ================================
-     回到今天
-  ================================= */
-
-  function goToday() {
-
-    setSelectedDate(
-      new Date().toLocaleDateString('en-CA')
-    )
-
-  }
-
-
-
-  /* ================================
-     固定顯示的時段
-  ================================= */
-
-  const timeSlots = [
+  const times = [
     '09:00',
     '10:00',
     '11:00',
@@ -172,282 +36,557 @@ function AdminSchedule() {
     '16:00',
     '17:00',
     '18:00',
-    '19:00'
+    '19:00',
+    '20:00',
+    '21:00'
   ]
 
 
+  // =========================
+  // 取得指定日期全館課表
+  // =========================
 
-  /* ================================
-     錯誤畫面
-  ================================= */
+  const loadSchedules =
+    async date => {
 
-  if (error) {
+      try {
 
-    return (
-      <div className="admin-schedule">
+        setLoading(true)
+        setError('')
 
-        <h2>
-          無法取得管理員課表
-        </h2>
 
-        <p>
-          {error}
-        </p>
+        const response =
+          await fetch(
+            `http://localhost:8080/admin/schedules/day?date=${date}`,
+            {
+              method: 'GET',
+              credentials: 'include'
+            }
+          )
 
-      </div>
+
+        if (!response.ok) {
+
+          throw new Error(
+            '取得全館課表失敗'
+          )
+
+        }
+
+
+        const data =
+          await response.json()
+
+
+        console.log(
+          '管理員課表：',
+          data
+        )
+
+
+        setSchedules(data)
+
+
+      } catch (error) {
+
+        console.error(
+          '取得管理員課表失敗：',
+          error
+        )
+
+
+        setError(
+          '無法取得全館教練排課表'
+        )
+
+
+      } finally {
+
+        setLoading(false)
+
+      }
+
+    }
+
+
+  // =========================
+  // 日期變動重新查詢
+  // =========================
+
+  useEffect(() => {
+
+    loadSchedules(
+      selectedDate
+    )
+
+  }, [selectedDate])
+
+
+  // =========================
+  // 前一天 / 後一天
+  // =========================
+
+  const changeDate =
+    days => {
+
+      const currentDate =
+        new Date(
+          `${selectedDate}T00:00:00`
+        )
+
+
+      currentDate.setDate(
+        currentDate.getDate() + days
+      )
+
+
+      setSelectedDate(
+        currentDate
+          .toLocaleDateString(
+            'en-CA'
+          )
+      )
+
+    }
+
+
+  // =========================
+  // 今天
+  // =========================
+
+  const goToday = () => {
+
+    setSelectedDate(
+      new Date()
+        .toLocaleDateString(
+          'en-CA'
+        )
     )
 
   }
 
 
+  // =========================
+  // 教練清單
+  // =========================
 
-  /* ================================
-     正常畫面
-  ================================= */
+  const coaches =
+    [
+      ...new Map(
+        schedules.map(
+          schedule => [
+
+            schedule.coachid,
+
+            {
+              coachid:
+                schedule.coachid,
+
+              coachname:
+                schedule.coachname
+            }
+
+          ]
+        )
+      ).values()
+    ]
+
+
+  // =========================
+  // 找指定時段 + 指定教練
+  // =========================
+
+  const findSchedule =
+    (
+      time,
+      coachid
+    ) => {
+
+      return schedules.find(
+        schedule =>
+
+          schedule.starttime
+            ?.slice(0, 5)
+          === time
+
+          &&
+
+          schedule.coachid
+          === coachid
+      )
+
+    }
+
 
   return (
+
     <div className="admin-schedule">
 
 
-      {/* 頁面標題 */}
+      {/* =========================
+          頁面標題
+      ========================= */}
 
-      <h2>
+      <h2 className="admin-schedule-title">
+
         全館教練排課表
+
       </h2>
 
 
-
       {/* =========================
-          日期切換工具列
-      ========================== */}
+          主卡片
+      ========================= */}
 
-      <div className="admin-schedule-toolbar">
-
-
-        <button
-          onClick={() => changeDate(-1)}
-        >
-          ← 前一天
-        </button>
-
-
-        <div className="admin-date-box">
-
-          {selectedDate}
-
-        </div>
-
-
-        <button
-          onClick={() => changeDate(1)}
-        >
-          後一天 →
-        </button>
-
-
-        <button
-          onClick={goToday}
-        >
-          今天
-        </button>
-
-
-      </div>
-
-
-
-      {/* =========================
-          全館教練課表
-      ========================== */}
-
-      <div className="admin-schedule-table">
+      <div className="admin-schedule-card">
 
 
         {/* =========================
-            表頭
-        ========================== */}
+            日期工具列
+        ========================= */}
 
-        <div
-          className="admin-schedule-header"
-          style={{
-            gridTemplateColumns:
-              `110px repeat(${coaches.length}, minmax(180px, 1fr))`
-          }}
-        >
+        <div className="admin-schedule-toolbar">
 
 
-          <div className="time-header">
-            時間
+          <button
+            className="admin-date-button"
+
+            onClick={() =>
+              changeDate(-1)
+            }
+          >
+
+            ← 前一天
+
+          </button>
+
+
+          <div className="admin-date-box">
+
+            {selectedDate}
+
           </div>
 
 
-          {
-            coaches.map(coach => (
+          <button
+            className="admin-date-button"
 
-              <div
-                className="coach-header"
-                key={coach.coachid}
-              >
+            onClick={() =>
+              changeDate(1)
+            }
+          >
 
-                {coach.coachname}
+            後一天 →
 
-              </div>
+          </button>
 
-            ))
-          }
 
+          <button
+            className="admin-today-button"
+
+            onClick={
+              goToday
+            }
+          >
+
+            今天
+
+          </button>
 
         </div>
 
 
+        {/* =========================
+            Loading
+        ========================= */}
+
+        {loading && (
+
+          <div className="admin-message">
+
+            載入中...
+
+          </div>
+
+        )}
+
 
         {/* =========================
-            每一個時間列
-        ========================== */}
+            Error
+        ========================= */}
+
+        {error && (
+
+          <div className="admin-message error">
+
+            {error}
+
+          </div>
+
+        )}
+
+
+        {/* =========================
+            無資料
+        ========================= */}
 
         {
-          timeSlots.map(time => (
+          !loading
+          &&
+          !error
+          &&
+          schedules.length === 0
+          && (
 
-            <div
-              className="admin-schedule-row"
-              key={time}
-              style={{
-                gridTemplateColumns:
-                  `110px repeat(${coaches.length}, minmax(180px, 1fr))`
-              }}
-            >
+            <div className="admin-message">
+
+              此日期沒有排課資料
+
+            </div>
+
+          )
+        }
 
 
-              {/* 左邊時間 */}
+        {/* =========================
+            課表
+        ========================= */}
 
-              <div className="time-cell">
+        {
+          !loading
+          &&
+          !error
+          &&
+          schedules.length > 0
+          && (
 
-                {time}
+            <div className="admin-schedule-table">
+
+
+              {/* 表頭 */}
+
+              <div
+                className="admin-schedule-header"
+
+                style={{
+                  gridTemplateColumns:
+                    `110px repeat(${coaches.length}, minmax(220px, 1fr))`
+                }}
+              >
+
+
+                <div className="time-header">
+
+                  時間
+
+                </div>
+
+
+                {
+                  coaches.map(
+                    coach => (
+
+                      <div
+                        className="coach-header"
+
+                        key={
+                          coach.coachid
+                        }
+                      >
+
+                        {
+                          coach.coachname
+                        }
+
+                      </div>
+
+                    )
+                  )
+                }
 
               </div>
 
 
-
-              {/* 每位教練 */}
+              {/* =========================
+                  每個固定時段
+              ========================= */}
 
               {
-                coaches.map(coach => {
-
-
-                  const schedule =
-                    schedules.find(item =>
-
-                      item.coachid === coach.coachid
-
-                      &&
-
-                      item.starttime.substring(0, 5)
-                        === time
-
-                    )
-
-
-                  return (
+                times.map(
+                  time => (
 
                     <div
-                      className="schedule-cell"
+                      className="admin-schedule-row"
+
                       key={
-                        `${coach.coachid}-${time}`
+                        time
                       }
+
+                      style={{
+                        gridTemplateColumns:
+                          `110px repeat(${coaches.length}, minmax(220px, 1fr))`
+                      }}
                     >
 
 
+                      {/* 時間 */}
+
+                      <div className="time-cell">
+
+                        {time}
+
+                      </div>
+
+
+                      {/* 每位教練 */}
+
                       {
-                        schedule
-                          ? (
+                        coaches.map(
+                          coach => {
 
-                            <div
-                              className={
-                                schedule.status === 'booked'
-                                  ? 'admin-booking-card booked'
-                                  : schedule.status === 'available'
-                                    ? 'admin-booking-card available'
-                                    : 'admin-booking-card unavailable'
-                              }
-                            >
+                            const schedule =
+                              findSchedule(
+                                time,
+                                coach.coachid
+                              )
 
 
-                              <strong>
+                            return (
 
-                                {
-                                  schedule.membername
-                                    ? schedule.membername
-                                    : '尚未預約'
+                              <div
+                                className="schedule-cell"
+
+                                key={
+                                  `${time}-${coach.coachid}`
                                 }
+                              >
 
-                              </strong>
-
-
-                              <span>
 
                                 {
-                                  schedule.coursename
-                                    ? schedule.coursename
-                                    : '可預約時段'
-                                }
+                                  schedule
+                                  ? (
 
-                              </span>
+                                    schedule.membername
+                                    ? (
+
+                                      // =========================
+                                      // 已預約
+                                      // =========================
+
+                                      <div className="admin-booking-card">
 
 
-                              <small>
+                                        {/* 第一列 */}
 
-                                {
-                                  schedule.starttime.substring(
-                                    0,
-                                    5
+                                        <div className="booking-main-line">
+
+                                          <strong className="booking-member">
+
+                                            👤
+
+                                            {
+                                              schedule.membername
+                                            }
+
+                                          </strong>
+
+
+                                          <span className="booking-separator">
+
+                                            |
+
+                                          </span>
+
+
+                                          <span className="booking-course-name">
+
+                                            {
+                                              schedule.coursename
+                                            }
+
+                                          </span>
+
+                                        </div>
+
+
+                                        {/* 第二列 */}
+
+                                        <div className="booking-time-line">
+
+                                          🕒
+
+                                          {
+                                            schedule.starttime
+                                              ?.slice(0, 5)
+                                          }
+
+                                          {' - '}
+
+                                          {
+                                            schedule.endtime
+                                              ?.slice(0, 5)
+                                          }
+
+                                        </div>
+
+                                      </div>
+
+                                    )
+                                    : (
+
+                                      // =========================
+                                      // 有開放時段但尚未預約
+                                      // =========================
+
+                                      <div className="admin-open-card">
+
+                                        🕒 空閒
+
+                                      </div>
+
+                                    )
+
+                                  )
+                                  : (
+
+                                    // =========================
+                                    // 沒有建立這個時段
+                                    // =========================
+
+                                    <div className="admin-no-schedule">
+
+                                      —
+
+                                    </div>
+
                                   )
                                 }
 
-                                {' - '}
+                              </div>
 
-                                {
-                                  schedule.endtime.substring(
-                                    0,
-                                    5
-                                  )
-                                }
+                            )
 
-                              </small>
-
-
-                            </div>
-
-                          )
-
-                          : (
-
-                            <div className="empty-slot">
-                            </div>
-
-                          )
+                          }
+                        )
                       }
-
 
                     </div>
 
                   )
-
-                })
+                )
               }
-
 
             </div>
 
-          ))
+          )
         }
 
-
       </div>
-
 
     </div>
   )
 
 }
+
 
 export default AdminSchedule
