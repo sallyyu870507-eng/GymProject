@@ -1,0 +1,1202 @@
+/* Scoped during integration; original selectors retained. */
+@scope (.booking-course-feature) {
+/* =====================================================
+   Booking Course
+===================================================== */
+
+
+/* =====================================================
+   整個頁面
+===================================================== */
+
+.booking-course-page {
+  width: 100%;
+
+  box-sizing: border-box;
+}
+
+
+/* =====================================================
+   卡片外標題
+===================================================== */
+
+.booking-course-title {
+  margin:
+    0 0 24px;
+
+  color: #18202B;
+
+  font-size: 28px;
+  font-weight: 700;
+
+  text-align: left;
+}
+
+
+/* =====================================================
+   白色大卡片
+===================================================== */
+
+.booking-page {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding:
+    36px 40px;
+
+  background-color: #FFFFFF;
+
+  border:
+    1px solid #D5DAE0;
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 6px 20px
+    rgba(15, 23, 42, 0.05);
+}
+
+
+/* =====================================================
+   最上方說明
+===================================================== */
+
+.booking-header {
+  width: 100%;
+
+  text-align: center;
+}
+
+
+.booking-header p {
+  margin: 0;
+
+  color: #64748B;
+
+  font-size: 16px;
+
+  line-height: 1.7;
+}
+
+
+/* =====================================================
+   步驟列
+===================================================== */
+
+.booking-steps {
+  width: 70%;
+
+  max-width: 920px;
+
+  margin:
+    34px auto
+    42px;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  justify-content: center;
+}
+
+
+.step-group {
+  flex: 1;
+
+  display: flex;
+
+  align-items: flex-start;
+}
+
+
+.step-group:last-child {
+  flex: 0 0 auto;
+}
+
+
+.step {
+  min-width: 100px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+
+  color: #64748B;
+
+  text-align: center;
+}
+
+
+.step-number {
+  width: 44px;
+  height: 44px;
+
+  box-sizing: border-box;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: #FFFFFF;
+
+  border:
+    2px solid #CBD5E1;
+
+  border-radius: 50%;
+
+  color: #64748B;
+
+  font-size: 17px;
+  font-weight: 700;
+}
+
+
+.step span {
+  margin-top: 10px;
+
+  color: #475569;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+.step.active .step-number {
+  background-color: #FF651E;
+
+  border-color: #FF651E;
+
+  color: #FFFFFF;
+}
+
+
+.step.active span {
+  color: #FF651E;
+}
+
+
+.step-line {
+  flex: 1;
+
+  min-width: 75px;
+
+  height: 2px;
+
+  margin:
+    21px 18px 0;
+
+  background-color: #D5DAE0;
+}
+
+
+.step-line.active-line {
+  background-color: #FF651E;
+}
+
+
+/* =====================================================
+   每個 Step 主區
+===================================================== */
+
+.course-section {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding-top: 32px;
+
+  border-top:
+    1px solid #E2E8F0;
+}
+
+
+/* =====================================================
+   Step 標題
+===================================================== */
+
+.section-title {
+  width: 76%;
+
+  max-width: 980px;
+
+  margin:
+    0 auto;
+
+  text-align: center;
+}
+
+
+.section-title h3 {
+  margin: 0;
+
+  color: #18202B;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+
+.section-title p {
+  margin:
+    8px 0 0;
+
+  color: #64748B;
+
+  font-size: 15px;
+
+  line-height: 1.6;
+
+  text-align: center;
+}
+
+
+/* =====================================================
+   Step 1 課程
+===================================================== */
+
+.course-list {
+  width: 76%;
+
+  max-width: 980px;
+
+  margin:
+    28px auto 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+}
+
+
+/* =========================
+   課程卡
+========================= */
+
+.course-card {
+  min-height: 118px;
+
+  box-sizing: border-box;
+
+  padding:
+    20px 24px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 18px;
+
+  background-color: #FFFFFF;
+
+  border:
+    1px solid #D5DAE0;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.course-card:hover {
+  border-color: #FF651E;
+
+  box-shadow:
+    0 4px 14px
+    rgba(255, 101, 30, 0.08);
+}
+
+
+.course-card.selected {
+  background-color: #FFF8F4;
+
+  border:
+    2px solid #FF651E;
+}
+
+
+/* =========================
+   課程圖示
+========================= */
+
+.course-card-icon {
+  width: 54px;
+  height: 54px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: #FFF0E8;
+
+  border-radius: 50%;
+
+  color: #FF651E;
+
+  font-size: 26px;
+}
+
+
+/* =========================
+   課程資訊
+========================= */
+
+.course-info {
+  flex: 1;
+
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+
+.course-info h4 {
+  margin: 0;
+
+  color: #18202B;
+
+  font-size: 18px;
+  font-weight: 700;
+}
+
+
+.course-info p {
+  margin: 0;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 5px;
+
+  color: #64748B;
+
+  font-size: 14px;
+}
+
+
+/* =========================
+   剩餘堂數
+========================= */
+
+.course-count {
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 5px;
+
+  padding-left: 20px;
+
+  border-left:
+    1px solid #E2E8F0;
+
+  color: #64748B;
+
+  white-space: nowrap;
+}
+
+
+.course-count span {
+  font-size: 14px;
+}
+
+
+.course-count strong {
+  color: #FF651E;
+
+  font-size: 26px;
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   共用小圖示
+===================================================== */
+
+.booking-mini-icon {
+  width: 22px;
+  height: 22px;
+
+  flex-shrink: 0;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #34506C;
+
+  font-size: 15px;
+
+  line-height: 1;
+}
+
+
+.booking-mini-icon.orange {
+  color: #FF651E;
+}
+
+
+/* =====================================================
+   Step 2 / 3 / 4
+   灰色摘要框
+===================================================== */
+
+.booking-summary {
+  width: 76%;
+
+  max-width: 980px;
+
+  box-sizing: border-box;
+
+  margin:
+    24px auto 0;
+
+  padding:
+    22px 24px;
+
+  background-color: #F4F6F8;
+
+  border-radius: 9px;
+
+  display: grid;
+
+  grid-template-columns:
+    24px
+    62px
+    max-content;
+
+  justify-content: center;
+
+  align-items: center;
+
+  column-gap: 8px;
+
+  row-gap: 8px;
+
+  color: #64748B;
+
+  font-size: 15px;
+}
+
+
+/* =========================
+   每一列共用父層 Grid
+========================= */
+
+.summary-row {
+  display: contents;
+}
+
+
+/* =========================
+   摘要圖示
+========================= */
+
+.summary-row .booking-mini-icon {
+  width: 24px;
+  height: 24px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  justify-self: center;
+
+  font-size: 15px;
+}
+
+
+/* =========================
+   摘要標籤
+========================= */
+
+.summary-row > span:not(.booking-mini-icon) {
+  color: #64748B;
+
+  text-align: left;
+
+  white-space: nowrap;
+}
+
+
+/* =========================
+   摘要內容
+========================= */
+
+.summary-row strong {
+  color: #18202B;
+
+  font-weight: 700;
+
+  text-align: left;
+
+  white-space: nowrap;
+}
+
+
+/* =====================================================
+   Step 2 Calendar
+===================================================== */
+
+.calendar-container {
+  width: 76%;
+
+  max-width: 980px;
+
+  margin:
+    28px auto 0;
+
+  display: flex;
+
+  justify-content: center;
+
+  text-align: center;
+}
+
+
+.booking-page .react-calendar {
+  width: 100%;
+
+  max-width: 760px;
+
+  box-sizing: border-box;
+
+  padding:
+    20px 24px;
+
+  margin:
+    0 auto;
+
+  background-color: #FFFFFF;
+
+  border:
+    1px solid #D5DAE0;
+
+  border-radius: 12px;
+
+  font-family:
+    Arial,
+    "Microsoft JhengHei",
+    sans-serif;
+}
+
+
+/* =========================
+   Calendar 導覽
+========================= */
+
+.booking-page
+.react-calendar__navigation {
+  display: flex;
+
+  margin-bottom: 16px;
+}
+
+
+.booking-page
+.react-calendar__navigation button {
+  min-width: 44px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background-color: transparent;
+
+  color: #18202B;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.booking-page
+.react-calendar__navigation button:hover {
+  background-color: #F4F5F7;
+}
+
+
+/* =========================
+   星期
+========================= */
+
+.booking-page
+.react-calendar__month-view__weekdays {
+  color: #64748B;
+
+  text-align: center;
+
+  font-weight: 600;
+}
+
+
+.booking-page
+.react-calendar__month-view__weekdays abbr {
+  text-decoration: none;
+}
+
+
+/* =========================
+   日期
+========================= */
+
+.booking-page
+.react-calendar__tile {
+  padding:
+    14px 6px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background-color: transparent;
+
+  color: #18202B;
+
+  font-size: 15px;
+
+  cursor: pointer;
+}
+
+
+.booking-page
+.react-calendar__tile:hover {
+  background-color: #FFF1EA;
+}
+
+
+.booking-page
+.react-calendar__tile--now {
+  background-color: #F4F5F7;
+
+  color: #FF651E;
+
+  font-weight: 700;
+}
+
+
+.booking-page
+.react-calendar__tile--active {
+  background-color:
+    #FF651E !important;
+
+  color:
+    #FFFFFF !important;
+
+  font-weight: 700;
+}
+
+
+.booking-page
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #B7BEC7;
+}
+
+
+.booking-page
+.react-calendar__month-view__days__day--weekend {
+  color: #FF651E;
+}
+
+
+.booking-page
+.react-calendar__tile:disabled {
+  background-color: #F4F5F7;
+
+  color: #B7BEC7;
+
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   Step 3 時段
+===================================================== */
+
+.time-list {
+  width: 76%;
+
+  max-width: 980px;
+
+  margin:
+    28px auto 0;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+}
+
+
+/* =========================
+   時段卡
+========================= */
+
+.time-card {
+  min-height: 96px;
+
+  box-sizing: border-box;
+
+  padding:
+    16px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 8px;
+
+  border-radius: 10px;
+
+  font-family:
+    Arial,
+    "Microsoft JhengHei",
+    sans-serif;
+
+  text-align: center;
+}
+
+
+.time-card-main {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+}
+
+
+/* =========================
+   可預約
+========================= */
+
+.time-card.available-time {
+  background-color: #FFFFFF;
+
+  border:
+    1px solid #D5DAE0;
+
+  color: #18202B;
+
+  cursor: pointer;
+}
+
+
+.time-card.available-time:hover {
+  background-color: #FFF8F4;
+
+  border-color: #FF651E;
+}
+
+
+/* =========================
+   已選擇
+========================= */
+
+.time-card.selected-time {
+  background-color: #FFF8F4;
+
+  border:
+    2px solid #FF651E;
+
+  color: #FF651E;
+}
+
+
+.time-card.selected-time strong,
+.time-card.selected-time span {
+  color: #FF651E;
+}
+
+
+/* =========================
+   不可預約
+========================= */
+
+.time-card.disabled-time,
+.time-card.disabled-time:disabled {
+  background-color: #F1F3F5;
+
+  border:
+    1px solid #E2E8F0;
+
+  color: #AAB4C0;
+
+  opacity: 1;
+
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   目前選擇時段
+===================================================== */
+
+.selected-time-summary {
+  width: 76%;
+
+  max-width: 980px;
+
+  box-sizing: border-box;
+
+  margin:
+    18px auto 0;
+
+  padding:
+    14px 20px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  background-color: #F4F6F8;
+
+  border-radius: 8px;
+
+  color: #64748B;
+
+  font-size: 15px;
+
+  text-align: center;
+}
+
+
+.selected-time-summary strong {
+  color: #18202B;
+
+  font-weight: 700;
+}
+
+
+/* =====================================================
+   按鈕
+===================================================== */
+
+.booking-page .booking-actions {
+  width: 76%;
+
+  max-width: 980px;
+
+  box-sizing: border-box;
+
+  margin:
+    28px auto 0;
+
+  display: flex;
+
+  justify-content: center;
+
+  gap: 12px;
+}
+
+
+/* Step 1 下一步維持靠右 */
+
+.booking-page .step-one-actions {
+  justify-content: flex-end;
+}
+
+
+.next-button,
+.back-button {
+  min-width: 110px;
+
+  padding:
+    12px 24px;
+
+  border-radius: 8px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+
+.next-button {
+  border:
+    1px solid #FF651E;
+
+  background-color: #FF651E;
+
+  color: #FFFFFF;
+}
+
+
+.next-button:hover:not(:disabled) {
+  background-color: #EB5A18;
+
+  border-color: #EB5A18;
+}
+
+
+.back-button {
+  border:
+    1px solid #CBD5E1;
+
+  background-color: #FFFFFF;
+
+  color: #18202B;
+}
+
+
+.back-button:hover:not(:disabled) {
+  background-color: #F8FAFC;
+
+  border-color: #94A3B8;
+}
+
+
+.next-button:disabled,
+.back-button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+/* =====================================================
+   Step 4 預約完成
+===================================================== */
+
+.success-box {
+  width: 76%;
+
+  max-width: 980px;
+
+  box-sizing: border-box;
+
+  margin:
+    0 auto;
+
+  padding:
+    28px 20px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  text-align: center;
+}
+
+
+.success-icon {
+  width: 60px;
+  height: 60px;
+
+  margin:
+    0 auto 16px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: #FF651E;
+
+  border-radius: 50%;
+
+  color: #FFFFFF;
+
+  font-size: 30px;
+  font-weight: 700;
+}
+
+
+.success-box h3 {
+  margin: 0;
+
+  color: #18202B;
+
+  font-size: 26px;
+  font-weight: 700;
+
+  text-align: center;
+}
+
+
+.success-box p {
+  margin:
+    8px 0 0;
+
+  color: #64748B;
+
+  font-size: 15px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   預約完成摘要
+========================= */
+
+.final-summary {
+  width: 76%;
+
+  max-width: 700px;
+
+  margin:
+    24px auto 0;
+}
+
+
+/* =====================================================
+   RWD
+===================================================== */
+
+@media (max-width: 1100px) {
+
+  .booking-steps {
+    width: 88%;
+  }
+
+
+  .section-title,
+  .course-list,
+  .booking-summary,
+  .calendar-container,
+  .time-list,
+  .selected-time-summary,
+  .booking-page .booking-actions,
+  .success-box {
+    width: 90%;
+  }
+
+}
+
+
+@media (max-width: 850px) {
+
+  .booking-page {
+    padding:
+      26px 22px;
+  }
+
+
+  .booking-steps {
+    width: 100%;
+
+    overflow-x: auto;
+
+    justify-content: flex-start;
+  }
+
+
+  .step-line {
+    min-width: 55px;
+
+    margin-left: 8px;
+    margin-right: 8px;
+  }
+
+
+  .course-list {
+    grid-template-columns: 1fr;
+  }
+
+
+  .time-list {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 600px) {
+
+  .booking-course-title {
+    font-size: 24px;
+  }
+
+
+  .booking-page {
+    padding:
+      20px 16px;
+  }
+
+
+  .section-title,
+  .course-list,
+  .booking-summary,
+  .calendar-container,
+  .time-list,
+  .selected-time-summary,
+  .booking-page .booking-actions,
+  .success-box {
+    width: 100%;
+  }
+
+
+  .booking-summary {
+    grid-template-columns:
+      22px
+      58px
+      minmax(0, max-content);
+
+    column-gap: 6px;
+  }
+
+
+  .course-card {
+    padding: 18px;
+  }
+
+
+  .course-count {
+    padding-left: 14px;
+  }
+
+
+  .booking-page .booking-actions {
+    flex-wrap: wrap;
+  }
+
+}
+}

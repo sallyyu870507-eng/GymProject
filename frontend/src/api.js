@@ -1,3 +1,4 @@
+import { sessionFetch } from './sessionFetch.js'
 export class ApiError extends Error {
   constructor(message, status) { super(message); this.status = status }
 }
@@ -6,7 +7,7 @@ export class ApiError extends Error {
 export async function request(path, options = {}) {
   let response
   try {
-    response = await fetch(path, {
+    response = await sessionFetch(path, {
       credentials: 'include', ...options,
       headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers }
     })

@@ -1,0 +1,752 @@
+/* Scoped during integration; original selectors retained. */
+@scope (.catalog-feature) {
+/* ===== 基本版面 ===== */
+.cc-admin-test-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0 0 24px;
+  padding: 12px 16px;
+  border: 1px solid #edc26c;
+  border-radius: 6px;
+  background: #fff3cd;
+  color: #664d03;
+  font-weight: 700;
+}
+
+.cc-admin-test-banner span, .cc-admin-test-banner a {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.cc-admin-test-banner a { color: #664d03; }
+
+.cc-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.cc-main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 32px;
+}
+
+/* ===== 上方橫幅 ===== */
+.cc-banner {
+  display: flex;
+  align-items: center;
+  min-height: 200px;
+  overflow: hidden;
+  border-radius: 5px;
+
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(15, 20, 16, 0.92),
+      rgba(15, 20, 16, 0.25)
+    ),
+    url("/images/banner.jpg");
+
+  background-size: cover;
+  background-position: center;
+}
+
+.cc-banner-content {
+  padding: 24px 30px;
+  color: #fff;
+}
+
+.cc-banner h1 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.cc-banner p {
+  margin: 0;
+  color: #d2d5cf;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+/* ===== 區塊標題與提示 ===== */
+.cc-section {
+  margin-top: 26px;
+}
+
+.cc-section h2 {
+  margin: 0 0 10px;
+  font-size: 26px;
+}
+
+.cc-description {
+  margin: 0;
+  color: #767971;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.cc-result-count {
+  margin: 18px 0 12px;
+  color: #767971;
+  font-size: 13px;
+}
+
+.cc-error {
+  margin-top: 24px;
+  color: #b42318;
+}
+
+/* ===== 課程卡片排列 ===== */
+.cc-course-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.cc-course-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #fff;
+  border: 1px solid #e4e4df;
+  border-radius: 6px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cc-course-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.07);
+}
+
+/* ===== 課程圖片與類型標籤 ===== */
+.cc-course-image {
+  position: relative;
+  height: 150px;
+  overflow: hidden;
+}
+
+.cc-course-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cc-course-type {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.92);
+  color: #444;
+  font-size: 11px;
+}
+
+/* ===== 課程卡片內容 ===== */
+.cc-course-:scope {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px;
+}
+
+.cc-course-body h3 {
+  margin: 0 0 10px;
+  font-size: 19px;
+}
+
+.cc-course-description {
+  margin: 0 0 12px;
+  color: #767971;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.cc-course-duration {
+  margin-top: auto;
+  margin-bottom: 12px;
+  color: #686d64;
+  font-size: 12px;
+}
+
+/* ===== 課程價格 ===== */
+.cc-course-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+
+  padding-top: 12px;
+  border-top: 1px solid #efefea;
+}
+
+.cc-course-price {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.cc-currency {
+  color: #767971;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.cc-price-unit {
+  padding: 3px 6px;
+  border-radius: 3px;
+  color: #858585;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* ===== 平板：每排兩張 ===== */
+@media (max-width: 1199px) {
+  .cc-course-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ===== 手機：每排一張 ===== */
+@media (max-width: 767px) {
+  .cc-sidebar {
+    width: 110px;
+    padding: 20px 8px;
+  }
+
+  .cc-brand {
+    font-size: 15px;
+  }
+
+  .cc-menu-item {
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .cc-main {
+    padding: 16px 12px;
+  }
+
+  .cc-banner {
+    min-height: 180px;
+  }
+
+  .cc-banner-content {
+    padding: 18px 16px;
+  }
+
+  .cc-banner h1 {
+    font-size: 22px;
+  }
+
+  .cc-banner p {
+    font-size: 12px;
+  }
+
+  .cc-section h2 {
+    font-size: 22px;
+  }
+
+  .cc-course-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .cc-course-image {
+    height: 145px;
+  }
+}
+
+/* ===== 課程分類與搜尋 ===== */
+.cc-course-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  margin-top: 26px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #e4e4df;
+}
+
+.cc-course-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cc-filter-btn {
+  padding: 9px 18px;
+  border: 1px solid #e4e4df;
+  border-radius: 24px;
+  background-color: transparent;
+  color: #18202b;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.cc-filter-btn:hover {
+  background-color: #eeeee8;
+}
+
+.cc-filter-btn.active {
+  border-color: #efc6b5;
+  background-color: #f7e5db;
+  color: #a93e1c;
+}
+
+.cc-course-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 300px;
+  max-width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #e4e4df;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #858980;
+}
+
+.cc-course-search svg {
+  flex-shrink: 0;
+}
+
+.cc-course-search input {
+  width: 100%;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: #18202b;
+  font-size: 13px;
+}
+
+.cc-course-search:focus-within {
+  border-color: #d93f0b;
+  box-shadow: 0 0 0 2px rgba(217, 63, 11, 0.12);
+}
+
+/* ===== 課程筆數與排序 ===== */
+.cc-course-results {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 18px 0 16px;
+}
+
+.cc-course-results .cc-result-count {
+  margin: 0;
+}
+
+.cc-course-sort {
+  max-width: 150px;
+  padding: 5px;
+  border: none;
+  background-color: transparent;
+  color: #767971;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* ===== 手機版工具列 ===== */
+@media (max-width: 767px) {
+  .cc-course-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .cc-course-search {
+    width: 100%;
+  }
+
+  .cc-filter-btn {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* ===== 查看課程按鈕 ===== */
+.cc-detail-button {
+  padding: 9px 12px;
+  border: none;
+  border-radius: 4px;
+  background-color: #f4f4ef;
+  color: #333;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.cc-detail-button:hover {
+  background-color: #f7e5db;
+  color: #a93e1c;
+}
+
+/* ===== 課程詳細視窗 ===== */
+.cc-detail-dialog {
+  position: fixed;
+  width: min(720px, calc(100% - 32px));
+  max-height: 90vh;
+  margin: auto;
+  padding: 0;
+
+  overflow-y: auto;
+  border: none;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #18202b;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.25);
+}
+
+.cc-detail-dialog::backdrop {
+  background-color: rgba(15, 20, 16, 0.65);
+}
+
+.cc-detail-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+
+  border: none;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #333;
+  font-size: 25px;
+  cursor: pointer;
+}
+
+.cc-detail-image {
+  display: block;
+  width: 100%;
+  height: 230px;
+  object-fit: cover;
+}
+
+.cc-detail-content {
+  padding: 28px;
+}
+
+.cc-detail-content h2 {
+  margin: 0 0 16px;
+  font-size: 27px;
+}
+
+.cc-detail-type {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background-color: #f7e5db;
+  color: #a93e1c;
+  font-size: 12px;
+}
+
+.cc-detail-content h3 {
+  margin: 26px 0 12px;
+  font-size: 16px;
+}
+
+.cc-detail-description {
+  color: #686d64;
+  font-size: 14px;
+  line-height: 1.9;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cc-detail-duration {
+  margin: 20px 0;
+  padding: 14px;
+  border-radius: 4px;
+  background-color: #f6f6f2;
+  font-size: 14px;
+}
+
+.cc-detail-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #e4e4df;
+}
+
+.cc-detail-return {
+  padding: 11px 16px;
+  border: none;
+  border-radius: 4px;
+  background-color: #18202b;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+@media (max-width: 767px) {
+  .cc-detail-image {
+    height: 170px;
+  }
+
+  .cc-detail-content {
+    padding: 20px;
+  }
+
+  .cc-detail-content h2 {
+    font-size: 23px;
+  }
+}
+
+/* 課程列表底部標語 */
+.cc-course-slogan {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 40px;
+  padding: 28px 0;
+  border-top: 1px solid #e4e4df;
+  color: #85877f;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.cc-course-slogan strong {
+  color: #596052;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* 教練搜尋區 */
+.cc-coach-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 26px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #e4e4df;
+}
+
+/* 教練列表 */
+.cc-coach-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 320px));
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.cc-coach-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #fff;
+  border: 1px solid #e4e4df;
+  border-radius: 6px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.cc-coach-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.07);
+}
+
+/* 教練照片 */
+/* 用接近正方形的區塊呈現教練照片 */
+.cc-coach-image {
+  aspect-ratio: 5 / 4;
+  overflow: hidden;
+  background-color: #eaece7;
+}
+
+.cc-coach-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.cc-coach-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #767971;
+  font-size: 14px;
+}
+
+/* 教練卡片內容 */
+.cc-coach-:scope {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 14px;
+}
+
+.cc-coach-label {
+  color: #b44923;
+  font-size: 12px;
+}
+
+.cc-coach-body h3 {
+  margin: 6px 0 12px;
+  color: #18202b;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.cc-coach-body h4 {
+  margin: 0 0 8px;
+  color: #454b40;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* 專長標籤排列，空間不足時自動換行 */
+.cc-coach-specialties {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* 每個專長的小方框 */
+.cc-coach-specialty-tag {
+  max-width: 100%;
+  padding: 4px 8px;
+  border: 1px solid #e4e4df;
+  border-radius: 2px;
+  background-color: #fff;
+  color: #767971;
+  font-size: 11px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 1199px) {
+  .cc-coach-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .cc-coach-toolbar .cc-course-search {
+    width: 100%;
+  }
+
+  .cc-coach-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .cc-coach-:scope {
+    padding: 16px;
+  }
+}
+
+/* 教練卡片底部按鈕 */
+.cc-coach-card-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.cc-coach-card-footer .cc-detail-button {
+  margin-top: 0;
+  padding: 8px 12px;
+  font-size: 12px;
+}
+
+/* 教練詳細介紹 */
+.cc-coach-detail-profile {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.cc-coach-detail-photo {
+  display: block;
+  width: 200px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.cc-coach-detail-info {
+  flex: 1;
+  min-width: 180px;
+  margin: 0;
+}
+
+.cc-coach-detail-info dt {
+  margin-bottom: 6px;
+  color: #767971;
+  font-size: 12px;
+}
+
+.cc-coach-detail-info dd {
+  margin: 0 0 18px;
+  color: #18202b;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.cc-coach-detail-footer {
+  justify-content: flex-end;
+}
+
+.cc-coach-detail-info .cc-coach-contact-title {
+  margin: 0 0 18px;
+  color: #18202b;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cc-coach-detail-info dl {
+  margin: 0;
+}
+
+/* 橫幅上方的頁面標題與說明 */
+.cc-page-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 14px;
+}
+
+.cc-page-heading h2 {
+  margin: 0;
+  color: #18202b;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.cc-page-heading .cc-description {
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .cc-page-heading h2 {
+    font-size: 22px;
+  }
+}
+}

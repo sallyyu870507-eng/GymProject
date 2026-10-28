@@ -17,8 +17,12 @@ export default defineConfig(({ mode }) => {
       host: 'localhost', port: 5173, strictPort: true,
       // Keep redirects in the frontend. The Java login redirects to /admin or /coach;
       // both are SPA paths here. Only form posts and APIs go to Spring Boot.
-      proxy: Object.fromEntries(['/api', '^/login$', '^/logout$'].map(path => [path, {
-        target, changeOrigin: true, autoRewrite: true, cookieDomainRewrite: ''
+      proxy: Object.fromEntries(['/api', '^/login(?:\\?.*)?$', '^/logout(?:\\?.*)?$', '/admin/schedules', '^/coaches/(?:dashboard|schedules|[0-9]+/)', '/members/courses', '/booking'].map(path => [path, {
+        target, changeOrigin: true, autoRewrite: true, cookieDomainRewrite: '',
+        bypass(req) {
+          // Login form POSTs reach Spring; HTML GETs render the shared React login.
+          if (req.method === 'GET' && /^\/login(?:\?|$)/.test(req.url) && req.headers.accept?.includes('text/html')) return '/index.html'
+        }
       }]))
     },
     build: { outDir: 'dist' }

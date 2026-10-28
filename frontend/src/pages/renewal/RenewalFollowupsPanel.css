@@ -1,0 +1,63 @@
+@scope (.team-feature) {
+.renewal-followups-panel { margin-top: 18px; padding: 22px 24px; border: 1px solid #e6eaf0; border-radius: 12px; background: #fff; color: #344256; }
+.renewal-followups-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+.renewal-followups-heading h2 { margin: 0; font-size: 19px; }
+.renewal-followups-heading > span { color: #8793a2; font-size: 14px; }
+.renewal-followup-timeline { position: relative; display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.renewal-followup-timeline::before { position: absolute; top: 22px; bottom: 30px; left: 197px; width: 2px; background: #d7e0ea; content: ""; }
+.renewal-followup-entry { position: relative; display: grid; grid-template-columns: 184px minmax(0, 1fr); align-items: stretch; gap: 22px; min-width: 0; }
+.renewal-followup-timeline-dot { position: absolute; z-index: 1; top: 18px; left: 190px; width: 14px; height: 14px; border: 0; border-radius: 50%; background: #f97316; box-shadow: 0 0 0 3px #fff; }
+.renewal-followup-time { display: flex; flex-direction: column; align-items: flex-start; padding: 8px 10px 0 20px; color: #182b49; line-height: 1.45; }
+.renewal-followup-time strong { font-size: 16px; }
+.renewal-followup-time span { font-size: 15px; }
+.renewal-followup-time small { color: #536477; font-size: 13px; }
+.renewal-followup-card { min-width: 0; border: 1px solid #e2e8f0; border-radius: 10px; padding: 9px 12px 10px 16px; background: #fff; }
+.renewal-followup-metadata { display: flex; align-items: center; flex-wrap: wrap; gap: 9px 11px; margin: 0 0 9px; }
+.renewal-followup-metadata > button { display: inline-flex; align-items: center; gap: 5px; flex: 0 0 auto; margin-left: auto; border: 1px solid #f3b188; border-radius: 7px; padding: 5px 10px; color: #e96610; background: #fff; font: inherit; font-size: 13px; font-weight: 650; cursor: pointer; }
+.renewal-followup-metadata > button::before { content: "✎"; font-size: 15px; }
+.renewal-followup-metadata > button:disabled { cursor: not-allowed; opacity: .58; }
+.renewal-followup-chip { display: inline-flex; align-items: center; gap: 8px; min-width: 106px; border-radius: 9px; padding: 7px 13px; color: #24354e; background: #f1f5f9; font-size: 14px; font-weight: 650; }
+.renewal-followup-chip::before { color: #405572; font-size: 17px; line-height: 1; }
+.renewal-followup-method::before { content: "☎"; }
+.renewal-followup-method-message::before { content: "▢"; }
+.renewal-followup-method-in_person::before { content: "♙"; }
+.renewal-followup-method-other::before { content: "•"; }
+.renewal-followup-method { color: #1457aa; background: #e7f1ff; }
+.renewal-followup-outcome { justify-content: center; color: #a85d14; background: #fff1df; }
+.renewal-followup-outcome::before { content: ""; }
+.renewal-followup-outcome-agreed { color: #087b5b; background: #e2f8ef; }
+.renewal-followup-outcome-declined, .renewal-followup-outcome-no_response { color: #c13b47; background: #ffeaec; }
+.renewal-followup-coach::before { content: "♙"; }
+.renewal-followup-note { border-top: 0; padding-top: 0; }
+.renewal-followup-note strong { color: #405572; font-size: 16px; font-weight: 600; }
+.renewal-followup-note strong::after { content: "："; }
+.renewal-followup-note p { display: inline; overflow-wrap: anywhere; white-space: pre-wrap; margin: 0; color: #405572; font-size: 16px; font-weight: 400; line-height: 1.55; }
+.renewal-followups-pagination { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 20px; color: #718093; font-size: 13px; }
+.renewal-followups-pagination > span:first-child { margin-right: auto; }
+.renewal-followups-pagination button, .renewal-followups-error button { border: 1px solid #dbe1e8; border-radius: 7px; padding: 7px 11px; color: #425268; background: white; font: inherit; cursor: pointer; }
+.renewal-followups-pagination button:disabled { color: #aab3bf; background: #f7f8fa; cursor: not-allowed; }
+.renewal-followups-note { margin: 20px 0 0; color: #8994a2; font-size: 12px; }
+.renewal-followups-state { border: 1px dashed #dce2e9; border-radius: 9px; padding: 32px 16px; color: #788596; text-align: center; }
+.renewal-followups-error p { margin: 0 0 14px; }
+.renewal-followups-error button { border-color: #f3b188; color: #b85312; }
+.renewal-followups-loading { display: grid; gap: 12px; }
+.renewal-followup-skeleton { height: 152px; border-radius: 10px; background: linear-gradient(90deg, #f0f2f5 25%, #f8f9fb 50%, #f0f2f5 75%); background-size: 200% 100%; animation: renewal-followups-shimmer 1.25s linear infinite; }
+@keyframes renewal-followups-shimmer { to { background-position: -200% 0; } }
+
+@media (max-width: 650px) {
+    .renewal-followups-panel { padding: 18px 14px; }
+    .renewal-followup-timeline::before { left: 112px; }
+    .renewal-followup-entry { grid-template-columns: 100px minmax(0, 1fr); gap: 14px; }
+    .renewal-followup-time { padding: 8px 0 0 0; }
+    .renewal-followup-time strong { font-size: 13px; }
+    .renewal-followup-time span { font-size: 13px; }
+    .renewal-followup-timeline-dot { left: 106px; }
+    .renewal-followup-card { padding: 10px; }
+    .renewal-followup-metadata { gap: 6px; }
+    .renewal-followup-chip { min-width: 0; padding: 6px 8px; font-size: 12px; }
+    .renewal-followup-metadata > button { margin-left: 0; padding: 5px 8px; }
+    .renewal-followups-pagination { justify-content: center; }
+    .renewal-followups-pagination > span:first-child { width: 100%; margin: 0 0 4px; text-align: center; }
+}
+
+}

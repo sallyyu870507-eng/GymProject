@@ -1,0 +1,116 @@
+@scope (.team-feature) {
+.renewal-overview-page {
+    min-height: 100%;
+    padding: 32px clamp(20px, 4vw, 56px) 40px;
+    color: #263445;
+    background: #f5f7fa;
+}
+
+.renewal-overview-inner { min-width: 0; }
+.renewal-overview-topbar { display: flex; align-items: flex-start; justify-content: flex-start; gap: 20px; margin-bottom: 24px; }
+.renewal-overview-topbar h1 { margin: 3px 0 0; font-size: var(--renewal-page-title-size, 32px); }
+.renewal-overview-eyebrow { margin: 0; color: #8793a2; font-size: 12px; letter-spacing: .08em; }
+.renewal-overview-actions { display: flex; gap: 10px; flex: 0 0 auto; }
+.renewal-overview-actions button, .renewal-overview-error button { border: 1px solid #f0a16e; border-radius: 8px; padding: 10px 15px; color: #ad4b0c; background: #fff8f3; font: inherit; font-weight: 650; }
+.renewal-overview-actions button:disabled { cursor: not-allowed; opacity: .58; }
+.renewal-overview-tabs { margin-top: 24px; border: 1px solid #e6eaf0; border-radius: 12px; background: #fff; }
+.renewal-overview-tabs-list { display: flex; gap: 24px; padding: 0 24px; }
+.renewal-overview-tabs-list button { position: relative; flex: 0 0 auto; border: 0; padding: 15px 2px; color: #7b8796; background: transparent; font: inherit; font-size: var(--renewal-navigation-text-size, 16px); cursor: pointer; }
+.renewal-overview-tabs-list button:not(:disabled) * { cursor: inherit; }
+.renewal-overview-tabs-list button:focus-visible { outline: 3px solid #ffc096; outline-offset: 3px; border-radius: 3px; }
+.renewal-overview-tabs-list button.is-active { color: #c75b17; font-weight: 700; }
+.renewal-overview-tabs-list button.is-active::after { position: absolute; right: -2px; bottom: -1px; left: -2px; height: 3px; border-radius: 3px 3px 0 0; background: #f97316; content: ""; }
+.renewal-overview-tabs-list button:disabled { cursor: not-allowed; opacity: .55; }
+.renewal-overview-tabs-list button:disabled * { cursor: inherit; }
+.renewal-overview-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 18px; }
+.renewal-overview-card { min-width: 0; padding: 22px 24px; border: 1px solid #e6eaf0; border-radius: 12px; background: #fff; }
+.renewal-overview-card h3 { margin: 0 0 17px; font-size: 17px; }
+.renewal-overview-card .renewal-overview-subheading { margin: 23px 0 10px; font-size: 14px; }
+.renewal-overview-card dl { display: grid; gap: 0; margin: 0; }
+.renewal-overview-detail { display: grid; grid-template-columns: minmax(105px, .7fr) minmax(0, 1.3fr); gap: 14px; padding: 10px 0; border-bottom: 1px solid #f0f2f5; }
+.renewal-overview-detail:last-child { border-bottom: 0; }
+.renewal-overview-detail dt { color: #818d9c; }
+.renewal-overview-detail dd { overflow-wrap: anywhere; margin: 0; color: #344256; font-weight: 550; }
+.renewal-overview-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.renewal-overview-tags span { border-radius: 999px; padding: 6px 11px; color: #b84e0e; background: #fff0e5; font-size: 13px; font-weight: 650; }
+.renewal-overview-status { display: inline-block; border-radius: 999px; padding: 6px 11px; color: #536477; background: #eef2f6; font-size: 13px; font-weight: 650; }
+.renewal-overview-reminders ul, .renewal-overview-renewals ul { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.renewal-overview-reminders li { border-left: 3px solid #ed792f; padding: 4px 0 4px 13px; }
+.renewal-overview-reminders li strong { color: #ad4b0c; font-size: 14px; }
+.renewal-overview-reminders li p { margin: 5px 0 0; line-height: 1.6; }
+.renewal-overview-renewals li { display: grid; gap: 5px; border-radius: 8px; padding: 12px; background: #f7f9fb; }
+.renewal-overview-renewals li strong { color: #344256; }
+.renewal-overview-renewals li span { color: #788595; font-size: 13px; }
+.renewal-overview-muted { margin: 0; color: #8994a2; }
+.renewal-overview-as-of { margin: 18px 0 0; color: #8994a2; font-size: 12px; text-align: right; }
+.renewal-overview-state { margin-top: 20px; border: 1px solid #e6eaf0; border-radius: 12px; padding: 42px 24px; background: white; text-align: center; }
+.renewal-overview-error h2 { margin: 0 0 8px; font-size: 20px; }
+.renewal-overview-error p { margin: 0 0 20px; color: #7d8998; }
+.renewal-overview-error > div { display: flex; justify-content: center; gap: 10px; }
+.renewal-overview-error .secondary { border-color: #d9dfe7; color: #526174; background: #fff; }
+.renewal-followups-member-summary { margin-top: 18px; }
+.renewal-create-result-banner { display: flex; flex-wrap: wrap; gap: 6px; margin: 12px 0; border: 1px solid #b8dfc3; border-radius: 8px; padding: 12px 15px; color: #245b35; background: #f0faf3; }
+.renewal-create-result-banner span { color: #8b4b16; }
+
+/* Screenshot-aligned scheme overview; the shared app header and sidebar stay in AppLayout. */
+.renewal-overview-actions { align-items: center; }
+.renewal-overview-actions button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 48px; padding: 10px 20px; border: 1.5px solid #f97316; border-radius: 9px; color: #f97316; background: #fff; font-size: 16px; font-weight: 700; cursor: pointer; }
+.renewal-overview-actions .renewal-overview-renew-action { color: #fff; background: #f97316; }
+.renewal-overview-actions .renewal-overview-renew-action:hover:not(:disabled) { border-color: #e96610; background: #e96610; }
+.renewal-overview-actions button:disabled { cursor: not-allowed; opacity: .55; }
+.renewal-overview-icon { display: block; width: 24px; height: 24px; flex: 0 0 24px; color: #47566c; }
+.renewal-overview-plan-card { margin-top: 18px; padding: 22px 24px 18px; }
+.renewal-overview-plan-card > h3 { margin-bottom: 12px; color: #13213b; font-size: 21px; }
+.renewal-overview-plan-columns { display: grid; grid-template-columns: minmax(0, .78fr) minmax(0, 1fr); }
+.renewal-overview-plan-details { display: grid; align-content: center; gap: 8px; padding: 0 28px 0 4px; }
+.renewal-overview-fact { display: flex; align-items: center; gap: 18px; min-height: 72px; }
+.renewal-overview-fact-icon { display: grid; width: 60px; height: 60px; flex: 0 0 60px; place-items: center; border-radius: 50%; background: #fff0e5; }
+.renewal-overview-fact-icon .renewal-overview-icon { width: 31px; height: 31px; }
+.renewal-overview-fact > div { display: grid; gap: 3px; min-width: 0; }
+.renewal-overview-fact > div > span { color: #536477; font-size: 15px; }
+.renewal-overview-fact strong { overflow-wrap: anywhere; color: #14213b; font-size: 20px; }
+.renewal-overview-plan-metrics { border-left: 1px solid #dbe2ea; padding-left: 32px; }
+.renewal-overview-metric { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; align-items: center; gap: 0 15px; min-height: 49px; border-bottom: 1px solid #e8edf2; }
+.renewal-overview-metric:last-child { border-bottom: 0; }
+.renewal-overview-metric > .renewal-overview-icon { width: 33px; height: 33px; }
+.renewal-overview-metric-label { color: #536477; font-size: 15px; }
+.renewal-overview-metric strong { color: #14213b; font-size: 19px; }
+.renewal-overview-metric small { grid-column: 2 / -1; margin: -2px 0 5px; color: #8191a7; font-size: 13px; }
+.renewal-overview-reminder-strip { display: flex; align-items: center; gap: 16px; min-height: 56px; margin-top: 14px; border: 1px solid #f8c69f; border-radius: 9px; padding: 8px 20px; color: #778495; background: #fffaf6; }
+.renewal-overview-reminder-strip > .renewal-overview-icon { width: 31px; height: 31px; color: #f97316; }
+.renewal-overview-reminder-strip > div { display: grid; gap: 4px; min-width: 0; }
+.renewal-overview-reminder-strip p { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; line-height: 1.5; }
+.renewal-overview-reminder-strip.has-reminders { color: #bd5412; font-weight: 650; }
+.renewal-overview-extra-grid { margin-top: 18px; }
+.renewal-overview-grid .renewal-overview-card { align-self: start; }
+
+@media (max-width: 960px) {
+}
+
+@media (max-width: 760px) {
+    .renewal-overview-page { padding: 22px 14px 30px; }
+    .renewal-overview-topbar { align-items: flex-start; }
+    .renewal-overview-actions { width: 100%; }
+    .renewal-overview-actions button { flex: 1; }
+    .renewal-overview-tabs-list { gap: 18px; overflow-x: auto; padding: 0 18px; }
+    .renewal-overview-tabs-list button { white-space: nowrap; }
+    .renewal-overview-tabs-list button.is-active::after { bottom: 0; }
+    .renewal-overview-grid { grid-template-columns: 1fr; }
+    .renewal-overview-card { padding: 19px; }
+    .renewal-overview-actions { width: 100%; }
+    .renewal-overview-actions button { flex: 1; min-width: 0; padding: 9px 10px; }
+    .renewal-overview-plan-card { padding: 18px 16px 14px; }
+    .renewal-overview-plan-columns { grid-template-columns: 1fr; }
+    .renewal-overview-plan-details { gap: 4px; padding: 0 0 12px; }
+    .renewal-overview-fact { min-height: 62px; gap: 13px; }
+    .renewal-overview-fact-icon { width: 50px; height: 50px; flex-basis: 50px; }
+    .renewal-overview-fact strong { font-size: 17px; }
+    .renewal-overview-plan-metrics { border-top: 1px solid #dbe2ea; border-left: 0; padding: 8px 0 0; }
+    .renewal-overview-metric { grid-template-columns: 38px minmax(0, 1fr) auto; gap: 0 8px; min-height: 47px; }
+    .renewal-overview-metric-label { font-size: 14px; }
+    .renewal-overview-metric strong { font-size: 16px; }
+    .renewal-overview-metric small { font-size: 12px; }
+    .renewal-overview-reminder-strip { align-items: flex-start; gap: 11px; padding: 10px 12px; }
+}
+
+}
