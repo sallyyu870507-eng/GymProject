@@ -722,3 +722,28 @@
 .cc-coach-detail-info dl {
   margin: 0;
 }
+
+/* 橫幅上方的頁面標題與說明 */
+.cc-page-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-bottom: 14px;
+}
+
+.cc-page-heading h2 {
+  margin: 0;
+  color: #18202b;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.cc-page-heading .cc-description {
+  margin: 0;
+}
+
+@media (max-width: 767px) {
+  .cc-page-heading h2 {
+    font-size: 22px;
+  }
+}

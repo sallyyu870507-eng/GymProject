@@ -1,3 +1,4 @@
+import { fetchJson } from './detailApi'
 import { useEffect, useState } from 'react'
 import CoachDetailDialog from './CoachDetailDialog'
 
@@ -7,27 +8,6 @@ const coachImages = {
     CHRIS: '/images/coach-chris.jpg',
     DAVID: '/images/coach-david.jpg',
     ERIC: '/images/coach-eric.jpg',
-}
-
-async function fetchJson(url, signal) {
-    const response = await fetch(url, {
-        signal,
-        headers: {
-            Accept: 'application/json',
-        },
-    })
-
-    if (!response.ok) {
-        throw new Error(`讀取教練資料失敗，狀態碼：${response.status}`)
-    }
-
-    const contentType = response.headers.get('content-type') || ''
-
-    if (!contentType.includes('application/json')) {
-        throw new Error('無法取得教練資料，請確認登入狀態與代理設定。')
-    }
-
-    return response.json()
 }
 
 export default function StudentCoaches() {
@@ -101,11 +81,7 @@ export default function StudentCoaches() {
 
     return (
         <section className="cc-section">
-            <h2>教練介紹</h2>
-
-            <p className="cc-description">
-                不同專長，一樣用心。找到陪你一起進步的夥伴。
-            </p>
+            
 
             <div className="cc-coach-toolbar">
                 <label className="cc-course-search">

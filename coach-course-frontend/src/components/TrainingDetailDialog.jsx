@@ -64,9 +64,7 @@ export default function TrainingDetailDialog({ initialKind, initialId, imageSrc,
           setRelated({
             key: viewKey,
             items: [],
-            error: error.status === 401 || error.status === 403
-              ? '目前帳號無法讀取授課關聯，請確認既有 API 的存取權限。'
-              : `授課關聯暫時無法載入：${error.message}`,
+            error: `授課關聯暫時無法載入：${error.message}`,
           })
         }
       } catch (error) {

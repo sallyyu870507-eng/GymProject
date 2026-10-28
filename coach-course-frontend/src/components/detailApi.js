@@ -26,9 +26,12 @@ export async function fetchJson(url, signal) {
   })
   if (!response.ok) {
     const error = new Error(
-      response.status === 404
-        ? '資料已下架、停用或不存在。'
-        : `讀取資料失敗（${response.status}）。`,
+      `讀取 ${url} 失敗（HTTP ${response.status}）：${
+        response.status === 401 ? '尚未登入或登入已失效；測試模式不會授予後端登入權限。'
+          : response.status === 403 ? '後端拒絕存取，目前身分沒有此 API 的權限。'
+            : response.status === 404 ? '資料已下架、停用或不存在。'
+              : '請確認後端服務狀態。'
+      }`,
     )
     error.status = response.status
     throw error

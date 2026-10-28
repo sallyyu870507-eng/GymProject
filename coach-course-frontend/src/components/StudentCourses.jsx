@@ -1,3 +1,4 @@
+import { fetchJson } from './detailApi'
 import { useEffect, useState } from 'react'
 import CourseDetailDialog from './CourseDetailDialog'
 
@@ -11,27 +12,6 @@ const courseImages = {
 }
 
 // 呼叫 API 並讀取 JSON
-async function fetchJson(url, signal) {
-  const response = await fetch(url, {
-    signal,
-    headers: {
-      Accept: 'application/json',
-    },
-  })
-
-  if (!response.ok) {
-    throw new Error(`讀取失敗：${url}，狀態碼 ${response.status}`)
-  }
-
-  const contentType = response.headers.get('content-type') || ''
-
-  if (!contentType.includes('application/json')) {
-    throw new Error('後端未回傳 JSON，請確認登入狀態與代理設定。')
-  }
-
-  return response.json()
-}
-
 export default function StudentCourses() {
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedType, setSelectedType] = useState('全部課程')
@@ -130,11 +110,7 @@ export default function StudentCourses() {
 
   return (
     <section className="cc-section">
-      <h2>課程總覽</h2>
-
-      <p className="cc-description">
-        不論剛開始，或想更進一步，找到適合你的訓練。
-      </p>
+      
 
       <div className="cc-course-toolbar">
         <div className="cc-course-filters" aria-label="課程分類">

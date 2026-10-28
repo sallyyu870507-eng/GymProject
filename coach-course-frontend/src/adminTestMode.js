@@ -1,3 +1,8 @@
-// 明確網址開關；Vite 正式建置的 DEV 為 false，無法啟用。
+// 僅限 Vite 開發環境；正式建置無法啟用。
+const params = new URLSearchParams(window.location.search)
 export const adminTestMode = import.meta.env.DEV
-  && new URLSearchParams(window.location.search).get('adminTest') === '1'
+  && params.get('adminTest') === '1'
+// 同時指定兩個參數時，管理員模式優先。
+export const studentTestMode = import.meta.env.DEV
+  && !adminTestMode && params.get('studentTest') === '1'
+export const testRole = adminTestMode ? 'admin' : studentTestMode ? 'member' : null

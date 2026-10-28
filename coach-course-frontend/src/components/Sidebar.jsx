@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import logo from '../assets/logo.png'
 import './Sidebar.css'
-import { adminTestMode } from '../adminTestMode'
+import { adminTestMode, studentTestMode, testRole } from '../adminTestMode'
 
 
 // =========================
@@ -64,7 +64,7 @@ function Sidebar({
   // =========================
 
   const currentRole =
-    adminTestMode ? 'admin' : (loginRole || role)
+    testRole || loginRole || role
 
   const menuItems =
     menuByRole[currentRole]
@@ -79,7 +79,7 @@ function Sidebar({
   useEffect(() => {
 
     // 測試模式完全略過身分查詢，避免 401 或既有會員身分覆蓋測試選單。
-    if (adminTestMode) return
+    if (testRole) return
 
     fetch(
       '/api/user',
@@ -169,6 +169,7 @@ function Sidebar({
   const getWelcomeText = () => {
 
     if (adminTestMode) return '管理員測試模式'
+    if (studentTestMode) return '學員測試模式'
 
     // 會員
     if (currentRole === 'member') {
