@@ -1,0 +1,43 @@
+/* Shared page gutter and content width for renewal module routes only. */
+main.renewal-content-page {
+    --renewal-page-title-size: 32px;
+    --renewal-plan-title-size: 22px;
+    --renewal-section-title-size: 20px;
+    --renewal-navigation-text-size: 16px;
+}
+
+main.renewal-content-page {
+    box-sizing: border-box;
+    padding-right: clamp(20px, 4vw, 56px);
+    padding-left: clamp(20px, 4vw, 56px);
+}
+
+main.renewal-content-page .renewal-page-title {
+    font-size: var(--renewal-page-title-size);
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+main.renewal-content-page :is(h2, h3).renewal-section-heading {
+    font-size: var(--renewal-section-title-size);
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.renewal-content-container.renewal-content-container {
+    box-sizing: border-box;
+    width: min(1240px, 100%);
+    max-width: 1240px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+@media (max-width: 760px) {
+    main.renewal-content-page {
+        --renewal-page-title-size: 26px;
+        --renewal-plan-title-size: 18px;
+        --renewal-section-title-size: 18px;
+        padding-right: 14px;
+        padding-left: 14px;
+    }
+}

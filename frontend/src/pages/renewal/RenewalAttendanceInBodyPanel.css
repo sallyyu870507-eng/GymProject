@@ -1,0 +1,100 @@
+.renewal-attendance-inbody { display: grid; gap: 20px; }
+.renewal-attendance-block, .renewal-inbody-block { min-width: 0; padding: 22px; border: 1px solid #e7ebf0; border-radius: 14px; background: #fff; }
+.renewal-attendance-section-heading, .renewal-inbody-section-heading, .renewal-inbody-history-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.renewal-attendance-section-heading h2, .renewal-inbody-section-heading h2, .renewal-inbody-history-heading h3 { margin: 0; color: #293648; font-size: 19px; }
+.renewal-attendance-section-heading p, .renewal-inbody-section-heading p { margin: 5px 0 0; color: #8793a2; font-size: 13px; }
+.renewal-attendance-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+.renewal-attendance-stat { display: grid; gap: 10px; padding: 18px; border: 1px solid #e8ecf1; border-radius: 11px; background: #fafbfc; }
+.renewal-attendance-stat > span, .renewal-inbody-latest-values span { color: #748194; font-size: 14px; }
+.renewal-attendance-stat strong { color: #293648; font-size: 30px; }
+.renewal-attendance-stat small { margin-left: 6px; color: #748194; font-size: 14px; font-weight: 500; }
+.renewal-inbody-metric-tabs { display: flex; gap: 5px; padding: 4px; border-radius: 9px; background: #f4f6f8; }
+.renewal-inbody-metric-tabs button { border: 0; border-radius: 7px; padding: 8px 13px; color: #667487; background: transparent; font: inherit; cursor: pointer; }
+.renewal-inbody-metric-tabs button.is-active { color: #fff; background: #f97316; }
+.renewal-inbody-latest, .renewal-inbody-chart-card, .renewal-inbody-history { margin-top: 20px; padding: 18px; border: 1px solid #e8ecf1; border-radius: 11px; }
+.renewal-inbody-latest h3, .renewal-inbody-chart-card h3, .renewal-inbody-history h3 { margin: 0; color: #344256; font-size: 16px; }
+.renewal-inbody-chart-card h3 small { color: #8793a2; font-weight: 500; }
+.renewal-inbody-latest-values { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 15px; margin-top: 17px; }
+.renewal-inbody-latest-values > div { display: grid; gap: 8px; }
+.renewal-inbody-latest-values strong { color: #344256; font-size: 20px; }
+.renewal-inbody-latest-date, .renewal-inbody-history-heading span { color: #8793a2; font-size: 13px; }
+.renewal-inbody-latest-date { margin: 14px 0 0; }
+.renewal-inbody-chart-wrap { width: 100%; overflow-x: auto; }
+.renewal-inbody-chart-wrap svg { display: block; width: 100%; min-width: 560px; max-height: 320px; overflow: visible; }
+.renewal-chart-axis { stroke: #dfe4ea; stroke-width: 1; }
+.renewal-chart-grid line { stroke: #edf0f3; stroke-width: 1; }
+.renewal-chart-grid text { fill: #718096; font-size: 12px; }
+.renewal-chart-line { stroke: #f97316; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.renewal-chart-point { outline: none; cursor: pointer; }
+.renewal-chart-point circle { fill: #fff; stroke: #f97316; stroke-width: 3; }
+.renewal-chart-point text { fill: #748194; font-size: 11px; }
+.renewal-chart-point:focus-visible circle { stroke: #344256; stroke-width: 4; }
+.renewal-inbody-table-scroll { overflow-x: auto; margin-top: 13px; }
+.renewal-inbody-table-scroll table { width: 100%; border-collapse: collapse; text-align: left; white-space: nowrap; }
+.renewal-inbody-table-scroll th, .renewal-inbody-table-scroll td { padding: 12px 14px; border-bottom: 1px solid #edf0f3; color: #46556a; font-size: 14px; }
+.renewal-inbody-table-scroll th { color: #748194; background: #fafbfc; font-weight: 650; }
+.renewal-inbody-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 9px; margin-top: 14px; }
+.renewal-inbody-pagination span { margin-right: auto; color: #8793a2; font-size: 13px; }
+.renewal-inbody-pagination button, .renewal-attendance-error button { border: 1px solid #dbe1e8; border-radius: 7px; padding: 8px 12px; color: #46556a; background: #fff; font: inherit; cursor: pointer; }
+.renewal-inbody-pagination button:disabled { cursor: not-allowed; opacity: .5; }
+.renewal-inbody-state, .renewal-inbody-empty, .renewal-attendance-stats-skeleton { padding: 22px 8px; color: #8793a2; text-align: center; }
+.renewal-attendance-error { margin-top: 16px; border-radius: 9px; padding: 14px; color: #8e352e; background: #fff2f0; }
+.renewal-attendance-error p { margin: 0 0 10px; }
+.renewal-inbody-empty { margin: 12px 0; }
+.renewal-inbody-footnote { margin: 0; color: #8793a2; font-size: 12px; }
+
+/* Keep attendance statistics, InBody, chart and history inside one reference-style panel. */
+.renewal-attendance-inbody { display: grid; gap: 0; min-width: 0; margin-top: 18px; padding: 20px 22px 16px; border: 1px solid #e2e8f0; border-radius: 13px; background: #fff; }
+.renewal-attendance-block, .renewal-inbody-block { padding: 0; border: 0; border-radius: 0; background: transparent; }
+.renewal-attendance-section-heading h2, .renewal-inbody-section-heading h2, .renewal-inbody-history-heading h3 { color: #13213b; font-size: 21px; }
+.renewal-attendance-section-heading p, .renewal-inbody-section-heading p { color: #536477; font-size: 14px; }
+.renewal-attendance-section-heading > div, .renewal-inbody-section-heading > div:first-child { display: flex; align-items: baseline; gap: 14px; }
+.renewal-attendance-section-heading p, .renewal-inbody-section-heading p { margin: 0; }
+.renewal-attendance-stats { gap: 12px; margin-top: 12px; }
+.renewal-attendance-stat { display: flex; align-items: center; gap: 17px; min-height: 76px; padding: 12px 20px; border-color: #e2e8f0; border-radius: 8px; background: #fff; }
+.renewal-attendance-stat-icon { display: grid; width: 56px; height: 56px; flex: 0 0 56px; place-items: center; border-radius: 50%; color: #0875e1; background: #e4f1ff; }
+.renewal-attendance-stat-icon svg { width: 31px; height: 31px; }
+.renewal-attendance-stat-leave .renewal-attendance-stat-icon, .renewal-attendance-stat-absent .renewal-attendance-stat-icon { color: #e4424b; background: #ffeaec; }
+.renewal-attendance-stat-copy { display: grid; gap: 2px; color: #536477; font-size: 14px; }
+.renewal-attendance-stat-copy strong { color: #14213b; font-size: 25px; line-height: 1.1; }
+.renewal-attendance-stat-copy small { margin-left: 7px; color: inherit; font-size: 14px; font-weight: 600; }
+.renewal-inbody-block { margin-top: 16px; border-top: 1px solid #dbe2ea; padding-top: 12px; }
+.renewal-inbody-section-heading { align-items: center; }
+.renewal-inbody-metric-tabs { gap: 5px; padding: 0; border-radius: 0; background: transparent; }
+.renewal-inbody-metric-tabs button { min-width: 92px; border: 1px solid #dbe2ea; border-radius: 7px; padding: 8px 13px; background: #fff; }
+.renewal-inbody-metric-tabs button.is-active { border-color: #f97316; background: #f97316; }
+.renewal-inbody-latest, .renewal-inbody-chart-card, .renewal-inbody-history { margin-top: 10px; padding: 0; border: 0; border-radius: 0; }
+.renewal-inbody-latest h3 { display: none; }
+.renewal-inbody-latest-values { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 0; }
+.renewal-inbody-latest-values > div { gap: 4px; min-width: 0; border: 1px solid #e2e8f0; border-radius: 7px; padding: 9px 14px; background: #fff; }
+.renewal-inbody-latest-values span { color: #536477; font-size: 14px; }
+.renewal-inbody-latest-values strong { overflow-wrap: anywhere; color: #14213b; font-size: 20px; }
+.renewal-inbody-latest-values .renewal-inbody-latest-date-card strong { font-size: 16px; }
+.renewal-inbody-chart-card { margin-top: 8px; }
+.renewal-inbody-chart-card h3 { margin-bottom: 7px; }
+.renewal-inbody-chart-wrap svg { max-height: 300px; }
+.renewal-inbody-history { margin-top: 8px; }
+.renewal-inbody-history-heading { margin-bottom: 7px; }
+.renewal-inbody-table-scroll { margin-top: 0; border: 1px solid #dbe4ee; border-radius: 6px; }
+.renewal-inbody-table-scroll th, .renewal-inbody-table-scroll td { padding: 7px 12px; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; color: #14213b; font-size: 13px; text-align: center; }
+.renewal-inbody-table-scroll th { color: #405572; background: #f4f7fa; }
+.renewal-inbody-pagination { margin-top: 9px; }
+.renewal-inbody-footnote { margin-top: 10px; }
+
+@media (max-width: 760px) {
+    .renewal-attendance-inbody { padding: 16px 14px 14px; }
+    .renewal-attendance-section-heading > div, .renewal-inbody-section-heading > div:first-child { flex-wrap: wrap; gap: 6px 10px; }
+    .renewal-attendance-stats { grid-template-columns: 1fr; }
+    .renewal-attendance-stat { min-height: 62px; padding: 9px 13px; }
+    .renewal-attendance-stat-icon { width: 46px; height: 46px; flex-basis: 46px; }
+    .renewal-attendance-stat-icon svg { width: 26px; height: 26px; }
+    .renewal-inbody-section-heading { align-items: stretch; }
+    .renewal-inbody-metric-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; }
+    .renewal-inbody-metric-tabs button { min-width: 0; padding: 8px 4px; }
+    .renewal-inbody-latest-values { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .renewal-inbody-latest-values > div { padding: 8px 10px; }
+    .renewal-inbody-latest-values strong { font-size: 17px; }
+    .renewal-inbody-history-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+    .renewal-inbody-pagination { flex-wrap: wrap; }
+}
+@media (max-width: 720px) { .renewal-attendance-block, .renewal-inbody-block { padding: 16px; } .renewal-attendance-stats { gap: 8px; } .renewal-attendance-stat { padding: 13px; } .renewal-attendance-stat strong { font-size: 24px; } .renewal-inbody-section-heading { align-items: flex-start; flex-direction: column; } .renewal-inbody-latest-values { gap: 10px; } .renewal-inbody-latest-values strong { font-size: 16px; } }
