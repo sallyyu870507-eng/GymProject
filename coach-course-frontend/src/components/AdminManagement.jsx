@@ -61,7 +61,7 @@ function AdminForm({ kind, initial, options, onClose, onSave }) {
         if (!body.coursename || !body.coursetype) throw new Error('請填寫課程名稱與類型。')
         if (!/^\d+(\.\d{1,2})?$/.test(String(form.price)) || !Number.isFinite(body.price) || body.price < 0 || body.price > 99999999.99) throw new Error('價格必須介於 0 至 99999999.99，最多兩位小數。')
       }
-      const base = isCoach ? '/api/coaches' : '/api/courses'
+      const base = isCoach ? '/api/admin/coaches' : '/api/admin/courses'
       const result = await adminRequest(form.id ? `${base}/${form.id}` : base, form.id ? 'PUT' : 'POST', body)
       const id = result?.[isCoach ? 'coachid' : 'courseid']
       if (!Number.isInteger(id)) throw new Error('儲存回應缺少有效 ID，請關閉表單並重新讀取列表確認，避免重複新增。')
@@ -69,7 +69,7 @@ function AdminForm({ kind, initial, options, onClose, onSave }) {
       // 基本資料成功後立刻記住 ID，部分失敗重試時使用 PUT。
       setForm(current => ({ ...current, id }))
       if (result.status !== form.status) await adminRequest(`${base}/${id}/status`, 'PATCH', { status: form.status })
-      if (isCoach) await adminRequest(`${base}/${id}/courses`, 'PUT', { courseids: form.selected })
+      if (isCoach) await adminRequest(`/api/relation/coaches/${id}/courses`, 'PUT', { courseids: form.selected })
       else await saveCourseCoaches(id, form.selected, options)
       await onSave()
       onClose()

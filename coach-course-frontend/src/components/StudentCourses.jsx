@@ -30,7 +30,7 @@ export default function StudentCourses() {
       try {
         // 先取得上架中的課程列表
         const courseList = await fetchJson(
-          '/api/student/courses',
+          '/api/member/student/courses',
           controller.signal,
         )
 
@@ -42,7 +42,7 @@ export default function StudentCourses() {
         const courseDetails = await Promise.all(
           courseList.map((course) =>
             fetchJson(
-              `/api/student/courses/${course.courseid}`,
+              `/api/member/student/courses/${course.courseid}`,
               controller.signal,
             ),
           ),

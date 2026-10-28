@@ -14,7 +14,7 @@ import tw.gymproject.dto.CourseUpdateRequest;
 import tw.gymproject.dto.CourseStatusRequest;
 
 @RestController
-@RequestMapping("/api/courses")
+@RequestMapping("/api/admin/courses")
 public class CourseController {
 
     private final CourseService courseService;
