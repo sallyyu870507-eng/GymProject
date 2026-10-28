@@ -2,22 +2,17 @@
    Coach Dashboard
 ===================================================== */
 
-
-/* =========================
-   整頁
-========================= */
-
-.coach-dashboard {
+.coach-dashboard-page {
   width: 100%;
   box-sizing: border-box;
 }
 
 
-/* =========================
+/* =====================================================
    頁面標題
-========================= */
+===================================================== */
 
-.coach-dashboard-title {
+.coach-page-title {
   margin: 0 0 24px;
 
   color: #18202B;
@@ -29,21 +24,20 @@
 }
 
 
-/* =========================
-   白色主卡
-========================= */
+/* =====================================================
+   主卡片
+===================================================== */
 
 .coach-dashboard-card {
   width: 100%;
 
   box-sizing: border-box;
 
-  padding: 30px 34px;
+  padding: 34px 40px;
 
   background-color: #FFFFFF;
 
-  border:
-    1px solid #E2E8F0;
+  border: 1px solid #DCE3EA;
 
   border-radius: 16px;
 
@@ -54,21 +48,21 @@
 
 
 /* =====================================================
-   日期
+   查詢日期
 ===================================================== */
 
-.coach-date-row {
+.coach-date-toolbar {
   display: flex;
 
   align-items: center;
 
-  gap: 14px;
+  gap: 16px;
 
-  margin-bottom: 28px;
+  margin-bottom: 30px;
 }
 
 
-.coach-date-row label {
+.coach-date-toolbar label {
   color: #18202B;
 
   font-size: 16px;
@@ -76,98 +70,90 @@
 }
 
 
-.coach-date-row input {
-  padding:
-    10px 14px;
+.coach-date-toolbar input {
+  height: 48px;
+
+  box-sizing: border-box;
+
+  padding: 0 16px;
 
   background-color: #FFFFFF;
 
-  border:
-    1px solid #CBD5E1;
+  border: 1px solid #CBD5E1;
 
-  border-radius: 8px;
+  border-radius: 9px;
 
   color: #18202B;
 
-  font-size: 15px;
+  font-size: 16px;
+
+  outline: none;
+}
+
+
+.coach-date-toolbar input:focus {
+  border-color: #FF651E;
+
+  box-shadow:
+    0 0 0 3px
+    rgba(255, 101, 30, 0.10);
 }
 
 
 /* =====================================================
-   統計卡
+   統計卡片
 ===================================================== */
 
-.dashboard-cards {
+.coach-stat-grid {
   display: grid;
 
   grid-template-columns:
     repeat(2, minmax(0, 1fr));
 
-  gap: 20px;
+  gap: 24px;
 
-  margin-bottom: 26px;
+  margin-bottom: 30px;
 }
 
 
-.dashboard-card {
-  position: relative;
-
-  min-height: 128px;
+.coach-stat-card {
+  min-height: 155px;
 
   box-sizing: border-box;
 
-  padding:
-    24px 28px;
+  padding: 28px 34px;
+
+  position: relative;
+
+  overflow: hidden;
 
   display: flex;
 
   align-items: center;
 
-  gap: 22px;
-
-  overflow: hidden;
+  gap: 24px;
 
   border-radius: 14px;
 }
 
 
-/* 課程 */
+.course-stat-card {
+  background-color: #FFF9F6;
 
-.course-count-card {
-  background:
-    linear-gradient(
-      135deg,
-      #FFF9F5,
-      #FFFDFB
-    );
-
-  border:
-    1px solid #FED7C3;
+  border: 1px solid #FFC7A8;
 }
 
 
-/* 學員 */
+.student-stat-card {
+  background-color: #F7FBFF;
 
-.student-count-card {
-  background:
-    linear-gradient(
-      135deg,
-      #F5FAFF,
-      #FBFDFF
-    );
-
-  border:
-    1px solid #D7E9F7;
+  border: 1px solid #CFE3F6;
 }
 
 
-/* =========================
-   Icon
-========================= */
-
-.dashboard-icon {
-  width: 64px;
-  height: 64px;
+.coach-stat-icon {
+  width: 62px;
+  height: 62px;
 
   flex-shrink: 0;
 
@@ -178,42 +164,37 @@
 
   border-radius: 50%;
 
-  font-size: 28px;
+  font-size: 27px;
 }
 
 
-.orange-icon {
-  background-color: #FFF0E7;
+.coach-stat-icon.orange {
+  background-color: #FFF0E8;
 }
 
 
-.blue-icon {
-  background-color: #E8F5FF;
+.coach-stat-icon.blue {
+  background-color: #EAF5FD;
 }
 
 
-/* =========================
-   統計文字
-========================= */
+.coach-stat-content {
+  display: flex;
 
-.dashboard-card-content {
-  position: relative;
+  flex-direction: column;
 
-  z-index: 2;
+  gap: 8px;
 }
 
 
-.dashboard-card-content p {
-  margin:
-    0 0 8px;
-
+.coach-stat-content > span {
   color: #64748B;
 
-  font-size: 15px;
+  font-size: 16px;
 }
 
 
-.dashboard-number-row {
+.coach-stat-content div {
   display: flex;
 
   align-items: baseline;
@@ -222,41 +203,36 @@
 }
 
 
-.dashboard-number-row strong {
+.coach-stat-content strong {
   color: #FF651E;
 
-  font-size: 40px;
+  font-size: 48px;
   font-weight: 700;
 
   line-height: 1;
 }
 
 
-.dashboard-number-row span {
-  color: #475569;
+.coach-stat-content small {
+  color: #64748B;
 
-  font-size: 15px;
+  font-size: 14px;
 }
 
 
-/* =========================
-   淡淡背景 icon
-========================= */
-
-.dashboard-watermark {
+.coach-stat-decoration {
   position: absolute;
 
-  right: 26px;
+  right: 40px;
   top: 50%;
 
-  transform:
-    translateY(-50%);
+  transform: translateY(-50%);
 
-  font-size: 76px;
+  color: #E8EBF0;
 
-  opacity: 0.07;
+  font-size: 58px;
 
-  pointer-events: none;
+  opacity: 0.7;
 }
 
 
@@ -268,45 +244,35 @@
   display: grid;
 
   grid-template-columns:
-    minmax(0, 1.05fr)
-    minmax(0, 1fr);
+    1.05fr 1fr;
 
-  gap: 22px;
-
-  align-items: stretch;
+  gap: 26px;
 }
 
 
 /* =====================================================
-   共用區塊
+   Panel
 ===================================================== */
 
-.schedule-section,
-.student-section {
+.coach-panel {
   min-width: 0;
+
+  overflow: hidden;
 
   background-color: #FFFFFF;
 
-  border:
-    1px solid #E2E8F0;
+  border: 1px solid #DCE3EA;
 
   border-radius: 14px;
-
-  overflow: hidden;
 }
 
 
-/* =========================
-   區塊標題
-========================= */
-
-.section-header {
-  min-height: 70px;
+.coach-panel-title {
+  min-height: 72px;
 
   box-sizing: border-box;
 
-  padding:
-    20px 26px;
+  padding: 0 28px;
 
   display: flex;
 
@@ -319,18 +285,18 @@
 }
 
 
-.section-header h3 {
+.coach-panel-title span {
+  font-size: 22px;
+}
+
+
+.coach-panel-title h3 {
   margin: 0;
 
   color: #18202B;
 
-  font-size: 20px;
+  font-size: 21px;
   font-weight: 700;
-}
-
-
-.section-icon {
-  font-size: 22px;
 }
 
 
@@ -338,235 +304,307 @@
    今日課表
 ===================================================== */
 
-.schedule-list {
-  padding: 24px;
+.coach-schedule-list {
+  padding: 28px;
 
   display: flex;
 
   flex-direction: column;
 
+  gap: 16px;
+}
+
+
+/* =====================================================
+   課表卡片
+===================================================== */
+
+.coach-schedule-card {
+  width: 100%;
+
+  min-height: 132px;
+
+  box-sizing: border-box;
+
+  padding: 20px 18px;
+
+  display: grid;
+
+  /*
+   * 時間縮窄
+   * 課程＋學員吃剩餘空間
+   * 按鈕固定在卡片內
+   */
+  grid-template-columns:
+    145px
+    1px
+    minmax(0, 1fr)
+    96px;
+
+  align-items: center;
+
+  column-gap: 16px;
+
+  background-color: #FFFFFF;
+
+  border: 1px solid #DCE3EA;
+
+  border-left:
+    6px solid #FFA46E;
+
+  border-radius: 12px;
+}
+
+
+/* =====================================================
+   時間區
+===================================================== */
+
+.schedule-time-column {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
   gap: 14px;
 }
 
 
-/* 單一課表 */
-
-.schedule-card {
-  position: relative;
-
-  min-height: 105px;
-
-  box-sizing: border-box;
-
-  padding:
-    20px 22px;
-
-  display: flex;
-
-  align-items: center;
-
-  background-color: #FFFFFF;
-
-  border:
-    1px solid #E2E8F0;
-
-  border-left:
-    5px solid #FFB27D;
-
-  border-radius: 10px;
-}
-
-
-/* 左側時間 */
-
-.schedule-left {
-  width: 190px;
-
-  flex-shrink: 0;
-}
-
-
-.schedule-time {
+.schedule-time-column strong {
   color: #FF651E;
 
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
+
+  white-space: nowrap;
 }
 
 
-/* 狀態 */
-
-.schedule-status {
-  display: inline-block;
-
-  margin-top: 10px;
-
+.schedule-time-column span {
   padding:
-    5px 10px;
+    7px 12px;
 
-  background-color: #FFF1E8;
+  background-color: #FFF0E8;
 
   border-radius: 999px;
 
   color: #FF651E;
 
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 13px;
+
+  white-space: nowrap;
 }
 
 
-/* 分隔 */
+/* =====================================================
+   分隔線
+===================================================== */
 
 .schedule-divider {
   width: 1px;
 
-  align-self: stretch;
+  height: 82px;
 
-  margin:
-    0 24px;
+  justify-self: center;
 
   background-color: #E2E8F0;
 }
 
 
-/* 課程 */
+/* =====================================================
+   課程＋學員
+===================================================== */
 
-.schedule-info {
-  flex: 1;
-
+.schedule-info-column {
   min-width: 0;
+
+  padding-left: 10px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+
+  gap: 12px;
 }
 
 
-.schedule-info h4 {
-  margin:
-    0 0 9px;
+.schedule-info-column h4 {
+  margin: 0;
 
   color: #18202B;
 
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 700;
+
+  line-height: 1.4;
+
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
 }
 
 
-.schedule-info p {
+.schedule-info-column p {
   margin: 0;
 
   color: #64748B;
 
-  font-size: 14px;
-}
+  font-size: 15px;
 
+  line-height: 1.5;
 
-/* 箭頭 */
+  white-space: nowrap;
 
-.schedule-arrow {
-  margin-left: 16px;
+  overflow: hidden;
 
-  color: #94A3B8;
-
-  font-size: 34px;
-
-  line-height: 1;
+  text-overflow: ellipsis;
 }
 
 
 /* =====================================================
-   今日學員
+   查看預約按鈕
 ===================================================== */
 
-.student-table-wrapper {
+.schedule-action-column {
+  width: 96px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+
+.schedule-detail-button {
+  width: 96px;
+
+  box-sizing: border-box;
+
   padding:
-    18px 24px 24px;
+    10px 8px;
 
-  overflow-x: auto;
-}
+  background-color: #FFFFFF;
 
+  border:
+    1px solid #FF651E;
 
-.student-table {
-  width: 100%;
+  border-radius: 8px;
 
-  border-collapse: collapse;
+  color: #FF651E;
 
-  table-layout: auto;
-}
-
-
-/* =========================
-   Header
-========================= */
-
-.student-table thead {
-  background-color: #F4F6F8;
-}
-
-
-.student-table th {
-  padding:
-    16px 14px;
-
-  color: #475569;
-
-  text-align: left;
+  font-family: inherit;
 
   font-size: 14px;
   font-weight: 700;
 
   white-space: nowrap;
 
-  border-bottom:
-    1px solid #E2E8F0;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 
-/* =========================
-   Body
-========================= */
+.schedule-detail-button:hover {
+  background-color: #FF651E;
 
-.student-table td {
+  border-color: #FF651E;
+
+  color: #FFFFFF;
+
+  box-shadow:
+    0 4px 12px
+    rgba(255, 101, 30, 0.15);
+}
+
+
+/* =====================================================
+   Empty
+===================================================== */
+
+.coach-empty {
+  min-height: 120px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #94A3B8;
+
+  font-size: 15px;
+}
+
+
+/* =====================================================
+   今日學員 Table
+===================================================== */
+
+.coach-student-table-wrapper {
   padding:
-    17px 14px;
+    24px 28px 28px;
+
+  overflow-x: auto;
+}
+
+
+.coach-student-table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+
+.coach-student-table thead {
+  background-color: #F4F6F8;
+}
+
+
+.coach-student-table th {
+  padding:
+    20px 16px;
+
+  color: #475569;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  text-align: left;
+}
+
+
+.coach-student-table td {
+  padding:
+    22px 16px;
+
+  border-bottom:
+    1px solid #E2E8F0;
 
   color: #18202B;
 
   font-size: 14px;
 
-  border-bottom:
-    1px solid #E2E8F0;
-
-  vertical-align: middle;
+  white-space: nowrap;
 }
 
 
-.student-table tbody tr:last-child td {
+.coach-student-table tbody
+tr:last-child td {
   border-bottom: none;
 }
 
-
-.student-table tbody tr:hover {
-  background-color: #FAFBFC;
-}
-
-
-/* =========================
-   編號
-========================= */
-
-.student-number-column {
-  width: 44px;
-}
-
-
-.student-number {
-  color: #64748B;
-
-  font-weight: 600;
-}
-
-
-/* =========================
-   學員
-========================= */
 
 .student-name-cell {
   display: flex;
@@ -574,8 +612,6 @@
   align-items: center;
 
   gap: 10px;
-
-  white-space: nowrap;
 }
 
 
@@ -590,49 +626,457 @@
   align-items: center;
   justify-content: center;
 
-  background-color: #F1F5F9;
+  background-color: #F1F3F8;
 
   border-radius: 50%;
-
-  font-size: 18px;
-}
-
-
-.student-name-cell strong {
-  color: #18202B;
-
-  font-size: 14px;
 }
 
 
 /* =====================================================
-   空資料 / Error
+   Modal Overlay
 ===================================================== */
 
-.empty-coach-data {
+.booking-detail-overlay {
+  position: fixed;
+
+  inset: 0;
+
+  z-index: 9999;
+
+  box-sizing: border-box;
+
+  padding: 24px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color:
+    rgba(15, 23, 42, 0.46);
+
+  backdrop-filter:
+    blur(2px);
+}
+
+
+/* =====================================================
+   Modal
+===================================================== */
+
+.booking-detail-modal {
+  width:
+    min(560px, 96vw);
+
+  box-sizing: border-box;
+
   padding:
-    55px 20px;
+    28px 30px 30px;
 
-  color: #94A3B8;
+  background-color: #FFFFFF;
 
-  text-align: center;
+  border-radius: 16px;
+
+  box-shadow:
+    0 24px 70px
+    rgba(15, 23, 42, 0.28);
+
+  animation:
+    bookingModalOpen
+    0.18s ease;
+}
+
+
+@keyframes bookingModalOpen {
+
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(10px)
+      scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+}
+
+
+/* =====================================================
+   Modal Header
+===================================================== */
+
+.booking-detail-header {
+  width: 100%;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  margin-bottom: 18px;
+
+  text-align: left;
+}
+
+
+/* 標題＋說明整組靠左 */
+
+.booking-detail-header > div {
+  flex: 1;
+
+  margin: 0;
+
+  text-align: left;
+}
+
+
+.booking-detail-header h3 {
+  margin: 0;
+
+  color: #18202B;
+
+  font-size: 23px;
+  font-weight: 700;
+
+  text-align: left;
+}
+
+
+.booking-detail-header p {
+  margin: 7px 0 0;
+
+  color: #64748B;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  text-align: left;
+}
+
+
+/* 右上角 X */
+
+.booking-detail-close {
+  width: 36px;
+  height: 36px;
+
+  flex-shrink: 0;
+
+  margin: -4px -4px 0 0;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+
+  background-color: transparent;
+
+  color: #64748B;
+
+  font-size: 30px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+
+/* =====================================================
+   預約狀態
+===================================================== */
+
+.booking-detail-status {
+  width: fit-content;
+
+  margin-bottom: 20px;
+
+  padding:
+    7px 13px;
+
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  background-color: #FFF1EA;
+
+  border-radius: 999px;
+
+  color: #FF651E;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  background-color: #FF651E;
+
+  border-radius: 50%;
+}
+
+
+/* =====================================================
+   預約內容
+===================================================== */
+
+.booking-detail-content {
+  box-sizing: border-box;
+
+  padding:
+    18px 20px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+
+  background-color: #F6F8FA;
+
+  border-radius: 11px;
+}
+
+
+.booking-detail-row {
+  min-height: 42px;
+
+  display: grid;
+
+  grid-template-columns:
+    32px
+    70px
+    1fr;
+
+  align-items: center;
+
+  column-gap: 7px;
+}
+
+
+.booking-detail-icon {
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  color: #34506C;
+
+  font-size: 16px;
+}
+
+
+.booking-detail-row > span {
+  color: #64748B;
 
   font-size: 14px;
 }
 
 
-.coach-message {
-  padding:
-    50px 20px;
+.booking-detail-row strong {
+  color: #18202B;
 
-  color: #64748B;
-
-  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
 }
 
 
-.coach-message.error {
-  color: #DC2626;
+/* =====================================================
+   Warning
+===================================================== */
+
+.booking-detail-warning {
+  margin-top: 18px;
+
+  box-sizing: border-box;
+
+  padding:
+    13px 15px;
+
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 10px;
+
+  background-color: #FFF9F4;
+
+  border:
+    1px solid #FFE2D1;
+
+  border-radius: 9px;
+}
+
+
+.booking-detail-warning > span {
+  width: 20px;
+  height: 20px;
+
+  flex-shrink: 0;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 1px;
+
+  background-color: #FF651E;
+
+  border-radius: 50%;
+
+  color: #FFFFFF;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+
+.booking-detail-warning p {
+  margin: 0;
+
+  color: #7C5A47;
+
+  font-size: 13px;
+
+  line-height: 1.6;
+}
+
+
+/* =====================================================
+   過期預約
+===================================================== */
+
+.booking-detail-warning.disabled-warning {
+  background-color: #F4F5F7;
+
+  border-color: #DCE3EA;
+}
+
+
+.booking-detail-warning.disabled-warning > span {
+  background-color: #94A3B8;
+}
+
+
+.booking-detail-warning.disabled-warning p {
+  color: #64748B;
+}
+
+
+/* =====================================================
+   Modal Buttons
+===================================================== */
+
+.booking-detail-actions {
+  margin-top: 24px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: flex-end;
+
+  gap: 12px;
+}
+
+
+.booking-detail-back-btn,
+.booking-detail-cancel-btn {
+  min-width: 120px;
+
+  box-sizing: border-box;
+
+  padding:
+    12px 22px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+
+/* 關閉 */
+
+.booking-detail-back-btn {
+  background-color: #FFFFFF;
+
+  border:
+    1px solid #CBD5E1;
+
+  color: #18202B;
+}
+
+
+.booking-detail-back-btn:hover:not(:disabled) {
+  background-color: #F8FAFC;
+
+  border-color: #94A3B8;
+}
+
+
+/* 取消 */
+
+.booking-detail-cancel-btn {
+  background-color: #FF651E;
+
+  border:
+    1px solid #FF651E;
+
+  color: #FFFFFF;
+}
+
+
+.booking-detail-cancel-btn:hover:not(:disabled) {
+  background-color: #EB5A18;
+
+  border-color: #EB5A18;
+}
+
+
+/* disabled */
+
+.booking-detail-back-btn:disabled,
+.booking-detail-cancel-btn:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+.booking-detail-cancel-btn:disabled {
+  background-color: #CBD5E1;
+
+  border-color: #CBD5E1;
+
+  color: #FFFFFF;
 }
 
 
@@ -640,36 +1084,61 @@
    RWD
 ===================================================== */
 
-@media (max-width: 1100px) {
+@media (max-width: 1150px) {
 
   .coach-content-grid {
     grid-template-columns: 1fr;
   }
 
+
+  .coach-schedule-card {
+    grid-template-columns:
+      145px
+      1px
+      minmax(0, 1fr)
+      96px;
+  }
+
 }
 
 
-@media (max-width: 800px) {
+@media (max-width: 850px) {
 
   .coach-dashboard-card {
     padding:
-      24px 20px;
+      26px 22px;
   }
 
 
-  .dashboard-cards {
+  .coach-stat-grid {
     grid-template-columns: 1fr;
   }
 
 
-  .schedule-left {
-    width: 150px;
+  .coach-schedule-card {
+    grid-template-columns:
+      135px
+      1px
+      minmax(0, 1fr);
+
+    row-gap: 16px;
   }
 
 
-  .schedule-divider {
-    margin:
-      0 16px;
+  .schedule-action-column {
+    width: auto;
+
+    grid-column:
+      1 / -1;
+
+    justify-content: flex-end;
+  }
+
+
+  .schedule-detail-button {
+    width: auto;
+
+    min-width: 110px;
   }
 
 }
@@ -677,41 +1146,100 @@
 
 @media (max-width: 600px) {
 
-  .coach-dashboard-title {
+  .coach-page-title {
     font-size: 24px;
   }
 
 
-  .coach-date-row {
-    align-items: flex-start;
-
-    flex-direction: column;
+  .coach-dashboard-card {
+    padding:
+      20px 16px;
   }
 
 
-  .schedule-card {
-    align-items: flex-start;
-
+  .coach-date-toolbar {
     flex-direction: column;
+
+    align-items: flex-start;
   }
 
 
-  .schedule-left {
-    width: 100%;
+  .coach-stat-card {
+    padding: 22px;
+  }
+
+
+  .coach-schedule-list,
+  .coach-student-table-wrapper {
+    padding: 18px;
+  }
+
+
+  .coach-schedule-card {
+    grid-template-columns: 1fr;
+
+    gap: 16px;
+  }
+
+
+  .schedule-time-column {
+    align-items: flex-start;
   }
 
 
   .schedule-divider {
-    width: 100%;
-    height: 1px;
-
-    margin:
-      16px 0;
+    display: none;
   }
 
 
-  .schedule-arrow {
-    display: none;
+  .schedule-info-column {
+    padding-left: 0;
+  }
+
+
+  .schedule-action-column {
+    width: 100%;
+
+    grid-column: auto;
+
+    justify-content: stretch;
+  }
+
+
+  .schedule-detail-button {
+    width: 100%;
+  }
+
+
+  .booking-detail-overlay {
+    padding: 10px;
+  }
+
+
+  .booking-detail-modal {
+    padding:
+      22px 18px;
+  }
+
+
+  .booking-detail-row {
+    grid-template-columns:
+      30px
+      58px
+      minmax(0, 1fr);
+  }
+
+
+  .booking-detail-actions {
+    justify-content: stretch;
+  }
+
+
+  .booking-detail-back-btn,
+  .booking-detail-cancel-btn {
+    flex: 1;
+
+    min-width: 0;
   }
 
 }
