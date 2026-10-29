@@ -127,6 +127,7 @@ public interface BookingRepository
     @Query(value = """
             SELECT
                 b.bookingid,
+                b.membercourseid,
                 c.coursename,
                 co.name,
                 cs.classdate,

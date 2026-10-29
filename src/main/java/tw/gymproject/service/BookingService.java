@@ -300,42 +300,46 @@ public class BookingService {
                     ((Number) row[0]).intValue()
             );
 
+            dto.setMembercourseid(
+                    ((Number) row[1]).intValue()
+            );
+
             dto.setCoursename(
-                    (String) row[1]
+                    (String) row[2]
             );
 
             dto.setCoachname(
-                    (String) row[2]
+                    (String) row[3]
             );
 
             dto.setClassdate(
                     convertToLocalDate(
-                            row[3]
+                            row[4]
                     )
             );
 
             dto.setStarttime(
                     convertToLocalTime(
-                            row[4]
+                            row[5]
                     )
             );
 
             dto.setEndtime(
                     convertToLocalTime(
-                            row[5]
+                            row[6]
                     )
             );
 
             dto.setClassroom(
-                    row[6] == null
+                    row[7] == null
                             ? null
-                            : row[6].toString()
+                            : row[7].toString()
             );
 
             dto.setBookingstatus(
-                    (String) row[7]
+                    (String) row[8]
             );
-
+            
             result.add(dto);
         }
 
