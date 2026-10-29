@@ -1,12 +1,33 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AvatarPlaceholder, MetaList, MiniStats, Placeholder } from '../../components/skeleton';
 import { Card } from '../../components/ui';
+import { todayISO } from '../../utils/format';
 
 /** 學員首頁：依 Figma 線框稿（下一堂課 + 2×2 卡片） */
 export default function StudentHome() {
+  const [date, setDate] = useState(todayISO);
+  const isToday = date === todayISO();
+
   return (
     <div className="page">
-      <h1 className="hello">你好，學員</h1>
+      <div className="page-head">
+        <label className="date-picker">
+          查看日期
+          <input
+            type="date"
+            value={date}
+            min="2000-01-01"
+            max="2099-12-31"
+            onChange={(e) => e.target.value && setDate(e.target.value)}
+          />
+          {!isToday && (
+            <button type="button" className="btn btn-small" onClick={() => setDate(todayISO())}>
+              回到今天
+            </button>
+          )}
+        </label>
+      </div>
 
       <section className="card next-bar">
         <h2>下一堂課</h2>

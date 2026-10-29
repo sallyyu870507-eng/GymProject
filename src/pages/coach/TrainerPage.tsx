@@ -11,7 +11,6 @@ export default function TrainerPage() {
   return (
     <div className="page page-fill">
       <div className="page-head">
-        <h1 className="hello">你好，教練</h1>
         <label className="date-picker">
           查看日期
           <input
@@ -33,7 +32,6 @@ export default function TrainerPage() {
         <StatTile label={isToday ? '今日課程數' : '當日課程數'} value="—" unit="堂" />
         <StatTile label={isToday ? '今日學員數' : '當日學員數'} value="—" unit="位" hint="不重複學員" />
         <StatTile label="下一堂" value="—" />
-        <StatTile label="全館預約率" value="—" hint="已預約 ÷（已預約＋可預約）" />
       </div>
 
       <Card title="今日教學課表" subtitle={fmtMonthDay(date)} className="card-fill">

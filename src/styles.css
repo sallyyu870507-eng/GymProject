@@ -1301,6 +1301,7 @@ img.avatar {
 }
 
 .date-picker {
+  margin-left: auto;
   display: inline-flex;
   align-items: center;
   gap: 8px;
