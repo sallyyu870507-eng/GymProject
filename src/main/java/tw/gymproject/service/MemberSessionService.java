@@ -1,38 +1,37 @@
 package tw.gymproject.service;
 
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpSession;
 import tw.gymproject.dto.LoginResultDTO;
-import tw.gymproject.entity.Member;
-import tw.gymproject.exception.ForbiddenException;
-import tw.gymproject.exception.UnauthorizedException;
-import tw.gymproject.repository.MemberRepository;
 
 /**
- * 從 Session 取出目前登入的會員編號（寫法比照 CoachSessionService）。
+ * 從 Session 取出目前登入的會員編號。
+ * 登入由組員的 LoginController 負責，它會把 LoginResultDTO 放在 session 的 "user"。
  */
 @Service
 public class MemberSessionService {
 
-    private final MemberRepository memberRepository;
+    private final NamedParameterJdbcTemplate jdbc;
 
-    public MemberSessionService(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
+    public MemberSessionService(NamedParameterJdbcTemplate jdbc) {
+        this.jdbc = jdbc;
     }
 
     public Integer getCurrentMemberId(HttpSession session) {
-        if (session == null) {
-            throw new UnauthorizedException("尚未登入或登入已失效");
-        }
-
-        Object sessionUser = session.getAttribute("user");
+        Object sessionUser = session == null ? null : session.getAttribute("user");
         if (!(sessionUser instanceof LoginResultDTO user)) {
-            throw new UnauthorizedException("尚未登入或登入已失效");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "尚未登入或登入已失效");
         }
 
         if (!"member".equalsIgnoreCase(user.getRole())) {
-            throw new ForbiddenException("目前登入身分不是會員");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "目前登入身分不是會員");
         }
 
         // 登入時通常已經放好 memberid；沒有的話用 accountid 反查
@@ -40,11 +39,15 @@ public class MemberSessionService {
             return user.getMemberid();
         }
         if (user.getAccountid() == null) {
-            throw new UnauthorizedException("登入資料不完整，請重新登入");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "登入資料不完整，請重新登入");
         }
-        return memberRepository
-                .findByAccount_Accountid(user.getAccountid())
-                .map(Member::getMemberid)
-                .orElseThrow(() -> new ForbiddenException("找不到登入帳號對應的會員"));
+        List<Integer> ids = jdbc.queryForList(
+                "SELECT memberid FROM member WHERE accountid = :accountid",
+                new MapSqlParameterSource("accountid", user.getAccountid()),
+                Integer.class);
+        if (ids.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "找不到登入帳號對應的會員");
+        }
+        return ids.get(0);
     }
 }

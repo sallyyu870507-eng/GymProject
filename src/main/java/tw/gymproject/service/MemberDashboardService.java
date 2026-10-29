@@ -10,12 +10,13 @@ import java.util.TreeMap;
 
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import tw.gymproject.dto.member.MemberInBodyResponse;
 import tw.gymproject.dto.member.MemberProfileResponse;
 import tw.gymproject.dto.member.WeeklyAttendanceResponse;
-import tw.gymproject.exception.ResourceNotFoundException;
 
 /**
  * 會員端 Dashboard 用的唯讀查詢：個人資料、每週出席次數、InBody 紀錄。
@@ -55,7 +56,7 @@ public class MemberDashboardService {
                         trim(rs.getString("status"))));
 
         if (rows.isEmpty()) {
-            throw new ResourceNotFoundException("找不到會員資料");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "找不到會員資料");
         }
         return rows.get(0);
     }
