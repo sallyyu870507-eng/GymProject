@@ -133,6 +133,12 @@ public class CoachManagementService {
 
         coach.setStatus(request.getStatus());
 
+        Useraccount account = coach.getAccount();
+        if (account != null) {
+            account.setStatus(request.getStatus());
+            accountRepository.save(account);
+        }
+
         return coachRepository.save(coach);
     }
 
