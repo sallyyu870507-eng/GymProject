@@ -66,102 +66,24 @@ h3 {
   font-weight: 500;
 }
 
-/* ───────────── 版面 ───────────── */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--panel);
-  border-bottom: 1px solid var(--line);
+/* ───────────── 版面：左邊是組員的 Sidebar（樣式在 components/Sidebar.css），右邊是頁面 ───────────── */
+.app-layout {
+  display: flex;
+  min-height: 100vh;
 }
 
-.topbar-inner,
-.tabs,
 .main {
+  flex: 1;
+  min-width: 0;
   max-width: 1200px;
   margin: 0 auto;
-  padding-inline: 16px;
+  padding: 24px 24px 48px;
 }
 
-.topbar-inner {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  height: 56px;
-}
-
-.brand {
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--fg);
-  text-decoration: none;
-  white-space: nowrap;
-}
-
-.brand-lg {
-  font-size: 22px;
-}
-
-.role-tag,
-.mock-tag {
-  font-size: 12px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  color: var(--muted);
-}
-
-.mock-tag {
-  color: var(--warn);
-  border-color: var(--warn);
-}
-
-.role-tag,
-.mock-tag {
-  white-space: nowrap;
-}
-
-@media (max-width: 560px) {
-  .role-tag,
-  .mock-tag {
-    display: none;
+@media (max-width: 700px) {
+  .main {
+    padding: 20px 12px 40px;
   }
-  .topbar-inner {
-    gap: 8px;
-  }
-}
-
-.spacer {
-  flex: 1;
-}
-
-.tabs {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.tab {
-  padding: 10px 12px;
-  color: var(--muted);
-  text-decoration: none;
-  border-bottom: 2px solid transparent;
-  white-space: nowrap;
-}
-
-.tab:hover {
-  color: var(--fg);
-}
-
-.tab.active {
-  color: var(--fg);
-  border-bottom-color: var(--fg);
-  font-weight: 500;
-}
-
-.main {
-  padding-block: 24px 48px;
 }
 
 .page {
@@ -1399,4 +1321,92 @@ img.avatar {
 /* 改期對話框：放得下月曆＋時段 */
 .dialog-wide {
   width: min(100%, 760px);
+}
+
+.form-grid .field-wide {
+  grid-column: 1 / -1;
+}
+
+/* 教練可授課程勾選清單 */
+.check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+  gap: 8px;
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.check-item:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft, var(--well));
+}
+
+.check-item input {
+  margin-top: 3px;
+}
+
+.check-item span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.tag-list .tag {
+  white-space: nowrap;
+}
+
+/* ───────────── 版面骨架：之後接上資料時替換的預留區塊 ───────────── */
+.placeholder {
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: var(--well);
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.avatar.avatar-empty {
+  background: var(--well);
+  border: 1px dashed var(--line);
+}
+
+/* ───────────── 延伸到視窗底部（教練首頁的今日教學課表） ───────────── */
+.page-fill {
+  /* 視窗高度扣掉 .main 上下的 padding（24 + 48） */
+  min-height: calc(100vh - 72px);
+}
+
+.card-fill {
+  flex: 1;
+}
+
+.table-wrap.table-fill {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-height: none;
+}
+
+.empty-fill {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  min-height: 160px;
 }

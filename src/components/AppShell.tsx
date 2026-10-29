@@ -1,75 +1,32 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { USE_MOCK } from '../api/mock';
-import type { Role } from '../api/types';
-import { HOME, ROLE_LABEL, useAuth } from '../auth/AuthContext';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
+import Sidebar from './Sidebar';
 
-const NAV: Record<Role, { to: string; label: string; end?: boolean }[]> = {
-  member: [
-    { to: '/student', label: '總覽', end: true },
-    { to: '/student/remind', label: '課堂提醒' },
-    { to: '/student/profile', label: '會員管理' },
-    { to: '/student/inbody', label: 'InBody 分析' },
-    { to: '/student/courses', label: '課程管理' },
-    { to: '/student/bookings', label: '預約管理' },
-  ],
-  coach: [
-    { to: '/trainer', label: '今日教學課表', end: true },
-    { to: '/trainer/members', label: '我的學員' },
-  ],
-  admin: [{ to: '/manage', label: '會員管理', end: true }],
-};
-
+/**
+ * 版面：左側用組員的 Sidebar（feature/frontend-fangyu 的 src/components/Sidebar.jsx，原檔不修改），
+ * 右側放頁面內容。
+ *
+ * 依網址決定角色：/student → member、/trainer → coach。
+ * Sidebar 的選單 key 對應網址：'home' → /student 或 /trainer，其他 key → /student/{key}、/trainer/{key}
+ * （那些頁面由組員製作，還沒加入前會導回首頁）。
+ */
 export function AppShell() {
-  const { user, logout, testLogin } = useAuth();
+  const { pathname } = useLocation();
   const navigate = useNavigate();
-  if (!user) return null;
 
-  const switchRole = async (role: Role) => {
-    await testLogin(role);
-    navigate(HOME[role]);
-  };
+  const base = pathname.startsWith('/trainer') ? '/trainer' : '/student';
+  const role = base === '/trainer' ? 'coach' : 'member';
+  const rest = pathname.slice(base.length).replace(/^\//, '').split('/')[0];
+  const activeItem = rest || 'home';
 
   return (
-    <div className="shell">
-      <header className="topbar">
-        <div className="topbar-inner">
-          <Link to={HOME[user.role]} className="brand">
-            POWER GYM
-          </Link>
-          <span className="role-tag">{ROLE_LABEL[user.role]}端</span>
-          {USE_MOCK && <span className="mock-tag">示範資料</span>}
-          <div className="spacer" />
-          {USE_MOCK && (
-            <select
-              className="select"
-              aria-label="切換角色（示範用）"
-              value={user.role}
-              onChange={(e) => void switchRole(e.target.value as Role)}
-            >
-              <option value="member">看學員端</option>
-              <option value="coach">看教練端</option>
-              <option value="admin">看管理員端</option>
-            </select>
-          )}
-          <button
-            type="button"
-            className="btn btn-ghost"
-            onClick={async () => {
-              await logout();
-              navigate('/signin');
-            }}
-          >
-            登出
-          </button>
-        </div>
-        <nav className="tabs" aria-label="功能選單">
-          {NAV[user.role].map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end} className="tab">
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-      </header>
+    <div className="app-layout">
+      {/* Sidebar 只在第一次出現時讀 role，換角色時用 key 讓它重新建立 */}
+      <Sidebar
+        key={role}
+        role={role}
+        activeItem={activeItem}
+        onNavigate={(key) => navigate(key === 'home' ? base : `${base}/${key}`)}
+      />
       <main className="main">
         <Outlet />
       </main>

@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import type { ApiState } from '../hooks/useApi';
 
 /* ───────────── 卡片 ───────────── */
 
@@ -103,30 +102,6 @@ const STATUS_TEXT: Record<string, string> = {
 export function StatusPill({ status }: { status: string }) {
   const key = (status ?? '').trim().toLowerCase();
   return <span className={`pill pill-${key}`}>{STATUS_TEXT[key] ?? status}</span>;
-}
-
-/* ───────────── 讀取中 / 錯誤 ───────────── */
-
-interface AsyncViewProps<T> {
-  state: ApiState<T>;
-  children: (data: T) => ReactNode;
-  minHeight?: number;
-}
-
-/** 依 API 狀態顯示骨架、錯誤訊息（含重試）或內容 */
-export function AsyncView<T>({ state, children, minHeight = 80 }: AsyncViewProps<T>) {
-  if (state.error) {
-    return (
-      <div className="error-box" style={{ minHeight }}>
-        <span>{state.error.message}</span>
-        <button type="button" className="btn btn-small" onClick={state.reload}>
-          重試
-        </button>
-      </div>
-    );
-  }
-  if (state.data === undefined) return <div className="skeleton" style={{ minHeight }} />;
-  return <div className={state.loading ? 'is-refreshing' : undefined}>{children(state.data)}</div>;
 }
 
 /* ───────────── 進度條 ───────────── */
