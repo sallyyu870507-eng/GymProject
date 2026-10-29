@@ -735,6 +735,34 @@
   cursor: not-allowed;
 }
 
+.selected-date-summary {
+	width: 76%;
+
+	max-width: 980px;
+
+  margin: 20px auto 0;
+  padding: 18px 22px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  background: #f5f6f8;
+  border-radius: 12px;
+
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.selected-date-summary span {
+  color: #667085;
+}
+
+.selected-date-summary strong {
+  color: #18202b;
+  font-weight: 700;
+}
 
 /* =====================================================
    Step 3 時段
@@ -840,6 +868,7 @@
 .time-card.selected-time span {
   color: #FF651E;
 }
+
 
 
 /* =========================

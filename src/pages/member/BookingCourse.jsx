@@ -71,7 +71,7 @@ function BookingCourse() {
   const loadCourses = () => {
 
     return fetch(
-      'http://localhost:8080/members/courses',
+      'http://localhost:8080/api/member/courses',
       {
         method: 'GET',
         credentials: 'include'
@@ -84,7 +84,6 @@ function BookingCourse() {
           throw new Error(
             '取得課程失敗'
           )
-
         }
 
         return response.json()
@@ -100,7 +99,6 @@ function BookingCourse() {
         setCourses(data)
 
       })
-
   }
 
 
@@ -134,12 +132,13 @@ function BookingCourse() {
       currentStep !== 2 ||
       selectedCourse === null
     ) {
+
       return
     }
 
 
     fetch(
-      `http://localhost:8080/members/courses/${selectedCourse}/available-dates`,
+      `http://localhost:8080/api/member/courses/${selectedCourse}/available-dates`,
       {
         method: 'GET',
         credentials: 'include'
@@ -152,7 +151,6 @@ function BookingCourse() {
           throw new Error(
             '取得可預約日期失敗'
           )
-
         }
 
         return response.json()
@@ -195,6 +193,7 @@ function BookingCourse() {
       selectedCourse === null ||
       selectedDate === null
     ) {
+
       return
     }
 
@@ -206,7 +205,7 @@ function BookingCourse() {
 
 
     fetch(
-      `http://localhost:8080/members/courses/${selectedCourse}/schedules?date=${dateString}`,
+      `http://localhost:8080/api/member/courses/${selectedCourse}/schedules?date=${dateString}`,
       {
         method: 'GET',
         credentials: 'include'
@@ -219,7 +218,6 @@ function BookingCourse() {
           throw new Error(
             '取得時段失敗'
           )
-
         }
 
         return response.json()
@@ -286,6 +284,7 @@ function BookingCourse() {
       selectedCourse === null ||
       selectedTime === null
     ) {
+
       return
     }
 
@@ -310,7 +309,7 @@ function BookingCourse() {
 
 
     fetch(
-      'http://localhost:8080/booking',
+      'http://localhost:8080/api/member/bookings',
       {
         method: 'POST',
 
@@ -335,7 +334,6 @@ function BookingCourse() {
             await response.text()
 
           throw new Error(message)
-
         }
 
         return response.json()
@@ -349,12 +347,9 @@ function BookingCourse() {
       .then(() => {
 
         /*
-         * 注意：
-         * 這裡不能 setScheduleOptions([])
-         *
-         * 因為 Step 4 還需要
-         * selectedScheduleData
-         * 顯示最後預約的時段。
+         * 這裡不能清空 scheduleOptions
+         * 因為 Step 4 還需要 selectedScheduleData
+         * 顯示最後預約成功的時段
          */
 
         setIsBooking(false)
@@ -377,7 +372,25 @@ function BookingCourse() {
         )
 
       })
+  }
 
+
+  // =====================================================
+  // 預約完成後重新預約
+  // =====================================================
+
+  const handleBookingAgain = () => {
+
+    setCurrentStep(1)
+
+    setSelectedCourse(null)
+    setSelectedDate(null)
+    setSelectedTime(null)
+
+    setAvailableDates([])
+    setScheduleOptions([])
+
+    setIsBooking(false)
   }
 
 
@@ -386,36 +399,20 @@ function BookingCourse() {
     <div className="booking-course-page">
 
 
-      {/* =================================================
-          卡片外頁面標題
-      ================================================= */}
-
       <h2 className="booking-course-title">
-
         預約課程
-
       </h2>
 
-
-      {/* =================================================
-          白色大卡片
-      ================================================= */}
 
       <section className="booking-page">
 
 
-        {/* =================================================
-            上方說明
-        ================================================= */}
-
         <div className="booking-header">
 
           <p>
-
             請依序完成以下步驟，
             選擇您已購買的課程後，
             再選擇日期與時段。
-
           </p>
 
         </div>
@@ -428,8 +425,6 @@ function BookingCourse() {
         <div className="booking-steps">
 
 
-          {/* Step 1 */}
-
           <div className="step-group">
 
             <div
@@ -441,15 +436,11 @@ function BookingCourse() {
             >
 
               <div className="step-number">
-
                 1
-
               </div>
 
               <span>
-
                 選擇課程
-
               </span>
 
             </div>
@@ -466,8 +457,6 @@ function BookingCourse() {
           </div>
 
 
-          {/* Step 2 */}
-
           <div className="step-group">
 
             <div
@@ -479,15 +468,11 @@ function BookingCourse() {
             >
 
               <div className="step-number">
-
                 2
-
               </div>
 
               <span>
-
                 選擇日期
-
               </span>
 
             </div>
@@ -504,8 +489,6 @@ function BookingCourse() {
           </div>
 
 
-          {/* Step 3 */}
-
           <div className="step-group">
 
             <div
@@ -517,15 +500,11 @@ function BookingCourse() {
             >
 
               <div className="step-number">
-
                 3
-
               </div>
 
               <span>
-
                 選擇時段
-
               </span>
 
             </div>
@@ -542,8 +521,6 @@ function BookingCourse() {
           </div>
 
 
-          {/* Step 4 */}
-
           <div className="step-group">
 
             <div
@@ -555,15 +532,11 @@ function BookingCourse() {
             >
 
               <div className="step-number">
-
                 4
-
               </div>
 
               <span>
-
                 預約完成
-
               </span>
 
             </div>
@@ -575,709 +548,495 @@ function BookingCourse() {
 
         {/* =================================================
             STEP 1
-            選擇課程
         ================================================= */}
 
-        {currentStep === 1 && (
+        {
+          currentStep === 1 && (
 
-          <div className="course-section">
+            <div className="course-section">
 
+              <div className="section-title">
 
-            <div className="section-title">
+                <h3>
+                  選擇您已購買的課程
+                </h3>
 
-              <h3>
+                <p>
+                  請選擇本次想要預約的課程。
+                </p>
 
-                選擇您已購買的課程
-
-              </h3>
-
-              <p>
-
-                請選擇本次想要預約的課程。
-
-              </p>
-
-            </div>
+              </div>
 
 
-            <div className="course-list">
+              <div className="course-list">
 
+                {
+                  courses.map(course => {
 
-              {courses.map(course => {
-
-                const isSelected =
-                  selectedCourse ===
-                  course.membercourseid
-
-
-                return (
-
-                  <div
-                    key={
+                    const isSelected =
+                      selectedCourse ===
                       course.membercourseid
-                    }
-
-                    className={
-                      isSelected
-                        ? 'course-card selected'
-                        : 'course-card'
-                    }
-
-                    onClick={() => {
-
-                      setSelectedCourse(
-                        course.membercourseid
-                      )
-
-                      setSelectedDate(null)
-
-                      setSelectedTime(null)
-
-                      setAvailableDates([])
-
-                      setScheduleOptions([])
-
-                    }}
-                  >
 
 
-                    {/* 課程圖示 */}
+                    return (
 
-                    <div className="course-card-icon">
-
-                      {
-                        course.coursename
-                          ?.includes('拳')
-                          ? '🥊'
-                          : '🏋'
-                      }
-
-                    </div>
-
-
-                    {/* 課程資訊 */}
-
-                    <div className="course-info">
-
-                      <h4>
-
-                        {course.coursename}
-
-                      </h4>
-
-
-                      <p>
-
-                        <CoachIcon />
-
-                        教練：
-
-                        {
-                          course.coachname
+                      <div
+                        key={
+                          course.membercourseid
                         }
 
-                      </p>
-
-                    </div>
-
-
-                    {/* 剩餘堂數 */}
-
-                    <div className="course-count">
-
-                      <span>
-
-                        剩餘堂數
-
-                      </span>
-
-                      <strong>
-
-                        {
-                          course.remainingsessions
+                        className={
+                          isSelected
+                            ? 'course-card selected'
+                            : 'course-card'
                         }
 
-                      </strong>
+                        onClick={() => {
 
-                      <span>
+                          setSelectedCourse(
+                            course.membercourseid
+                          )
 
-                        堂
+                          setSelectedDate(null)
 
-                      </span>
+                          setSelectedTime(null)
 
-                    </div>
+                          setAvailableDates([])
 
-                  </div>
+                          setScheduleOptions([])
 
-                )
+                        }}
+                      >
 
-              })}
+
+                        <div className="course-card-icon">
+
+                          {
+                            course.coursename
+                              ?.includes('拳')
+                              ? '🥊'
+                              : '🏋'
+                          }
+
+                        </div>
+
+
+                        <div className="course-info">
+
+                          <h4>
+                            {course.coursename}
+                          </h4>
+
+
+                          <p>
+
+                            <CoachIcon />
+
+                            教練：
+
+                            {
+                              course.coachname
+                            }
+
+                          </p>
+
+                        </div>
+
+
+                        <div className="course-count">
+
+                          <span>
+                            剩餘堂數
+                          </span>
+
+                          <strong>
+                            {
+                              course.remainingsessions
+                            }
+                          </strong>
+
+                          <span>
+                            堂
+                          </span>
+
+                        </div>
+
+                      </div>
+
+                    )
+
+                  })
+                }
+
+              </div>
+
+
+              <div className="booking-actions step-one-actions">
+
+                <button
+                  className="next-button"
+
+                  disabled={
+                    selectedCourse === null
+                  }
+
+                  onClick={() =>
+                    setCurrentStep(2)
+                  }
+                >
+                  下一步
+                </button>
+
+              </div>
 
             </div>
 
-
-            <div className="booking-actions step-one-actions">
-
-              <button
-                className="next-button"
-
-                disabled={
-                  selectedCourse === null
-                }
-
-                onClick={() =>
-                  setCurrentStep(2)
-                }
-              >
-
-                下一步
-
-              </button>
-
-            </div>
-
-          </div>
-
-        )}
+          )
+        }
 
 
         {/* =================================================
             STEP 2
-            選擇日期
         ================================================= */}
 
-        {currentStep === 2 && (
+        {
+          currentStep === 2 && (
 
-          <div className="course-section">
+            <div className="course-section">
 
+              <div className="section-title">
 
-            <div className="section-title">
+                <h3>
+                  選擇日期
+                </h3>
 
-              <h3>
-
-                選擇日期
-
-              </h3>
-
-              <p>
-
-                請選擇您想預約上課的日期。
-
-              </p>
-
-            </div>
-
-
-            {/* 已選內容 */}
-
-            <div className="booking-summary">
-
-              <div className="summary-row">
-
-                <CourseIcon />
-
-                <span>
-
-                  課程：
-
-                </span>
-
-                <strong>
-
-                  {
-                    selectedCourseData
-                      ?.coursename
-                  }
-
-                </strong>
+                <p>
+                  請選擇您想預約上課的日期。
+                </p>
 
               </div>
 
 
-              <div className="summary-row">
+              <div className="booking-summary">
 
-                <CoachIcon />
+                <div className="summary-row">
 
-                <span>
+                  <CourseIcon />
 
-                  教練：
+                  <span>
+                    課程：
+                  </span>
 
-                </span>
+                  <strong>
+                    {
+                      selectedCourseData
+                        ?.coursename
+                    }
+                  </strong>
 
-                <strong>
+                </div>
 
-                  {
-                    selectedCourseData
-                      ?.coachname
-                  }
 
-                </strong>
+                <div className="summary-row">
+
+                  <CoachIcon />
+
+                  <span>
+                    教練：
+                  </span>
+
+                  <strong>
+                    {
+                      selectedCourseData
+                        ?.coachname
+                    }
+                  </strong>
+
+                </div>
 
               </div>
 
-            </div>
 
+              <div className="calendar-container">
 
-            {/* 月曆 */}
+                <Calendar
 
-            <div className="calendar-container">
+                  value={
+                    selectedDate
+                  }
 
-              <Calendar
+                  minDate={
+                    new Date()
+                  }
 
-                value={
-                  selectedDate
-                }
+                  onChange={date => {
 
-                minDate={
-                  new Date()
-                }
+                    setSelectedDate(date)
 
-                onChange={date => {
+                    setSelectedTime(null)
 
-                  setSelectedDate(date)
+                    setScheduleOptions([])
 
-                  setSelectedTime(null)
+                  }}
 
-                  setScheduleOptions([])
+                  tileDisabled={({ date }) => {
 
-                }}
+                    const dateString =
+                      date.toLocaleDateString(
+                        'en-CA'
+                      )
 
-                tileDisabled={({ date }) => {
-
-                  const dateString =
-                    date.toLocaleDateString(
-                      'en-CA'
+                    return !availableDates.includes(
+                      dateString
                     )
 
-                  return !availableDates.includes(
-                    dateString
-                  )
+                  }}
+                />
 
-                }}
-              />
+              </div>
+
+
+              <div className="selected-date-summary">
+
+                <DateIcon />
+
+                <span>
+                  目前選擇日期：
+                </span>
+
+                <strong>
+
+                  {
+                    selectedDate
+
+                      ? selectedDate
+                          .toLocaleDateString(
+                            'zh-TW'
+                          )
+
+                      : '尚未選擇'
+                  }
+
+                </strong>
+
+              </div>
+
+
+              <div className="booking-actions">
+
+                <button
+                  className="back-button"
+
+                  onClick={() =>
+                    setCurrentStep(1)
+                  }
+                >
+                  上一步
+                </button>
+
+
+                <button
+                  className="next-button"
+
+                  disabled={
+                    selectedDate === null
+                  }
+
+                  onClick={() =>
+                    setCurrentStep(3)
+                  }
+                >
+                  下一步
+                </button>
+
+              </div>
 
             </div>
 
-
-            <div className="booking-actions">
-
-              <button
-                className="back-button"
-
-                onClick={() =>
-                  setCurrentStep(1)
-                }
-              >
-
-                上一步
-
-              </button>
-
-
-              <button
-                className="next-button"
-
-                disabled={
-                  selectedDate === null
-                }
-
-                onClick={() =>
-                  setCurrentStep(3)
-                }
-              >
-
-                下一步
-
-              </button>
-
-            </div>
-
-          </div>
-
-        )}
+          )
+        }
 
 
         {/* =================================================
             STEP 3
-            選擇時段
         ================================================= */}
 
-        {currentStep === 3 && (
+        {
+          currentStep === 3 && (
 
-          <div className="course-section">
+            <div className="course-section">
 
+              <div className="section-title">
 
-            <div className="section-title">
+                <h3>
+                  選擇時段
+                </h3>
 
-              <h3>
-
-                選擇時段
-
-              </h3>
-
-              <p>
-
-                請選擇您想預約的上課時段。
-
-              </p>
-
-            </div>
-
-
-            {/* 已選內容 */}
-
-            <div className="booking-summary">
-
-              <div className="summary-row">
-
-                <CourseIcon />
-
-                <span>
-
-                  課程：
-
-                </span>
-
-                <strong>
-
-                  {
-                    selectedCourseData
-                      ?.coursename
-                  }
-
-                </strong>
+                <p>
+                  請選擇您想預約的上課時段。
+                </p>
 
               </div>
 
 
-              <div className="summary-row">
+              <div className="booking-summary">
 
-                <CoachIcon />
+                <div className="summary-row">
 
-                <span>
+                  <CourseIcon />
 
-                  教練：
+                  <span>
+                    課程：
+                  </span>
 
-                </span>
-
-                <strong>
-
-                  {
-                    selectedCourseData
-                      ?.coachname
-                  }
-
-                </strong>
-
-              </div>
-
-
-              <div className="summary-row">
-
-                <DateIcon />
-
-                <span>
-
-                  日期：
-
-                </span>
-
-                <strong>
-
-                  {
-                    selectedDate
-                      ?.toLocaleDateString(
-                        'zh-TW'
-                      )
-                  }
-
-                </strong>
-
-              </div>
-
-            </div>
-
-
-            {/* 時段選項 */}
-
-            <div className="time-list">
-
-
-              {scheduleOptions.map(
-                schedule => (
-
-                  <button
-                    key={
-                      schedule.scheduleid
+                  <strong>
+                    {
+                      selectedCourseData
+                        ?.coursename
                     }
+                  </strong>
 
-                    disabled={
-                      schedule.status ===
-                      'booked'
+                </div>
+
+
+                <div className="summary-row">
+
+                  <CoachIcon />
+
+                  <span>
+                    教練：
+                  </span>
+
+                  <strong>
+                    {
+                      selectedCourseData
+                        ?.coachname
                     }
+                  </strong>
 
-                    className={
-                      schedule.status ===
-                      'booked'
-                        ? 'time-card disabled-time'
+                </div>
 
-                        : selectedTime ===
-                          schedule.scheduleid
 
-                          ? 'time-card selected-time'
+                <div className="summary-row">
 
-                          : 'time-card available-time'
-                    }
+                  <DateIcon />
 
-                    onClick={() => {
+                  <span>
+                    日期：
+                  </span>
 
-                      if (
-                        schedule.status ===
-                        'available'
-                      ) {
-
-                        setSelectedTime(
-                          schedule.scheduleid
+                  <strong>
+                    {
+                      selectedDate
+                        ?.toLocaleDateString(
+                          'zh-TW'
                         )
+                    }
+                  </strong>
 
-                      }
+                </div>
 
-                    }}
-                  >
-
-
-                    <div className="time-card-main">
-
-                      <TimeIcon />
-
-                      <strong>
-
-                        {
-                          schedule.starttime
-                            ?.substring(0, 5)
-                        }
-
-                        {' - '}
-
-                        {
-                          schedule.endtime
-                            ?.substring(0, 5)
-                        }
-
-                      </strong>
-
-                    </div>
+              </div>
 
 
-                    <span>
-
-                      {
-                        schedule.status ===
-                        'booked'
-                          ? '已被預約'
-                          : '可預約'
-                      }
-
-                    </span>
-
-                  </button>
-
-                )
-              )}
-
-            </div>
-
-
-            {/* 目前選擇時段 */}
-
-            <div className="selected-time-summary">
-
-              <TimeIcon />
-
-              <span>
-
-                目前選擇時段：
-
-              </span>
-
-              <strong>
+              <div className="time-list">
 
                 {
-                  selectedScheduleData
+                  scheduleOptions.map(
+                    schedule => (
 
-                    ? `${selectedScheduleData.starttime.substring(0, 5)} - ${selectedScheduleData.endtime.substring(0, 5)}`
+                      <button
+                        key={
+                          schedule.scheduleid
+                        }
 
-                    : '尚未選擇'
+                        disabled={
+                          schedule.status ===
+                          'booked'
+                        }
+
+                        className={
+                          schedule.status ===
+                          'booked'
+
+                            ? 'time-card disabled-time'
+
+                            : selectedTime ===
+                              schedule.scheduleid
+
+                              ? 'time-card selected-time'
+
+                              : 'time-card available-time'
+                        }
+
+                        onClick={() => {
+
+                          if (
+                            schedule.status ===
+                            'available'
+                          ) {
+
+                            setSelectedTime(
+                              schedule.scheduleid
+                            )
+
+                          }
+
+                        }}
+                      >
+
+
+                        <div className="time-card-main">
+
+                          <TimeIcon />
+
+                          <strong>
+
+                            {
+                              schedule.starttime
+                                ?.substring(0, 5)
+                            }
+
+                            {' - '}
+
+                            {
+                              schedule.endtime
+                                ?.substring(0, 5)
+                            }
+
+                          </strong>
+
+                        </div>
+
+
+                        <span>
+
+                          {
+                            schedule.status ===
+                            'booked'
+
+                              ? '已被預約'
+
+                              : '可預約'
+                          }
+
+                        </span>
+
+                      </button>
+
+                    )
+                  )
                 }
-
-              </strong>
-
-            </div>
-
-
-            <div className="booking-actions">
-
-              <button
-                className="back-button"
-
-                disabled={
-                  isBooking
-                }
-
-                onClick={() =>
-                  setCurrentStep(2)
-                }
-              >
-
-                上一步
-
-              </button>
-
-
-              <button
-                className="next-button"
-
-                disabled={
-                  selectedTime === null ||
-                  isBooking
-                }
-
-                onClick={
-                  handleBooking
-                }
-              >
-
-                {
-                  isBooking
-                    ? '預約中...'
-                    : '確認預約'
-                }
-
-              </button>
-
-            </div>
-
-          </div>
-
-        )}
-
-
-        {/* =================================================
-            STEP 4
-            預約完成
-        ================================================= */}
-
-        {currentStep === 4 && (
-
-          <div className="course-section">
-
-
-            <div className="success-box">
-
-              <div className="success-icon">
-
-                ✓
 
               </div>
 
 
-              <h3>
-
-                預約完成
-
-              </h3>
-
-
-              <p>
-
-                您的私人教練課程已完成預約。
-
-              </p>
-
-            </div>
-
-
-            {/* 最終摘要 */}
-
-            <div className="booking-summary final-summary">
-
-
-              <div className="summary-row">
-
-                <CourseIcon />
-
-                <span>
-
-                  課程：
-
-                </span>
-
-                <strong>
-
-                  {
-                    selectedCourseData
-                      ?.coursename
-                  }
-
-                </strong>
-
-              </div>
-
-
-              <div className="summary-row">
-
-                <CoachIcon />
-
-                <span>
-
-                  教練：
-
-                </span>
-
-                <strong>
-
-                  {
-                    selectedCourseData
-                      ?.coachname
-                  }
-
-                </strong>
-
-              </div>
-
-
-              <div className="summary-row">
-
-                <DateIcon />
-
-                <span>
-
-                  日期：
-
-                </span>
-
-                <strong>
-
-                  {
-                    selectedDate
-                      ?.toLocaleDateString(
-                        'zh-TW'
-                      )
-                  }
-
-                </strong>
-
-              </div>
-
-
-              <div className="summary-row">
+              <div className="selected-time-summary">
 
                 <TimeIcon />
 
                 <span>
-
-                  時段：
-
+                  目前選擇時段：
                 </span>
 
                 <strong>
@@ -1287,25 +1046,194 @@ function BookingCourse() {
 
                       ? `${selectedScheduleData.starttime.substring(0, 5)} - ${selectedScheduleData.endtime.substring(0, 5)}`
 
-                      : ''
+                      : '尚未選擇'
                   }
 
                 </strong>
 
               </div>
 
+
+              <div className="booking-actions">
+
+                <button
+                  className="back-button"
+
+                  disabled={
+                    isBooking
+                  }
+
+                  onClick={() =>
+                    setCurrentStep(2)
+                  }
+                >
+                  上一步
+                </button>
+
+
+                <button
+                  className="next-button"
+
+                  disabled={
+                    selectedTime === null ||
+                    isBooking
+                  }
+
+                  onClick={
+                    handleBooking
+                  }
+                >
+
+                  {
+                    isBooking
+                      ? '預約中...'
+                      : '確認預約'
+                  }
+
+                </button>
+
+              </div>
+
             </div>
 
-          </div>
+          )
+        }
 
-        )}
+
+        {/* =================================================
+            STEP 4
+        ================================================= */}
+
+        {
+          currentStep === 4 && (
+
+            <div className="course-section">
+
+
+              <div className="success-box">
+
+                <div className="success-icon">
+                  ✓
+                </div>
+
+                <h3>
+                  預約完成
+                </h3>
+
+                <p>
+                  您的私人教練課程已完成預約。
+                </p>
+
+              </div>
+
+
+              <div className="booking-summary final-summary">
+
+
+                <div className="summary-row">
+
+                  <CourseIcon />
+
+                  <span>
+                    課程：
+                  </span>
+
+                  <strong>
+                    {
+                      selectedCourseData
+                        ?.coursename
+                    }
+                  </strong>
+
+                </div>
+
+
+                <div className="summary-row">
+
+                  <CoachIcon />
+
+                  <span>
+                    教練：
+                  </span>
+
+                  <strong>
+                    {
+                      selectedCourseData
+                        ?.coachname
+                    }
+                  </strong>
+
+                </div>
+
+
+                <div className="summary-row">
+
+                  <DateIcon />
+
+                  <span>
+                    日期：
+                  </span>
+
+                  <strong>
+                    {
+                      selectedDate
+                        ?.toLocaleDateString(
+                          'zh-TW'
+                        )
+                    }
+                  </strong>
+
+                </div>
+
+
+                <div className="summary-row">
+
+                  <TimeIcon />
+
+                  <span>
+                    時段：
+                  </span>
+
+                  <strong>
+
+                    {
+                      selectedScheduleData
+
+                        ? `${selectedScheduleData.starttime.substring(0, 5)} - ${selectedScheduleData.endtime.substring(0, 5)}`
+
+                        : ''
+                    }
+
+                  </strong>
+
+                </div>
+
+              </div>
+
+
+              <div className="booking-actions success-actions">
+
+                <button
+                  className="next-button"
+
+                  onClick={
+                    handleBookingAgain
+                  }
+                >
+                  返回重新預約
+                </button>
+
+              </div>
+
+            </div>
+
+          )
+        }
 
       </section>
 
     </div>
-
   )
-
 }
 
 

@@ -47,11 +47,15 @@ function MyBookings() {
     useState('')
 
 
+  // =====================================================
+  // 查詢會員自己的預約
+  // =====================================================
+
   const loadBookings = async () => {
 
     const response =
       await fetch(
-        'http://localhost:8080/booking/my',
+        'http://localhost:8080/api/member/bookings',
         {
           method: 'GET',
           credentials: 'include'
@@ -59,6 +63,7 @@ function MyBookings() {
       )
 
     if (!response.ok) {
+
       throw new Error(
         '取得預約紀錄失敗'
       )
@@ -75,16 +80,24 @@ function MyBookings() {
 
     loadBookings()
       .catch(() => {
+
         setError(
           '無法取得預約紀錄'
         )
+
       })
       .finally(() => {
+
         setLoading(false)
+
       })
 
   }, [])
 
+
+  // =====================================================
+  // 是否為歷史預約
+  // =====================================================
 
   const isPastBooking = booking => {
 
@@ -92,6 +105,7 @@ function MyBookings() {
       !booking.classdate ||
       !booking.endtime
     ) {
+
       return false
     }
 
@@ -101,12 +115,18 @@ function MyBookings() {
   }
 
 
+  // =====================================================
+  // 是否可以修改
+  // 會員只能修改明天以後
+  // =====================================================
+
   const canEditBooking = booking => {
 
     if (
       booking.bookingstatus !==
       'booked'
     ) {
+
       return false
     }
 
@@ -114,7 +134,10 @@ function MyBookings() {
       new Date()
 
     today.setHours(
-      0, 0, 0, 0
+      0,
+      0,
+      0,
+      0
     )
 
     const bookingDate =
@@ -126,17 +149,43 @@ function MyBookings() {
   }
 
 
-  const canCancelBooking =
-    booking => {
+  // =====================================================
+  // 是否可以取消
+  // 會員只能取消明天以後
+  // =====================================================
 
-      return (
-        booking.bookingstatus ===
-        'booked'
-        &&
-        !isPastBooking(booking)
-      )
+  const canCancelBooking = booking => {
+
+    if (
+      booking.bookingstatus !==
+      'booked'
+    ) {
+
+      return false
     }
 
+    const today =
+      new Date()
+
+    today.setHours(
+      0,
+      0,
+      0,
+      0
+    )
+
+    const bookingDate =
+      new Date(
+        `${booking.classdate}T00:00:00`
+      )
+
+    return bookingDate > today
+  }
+
+
+  // =====================================================
+  // 即將到來
+  // =====================================================
 
   const upcomingBookings =
     bookings
@@ -155,6 +204,10 @@ function MyBookings() {
           )
       )
 
+
+  // =====================================================
+  // 歷史紀錄
+  // =====================================================
 
   const historyBookings =
     bookings
@@ -180,6 +233,10 @@ function MyBookings() {
       : historyBookings
 
 
+  // =====================================================
+  // 狀態文字
+  // =====================================================
+
   const getStatusText =
     status => {
 
@@ -199,10 +256,15 @@ function MyBookings() {
     }
 
 
+  // =====================================================
+  // 確認取消
+  // =====================================================
+
   const confirmCancelBooking =
     async () => {
 
       if (!cancelBookingData) {
+
         return
       }
 
@@ -214,7 +276,7 @@ function MyBookings() {
 
         const response =
           await fetch(
-            `http://localhost:8080/booking/${cancelBookingData.bookingid}/cancel`,
+            `http://localhost:8080/api/member/bookings/${cancelBookingData.bookingid}/cancel`,
             {
               method: 'PUT',
               credentials: 'include'
@@ -225,6 +287,7 @@ function MyBookings() {
           await response.text()
 
         if (!response.ok) {
+
           throw new Error(message)
         }
 
@@ -251,12 +314,20 @@ function MyBookings() {
     }
 
 
+  // =====================================================
+  // 開啟修改預約
+  // =====================================================
+
   const openEditBooking =
     async booking => {
 
-      setEditBookingData(booking)
+      setEditBookingData(
+        booking
+      )
 
-      setSelectedScheduleId(null)
+      setSelectedScheduleId(
+        null
+      )
 
       setScheduleOptions([])
 
@@ -270,12 +341,19 @@ function MyBookings() {
 
         const response =
           await fetch(
-            `http://localhost:8080/members/courses/${booking.membercourseid}/available-dates`,
+            `http://localhost:8080/api/member/courses/${booking.membercourseid}/available-dates`,
             {
               method: 'GET',
               credentials: 'include'
             }
           )
+
+        if (!response.ok) {
+
+          throw new Error(
+            '取得可修改日期失敗'
+          )
+        }
 
         const data =
           await response.json()
@@ -291,10 +369,15 @@ function MyBookings() {
     }
 
 
+  // =====================================================
+  // 查詢新日期時段
+  // =====================================================
+
   const loadScheduleOptions =
     async date => {
 
       if (!editBookingData) {
+
         return
       }
 
@@ -305,13 +388,15 @@ function MyBookings() {
 
       const response =
         await fetch(
-          `http://localhost:8080/members/courses/${editBookingData.membercourseid}/schedules?date=${dateString}`,
+          `http://localhost:8080/api/member/courses/${editBookingData.membercourseid}/schedules?date=${dateString}`,
           {
+            method: 'GET',
             credentials: 'include'
           }
         )
 
       if (!response.ok) {
+
         throw new Error(
           '取得可預約時段失敗'
         )
@@ -324,6 +409,10 @@ function MyBookings() {
     }
 
 
+  // =====================================================
+  // 確認改期
+  // =====================================================
+
   const confirmReschedule =
     async () => {
 
@@ -331,6 +420,7 @@ function MyBookings() {
         !editBookingData ||
         selectedScheduleId === null
       ) {
+
         return
       }
 
@@ -340,7 +430,7 @@ function MyBookings() {
 
         const response =
           await fetch(
-            `http://localhost:8080/booking/${editBookingData.bookingid}/reschedule`,
+            `http://localhost:8080/api/member/bookings/${editBookingData.bookingid}/reschedule`,
             {
               method: 'PUT',
 
@@ -363,6 +453,7 @@ function MyBookings() {
           await response.text()
 
         if (!response.ok) {
+
           throw new Error(message)
         }
 
@@ -388,6 +479,10 @@ function MyBookings() {
       }
     }
 
+
+  // =====================================================
+  // 修改預約頁面
+  // =====================================================
 
   if (editBookingData) {
 
@@ -458,7 +553,9 @@ function MyBookings() {
 
               <Calendar
 
-                value={selectedDate}
+                value={
+                  selectedDate
+                }
 
                 minDate={
                   new Date()
@@ -473,6 +570,7 @@ function MyBookings() {
 
                   return !availableDates
                     .includes(value)
+
                 }}
 
                 onChange={date => {
@@ -486,6 +584,7 @@ function MyBookings() {
                   loadScheduleOptions(
                     date
                   )
+
                 }}
               />
 
@@ -494,49 +593,53 @@ function MyBookings() {
 
             <div className="edit-time-list">
 
-              {scheduleOptions.map(
-                schedule => (
+              {
+                scheduleOptions.map(
+                  schedule => (
 
-                  <button
-                    key={
-                      schedule.scheduleid
-                    }
-
-                    disabled={
-                      schedule.status ===
-                      'booked'
-                    }
-
-                    className={
-                      selectedScheduleId ===
-                      schedule.scheduleid
-                        ? 'edit-time-btn selected'
-                        : 'edit-time-btn'
-                    }
-
-                    onClick={() =>
-                      setSelectedScheduleId(
+                    <button
+                      key={
                         schedule.scheduleid
-                      )
-                    }
-                  >
+                      }
 
-                    {
-                      schedule.starttime
-                        .slice(0, 5)
-                    }
+                      disabled={
+                        schedule.status ===
+                        'booked'
+                      }
 
-                    {' - '}
+                      className={
+                        selectedScheduleId ===
+                        schedule.scheduleid
 
-                    {
-                      schedule.endtime
-                        .slice(0, 5)
-                    }
+                          ? 'edit-time-btn selected'
 
-                  </button>
+                          : 'edit-time-btn'
+                      }
 
+                      onClick={() =>
+                        setSelectedScheduleId(
+                          schedule.scheduleid
+                        )
+                      }
+                    >
+
+                      {
+                        schedule.starttime
+                          ?.slice(0, 5)
+                      }
+
+                      {' - '}
+
+                      {
+                        schedule.endtime
+                          ?.slice(0, 5)
+                      }
+
+                    </button>
+
+                  )
                 )
-              )}
+              }
 
             </div>
 
@@ -549,17 +652,21 @@ function MyBookings() {
               className="edit-back-button"
 
               onClick={() =>
-                setEditBookingData(null)
+                setEditBookingData(
+                  null
+                )
               }
             >
               返回
             </button>
 
+
             <button
               className="edit-confirm-button"
 
               disabled={
-                selectedScheduleId === null ||
+                selectedScheduleId ===
+                  null ||
                 isRescheduling
               }
 
@@ -585,15 +692,33 @@ function MyBookings() {
   }
 
 
+  // =====================================================
+  // Loading / Error
+  // =====================================================
+
   if (loading) {
-    return <div>載入中...</div>
+
+    return (
+      <div>
+        載入中...
+      </div>
+    )
   }
 
 
   if (error) {
-    return <div>{error}</div>
+
+    return (
+      <div>
+        {error}
+      </div>
+    )
   }
 
+
+  // =====================================================
+  // 我的預約
+  // =====================================================
 
   return (
 
@@ -607,23 +732,25 @@ function MyBookings() {
       </h2>
 
 
-      {successMessage && (
+      {
+        successMessage && (
 
-        <div className="success-toast">
+          <div className="success-toast">
 
-          ✓ {successMessage}
+            ✓ {successMessage}
 
-          <button
-            onClick={() =>
-              setSuccessMessage('')
-            }
-          >
-            ×
-          </button>
+            <button
+              onClick={() =>
+                setSuccessMessage('')
+              }
+            >
+              ×
+            </button>
 
-        </div>
+          </div>
 
-      )}
+        )
+      }
 
 
       <div className="booking-main-card">
@@ -639,7 +766,9 @@ function MyBookings() {
             }
 
             onClick={() =>
-              setActiveTab('upcoming')
+              setActiveTab(
+                'upcoming'
+              )
             }
           >
 
@@ -656,7 +785,9 @@ function MyBookings() {
             }
 
             onClick={() =>
-              setActiveTab('history')
+              setActiveTab(
+                'history'
+              )
             }
           >
 
@@ -678,218 +809,256 @@ function MyBookings() {
             }
           >
 
-            <div>課程</div>
-            <div>教練</div>
-            <div>日期</div>
-            <div>時段</div>
-            <div>地點</div>
-            <div>狀態</div>
+            <div>
+              課程
+            </div>
+
+            <div>
+              教練
+            </div>
+
+            <div>
+              日期
+            </div>
+
+            <div>
+              時段
+            </div>
+
+            <div>
+              地點
+            </div>
+
+            <div>
+              狀態
+            </div>
 
             {
               activeTab ===
-              'upcoming'
+                'upcoming'
               &&
-              <div>操作</div>
+              <div>
+                操作
+              </div>
             }
 
           </div>
 
 
-          {displayedBookings.map(
-            booking => (
+          {
+            displayedBookings.map(
+              booking => (
 
-              <div
-                key={
-                  booking.bookingid
-                }
-
-                className={
-                  activeTab ===
-                  'history'
-                    ? 'booking-row history'
-                    : 'booking-row'
-                }
-              >
-
-                <div className="booking-course">
-
-                  <strong>
-                    {
-                      booking.coursename
-                    }
-                  </strong>
-
-                  <span>
-                    私人教練課
-                  </span>
-
-                </div>
-
-
-                <div>
-                  {booking.coachname}
-                </div>
-
-                <div>
-                  {booking.classdate}
-                </div>
-
-                <div>
-
-                  {
-                    booking.starttime
-                      ?.slice(0, 5)
+                <div
+                  key={
+                    booking.bookingid
                   }
 
-                  {' - '}
+                  className={
+                    activeTab ===
+                      'history'
 
-                  {
-                    booking.endtime
-                      ?.slice(0, 5)
+                      ? 'booking-row history'
+
+                      : 'booking-row'
                   }
+                >
 
-                </div>
+                  <div className="booking-course">
 
-                <div>
-                  {
-                    booking.classroom
-                    || '未安排'
-                  }
-                </div>
+                    <strong>
+                      {
+                        booking.coursename
+                      }
+                    </strong>
+
+                    <span>
+                      私人教練課
+                    </span>
+
+                  </div>
 
 
-                <div>
-
-                  <span
-                    className={
-                      `booking-status ${booking.bookingstatus}`
-                    }
-                  >
+                  <div>
                     {
-                      getStatusText(
-                        booking.bookingstatus
-                      )
+                      booking.coachname
                     }
-                  </span>
-
-                </div>
+                  </div>
 
 
-                {
-                  activeTab ===
-                  'upcoming'
-                  &&
+                  <div>
+                    {
+                      booking.classdate
+                    }
+                  </div>
 
-                  <div className="booking-actions">
+
+                  <div>
 
                     {
-                      canEditBooking(
-                        booking
-                      )
-                      &&
-
-                      <button
-                        className="edit-booking-btn"
-
-                        onClick={() =>
-                          openEditBooking(
-                            booking
-                          )
-                        }
-                      >
-                        修改預約
-                      </button>
+                      booking.starttime
+                        ?.slice(0, 5)
                     }
 
+                    {' - '}
 
                     {
-                      canCancelBooking(
-                        booking
-                      )
-                      &&
-
-                      <button
-                        className="cancel-booking-btn"
-
-                        onClick={() =>
-                          setCancelBookingData(
-                            booking
-                          )
-                        }
-                      >
-                        取消預約
-                      </button>
+                      booking.endtime
+                        ?.slice(0, 5)
                     }
 
                   </div>
-                }
 
-              </div>
 
+                  <div>
+                    {
+                      booking.classroom
+                      || '未安排'
+                    }
+                  </div>
+
+
+                  <div>
+
+                    <span
+                      className={
+                        `booking-status ${booking.bookingstatus}`
+                      }
+                    >
+
+                      {
+                        getStatusText(
+                          booking.bookingstatus
+                        )
+                      }
+
+                    </span>
+
+                  </div>
+
+
+                  {
+                    activeTab ===
+                      'upcoming'
+                    &&
+
+                    <div className="booking-actions">
+
+                      {
+                        canEditBooking(
+                          booking
+                        )
+                        &&
+
+                        <button
+                          className="edit-booking-btn"
+
+                          onClick={() =>
+                            openEditBooking(
+                              booking
+                            )
+                          }
+                        >
+                          修改預約
+                        </button>
+                      }
+
+
+                      {
+                        canCancelBooking(
+                          booking
+                        )
+                        &&
+
+                        <button
+                          className="cancel-booking-btn"
+
+                          onClick={() =>
+                            setCancelBookingData(
+                              booking
+                            )
+                          }
+                        >
+                          取消預約
+                        </button>
+                      }
+
+                    </div>
+                  }
+
+                </div>
+
+              )
             )
-          )}
+          }
 
         </div>
 
       </div>
 
 
-      {cancelBookingData && (
+      {
+        cancelBookingData && (
 
-        <div className="modal-overlay">
+          <div className="modal-overlay">
 
-          <div className="cancel-modal">
+            <div className="cancel-modal">
 
-            <h3>
-              取消預約確認
-            </h3>
+              <h3>
+                取消預約確認
+              </h3>
 
-            <p>
-              確定要取消
-              「
-              {
-                cancelBookingData
-                  .coursename
-              }
-              」嗎？
-            </p>
+              <p>
+
+                確定要取消
+                「
+                {
+                  cancelBookingData
+                    .coursename
+                }
+                」嗎？
+
+              </p>
 
 
-            <div className="cancel-modal-actions">
+              <div className="cancel-modal-actions">
 
-              <button
-                className="modal-back-btn"
+                <button
+                  className="modal-back-btn"
 
-                onClick={() =>
-                  setCancelBookingData(
+                  onClick={() =>
+                    setCancelBookingData(
+                      null
+                    )
+                  }
+                >
+                  返回
+                </button>
+
+
+                <button
+                  className="modal-confirm-cancel-btn"
+
+                  disabled={
+                    cancellingId !==
                     null
-                  )
-                }
-              >
-                返回
-              </button>
+                  }
 
-              <button
-                className="modal-confirm-cancel-btn"
+                  onClick={
+                    confirmCancelBooking
+                  }
+                >
+                  確認取消
+                </button>
 
-                disabled={
-                  cancellingId !== null
-                }
-
-                onClick={
-                  confirmCancelBooking
-                }
-              >
-                確認取消
-              </button>
+              </div>
 
             </div>
 
           </div>
 
-        </div>
-
-      )}
+        )
+      }
 
     </div>
   )
