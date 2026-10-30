@@ -88,6 +88,12 @@ public class LoginInterceptor implements HandlerInterceptor {
 			else{response.sendRedirect(getHomeByRole(role));}
 			return false;
 		}
+		//admin與member共同存取的API
+		if((uri.startsWith("/api/relation/")) && !"member".equals(role) && !"admin".equals(role)) {
+				response.sendError(
+						HttpServletResponse.SC_FORBIDDEN);
+			return false;
+		}
 		return true;
 	}
 

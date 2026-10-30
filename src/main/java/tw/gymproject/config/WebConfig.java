@@ -20,20 +20,18 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) { //把網址註冊進來
 		registry.addInterceptor(loginInterceptor)
         .addPathPatterns(
-        		"/api/admin/**", //admin
-                "/admin/**", //admin
-                "/coach/**", //coach
-                "/coaches/**", //coach
-                "/member/**", //member
+        		"/api/admin/**",
+                "/admin/**",
+                "/coach/**",
+                "/api/coach/**",
+                "/coaches/**",
+                "/member/**",
+                "/members/**", 
+                "/api/member/**", 
                 "/admin.html",
                 "/coach.html",
                 "/member.html",
-                "/api/coach/**",
-                "/api/coaches/**", //admin*
-                "/api/courses/**", //admin*
-                "/api/student/**", //member
-                "/members/**", //member
-                "/booking/**" //member
+                "/api/relation/**" //member+admin
         );
 	}
 }

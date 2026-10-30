@@ -20,8 +20,9 @@ export default defineConfig(({ mode }) => {
       proxy: Object.fromEntries(['/api', '^/login(?:\\?.*)?$', '^/logout(?:\\?.*)?$', '/admin/schedules', '^/coaches/(?:dashboard|schedules|[0-9]+/)', '/members/courses', '/booking'].map(path => [path, {
         target, changeOrigin: true, autoRewrite: true, cookieDomainRewrite: '',
         bypass(req) {
-          // Login form POSTs reach Spring; HTML GETs render the shared React login.
-          if (req.method === 'GET' && /^\/login(?:\?|$)/.test(req.url) && req.headers.accept?.includes('text/html')) return '/index.html'
+          // Fetch follows the logout redirect with Accept: */*. It must receive
+          // the same React entry as browser navigation, never Spring's old HTML.
+          if (['GET', 'HEAD'].includes(req.method) && /^\/login(?:\?|$)/.test(req.url)) return '/index.html'
         }
       }]))
     },

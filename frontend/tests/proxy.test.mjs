@@ -15,8 +15,20 @@ test('all four feature API families reach the shared backend', () => {
     assert.equal(matching(url).length, 1, url)
   }
 })
-test('login GET renders React while form POST reaches the backend', () => {
+test('login GET always renders React, including fetch redirects and missing Accept', () => {
   const proxy = matching('/login')[0][1]
-  assert.equal(proxy.bypass({ method: 'GET', url: '/login?error=invalid', headers: { accept: 'text/html' } }), '/index.html')
+  for (const accept of ['text/html', '*/*', 'application/json', undefined]) {
+    for (const url of ['/login', '/login?error=invalid']) {
+      assert.equal(proxy.bypass({ method: 'GET', url, headers: { accept } }), '/index.html')
+    }
+  }
+})
+test('login HEAD resolves to the same React entry', () => {
+  const proxy = matching('/login')[0][1]
+  assert.equal(proxy.bypass({ method: 'HEAD', url: '/login', headers: {} }), '/index.html')
+})
+test('login and logout POSTs still reach the backend', () => {
+  const proxy = matching('/login')[0][1]
   assert.equal(proxy.bypass({ method: 'POST', url: '/login', headers: { accept: 'text/html' } }), undefined)
+  assert.equal(matching('/logout')[0][1].bypass({ method: 'POST', url: '/logout', headers: {} }), undefined)
 })

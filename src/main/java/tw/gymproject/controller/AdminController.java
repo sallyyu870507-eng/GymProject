@@ -3,6 +3,8 @@ package tw.gymproject.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import tw.gymproject.dto.CreateAdminDTO;
 import tw.gymproject.dto.MemberUpdateDTO;
 import tw.gymproject.dto.RegisterDTO;
+import tw.gymproject.entity.Useraccount;
+import tw.gymproject.repository.AccountRepository;
 import tw.gymproject.service.AccountService;
 
 @RestController  //同時包含requestbody回傳JSON格式和controller
@@ -141,8 +146,25 @@ public class AdminController {
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("系統發生錯誤，請稍後再試");
 	    }
 */		
-	}
 	
+	//新增管理員用=>單純建立帳密=>直接使用entity
+	@Autowired
+	private AccountRepository repository ;
+		
+	@PostMapping("/boss/admin")
+	public void addAdmin(@RequestBody CreateAdminDTO dto) {
+	    Useraccount admin = new Useraccount();
+
+	    admin.setUsername(dto.username().trim());
+	    admin.setPassword(
+	        BCrypt.hashpw(dto.password(), BCrypt.gensalt())
+	    );
+	    admin.setRole("admin");
+	    admin.setStatus("active");
+
+	    repository.save(admin);
+	}
+}
 
 	
 
@@ -171,22 +193,4 @@ public class AdminController {
 	    return ResponseEntity.badRequest().body(result);
 	}
 	
-
-新增管理員用=>單純建立帳密=>直接使用entity
-
-@Autowired
-private AccountRepository repository ;
-	
-@PostMapping("/boss/admin")
-public void addAdmin(@RequestBody Useraccount admin) { 
-
-admin.setUsername(admin.getUsername());
-admin.setPassword(BCrypt.hashpw(admin.getPassword(), BCrypt.gensalt()));
-admin.setRole("admin");
-admin.setSatus("active");
-
-Useraccount savedAdmin = repository.save(admin);
-System.out.println(savedAdmin);
-
-}
 */

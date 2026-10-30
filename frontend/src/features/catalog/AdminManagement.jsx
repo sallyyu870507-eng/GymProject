@@ -53,10 +53,7 @@ function AdminForm({ kind, initial, options, onClose, onSave }) {
         if (!body.coachno || !body.name) throw new Error('請填寫教練編號與姓名。')
         body.specialty = options.filter(item => form.selected.includes(item.courseid)).map(item => item.coursename).join('、') || null
         if ((body.specialty?.length ?? 0) > 200) throw new Error('所選課程名稱合計超過專長欄位的 200 字限制。')
-        if (!form.id) {
-          if (!/^[1-9][0-9]*$/.test(String(form.accountid)) || Number(form.accountid) > 2147483647) throw new Error('請輸入有效的整數帳號 ID。')
-          body.accountid = Number(form.accountid)
-        }
+        if (!form.id && !body.phone) throw new Error('請填寫電話，將作為初始登入密碼。')
       } else {
         if (!body.coursename || !body.coursetype) throw new Error('請填寫課程名稱與類型。')
         if (!/^\d+(\.\d{1,2})?$/.test(String(form.price)) || !Number.isFinite(body.price) || body.price < 0 || body.price > 99999999.99) throw new Error('價格必須介於 0 至 99999999.99，最多兩位小數。')
@@ -89,7 +86,6 @@ function AdminForm({ kind, initial, options, onClose, onSave }) {
         {isCoach ? <>
           {field('coachno', '教練編號', { required: true, maxLength: 20, placeholder: '必填' })}
           {field('name', '姓名', { required: true, maxLength: 50, placeholder: '必填' })}
-          {field('accountid', '帳號 ID', { required: !form.id, readOnly: Boolean(form.id), inputMode: 'numeric', pattern: '[1-9][0-9]*', placeholder: form.id ? '後端未提供帳號 ID' : '必填' })}
           {field('gender', '性別', { required: true, maxLength: 10, placeholder: '必填' })}
           {field('phone', '電話', { required: true, type: 'tel', maxLength: 20, placeholder: '必填' })}
           {field('email', '電子郵件', { required: true, type: 'email', maxLength: 100, placeholder: '必填' })}
@@ -152,7 +148,7 @@ export default function AdminManagement({ kind }) {
     setNotice('')
     const id = item?.[isCoach ? 'coachid' : 'courseid']
     setForm(isCoach ? {
-      id, coachno: item?.coachno ?? '', name: item?.name ?? '', accountid: item?.accountid ?? '',
+      id, coachno: item?.coachno ?? '', name: item?.name ?? '',
       gender: item?.gender ?? '', phone: item?.phone ?? '', email: item?.email ?? '', status: item?.status ?? 'active', selected: [...(data.relations[id] ?? [])],
     } : {
       id, coursename: item?.coursename ?? '', coursetype: item?.coursetype ?? '重量訓練', description: item?.description ?? '', durationmin: item?.durationmin ?? 60,

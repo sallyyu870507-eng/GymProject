@@ -8,10 +8,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import tw.gymproject.dto.LoginResultDTO;
 import tw.gymproject.service.AccountService;
+import org.springframework.beans.factory.annotation.Value;
 
 @Controller
 public class LoginController {
-
+	
+	@Value("${app.frontend-url}")
+	private String frontendUrl;
     private final AccountService accountService;
 
     public LoginController(AccountService accountService) {
@@ -20,19 +23,26 @@ public class LoginController {
 
     @GetMapping("/login")
     public String loginPage() {
-        return "forward:/login.html";
+        return "redirect:" + frontendUrl + "/login";
     }
+//    @GetMapping("/login")
+//    public String loginPage() {
+//        return "forward:/login.html";
+//    }
 
     @PostMapping("/login")
     public String login(
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String password,
             HttpSession session) {
+//    	boolean valid = accountService.verifyPassword("admin", "123456");
+//    	System.out.println(valid);檢查密碼有無符合資料庫雜湊比對
+    	
         if (username == null || username.isBlank()) {
-            return "redirect:/login.html?error=usernameEmpty";
+            return "redirect:/login?error=usernameEmpty";
         }
         if (password == null || password.isBlank()) {
-            return "redirect:/login.html?error=passwordEmpty";
+            return "redirect:/login?error=passwordEmpty";
         }
 
         LoginResultDTO result = accountService.login(username, password);
@@ -62,16 +72,30 @@ public class LoginController {
 
     @GetMapping("/admin")
     public String adminPage() {
-        return "forward:/admin.html";
+        return "redirect:" + frontendUrl + "/admin";
     }
 
     @GetMapping("/coach")
     public String coachPage() {
-        return "forward:/coach.html";
+        return "redirect:" + frontendUrl + "/coach";
     }
 
     @GetMapping("/member")
     public String memberPage() {
-        return "forward:/member.html";
+        return "redirect:" + frontendUrl + "/member";
     }
+//    @GetMapping("/admin")
+//    public String adminPage() {
+//        return "forward:/admin.html";
+//    }
+//
+//    @GetMapping("/coach")
+//    public String coachPage() {
+//        return "forward:/coach.html";
+//    }
+//
+//    @GetMapping("/member")
+//    public String memberPage() {
+//        return "forward:/member.html";
+//    }
 }

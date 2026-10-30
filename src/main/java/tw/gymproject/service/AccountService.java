@@ -105,6 +105,7 @@ public class AccountService {
 		
 		//如果有帳號才往下
 		Useraccount account = userOpt.get();
+		System.out.println(account.getUsername());
 		//帳號停用
 		if("inactive".equals(account.getStatus())) {
 			result.setSuccess(false);
@@ -346,7 +347,15 @@ public class AccountService {
 	    account.setStatus("active");
 	    member.setStatus("active");
 	}
-	
+
+	//檢查密碼是否符合當初輸入的
+//	public boolean verifyPassword(String username, String rawPassword) {
+//	    Useraccount account = repository
+//	        .findFirstByUsernameOrderByAccountidDesc(username)
+//	        .orElseThrow(() -> new IllegalArgumentException("找不到帳號"));
+//
+//	    return BCrypt.checkpw(rawPassword, account.getPassword());
+//	}
 }
 
 

@@ -12,6 +12,8 @@ import org.springframework.data.domain.Sort;
 import tw.gymproject.dto.CoachUpdateRequest;
 import tw.gymproject.dto.CoachStatusRequest;
 import tw.gymproject.repository.AccountRepository;
+import org.mindrot.jbcrypt.BCrypt;
+import tw.gymproject.entity.Useraccount;
 
 @Service
 public class CoachManagementService {
@@ -30,28 +32,54 @@ public class CoachManagementService {
     public Coach createCoach(CoachCreateRequest request) {
 
         String coachno = request.getCoachno().trim();
+        String name = request.getName().trim();
+        String phone = request.getPhone().trim();
 
-        // 檢查教練編號是否重複
+        // 教練英文名字作為登入帳號
+        String username = name;
+
+        // 檢查教練編號
         if (coachRepository.existsByCoachno(coachno)) {
             throw new ResponseStatusException(
-                    HttpStatus.CONFLICT, "教練編號已存在"
+                    HttpStatus.CONFLICT,
+                    "教練編號已存在"
             );
         }
 
+        // 檢查所有角色的帳號，避免使用到既有帳號
+        if (accountRepository.existsByUsername(username)) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "此名字已被用作登入帳號，請使用其他名稱"
+            );
+        }
+
+        // 建立教練帳號
+        Useraccount account = new Useraccount();
+        account.setUsername(username);
+
+        // 初始密碼為電話，資料庫存 BCrypt 雜湊
+        account.setPassword(
+                BCrypt.hashpw(phone, BCrypt.gensalt())
+        );
+
+        account.setRole("coach");
+        account.setStatus("active");
+
+        Useraccount savedAccount = accountRepository.save(account);
+
+        // 建立教練資料
         Coach coach = new Coach();
         coach.setCoachno(coachno);
-        coach.setName(request.getName().trim());
+        coach.setName(name);
         coach.setGender(request.getGender());
-        coach.setPhone(request.getPhone());
+        coach.setPhone(phone);
         coach.setEmail(request.getEmail());
         coach.setSpecialty(request.getSpecialty());
         coach.setStatus("active");
 
-        coach.setAccount(
-                accountRepository.findById(request.getAccountid())
-                        .orElseThrow(() -> new ResponseStatusException(
-                                HttpStatus.NOT_FOUND, "找不到此帳號"))
-        );
+        // 關聯剛建立的帳號
+        coach.setAccount(savedAccount);
 
         return coachRepository.save(coach);
     }
@@ -104,6 +132,12 @@ public class CoachManagementService {
                         HttpStatus.NOT_FOUND, "找不到此教練"));
 
         coach.setStatus(request.getStatus());
+
+        Useraccount account = coach.getAccount();
+        if (account != null) {
+            account.setStatus(request.getStatus());
+            accountRepository.save(account);
+        }
 
         return coachRepository.save(coach);
     }

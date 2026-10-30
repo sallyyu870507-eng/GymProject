@@ -21,7 +21,7 @@ export default function Sidebar({ user, role = 'member', activeItem = 'home', on
     try {
       const response = await sessionFetch('/logout', { method: 'POST', credentials: 'include' })
       if (!response.ok) throw new Error('登出失敗，請稍後再試。')
-      window.location.assign('/login')
+      window.location.replace('/')
     } catch (failure) { setError(failure.message); setIsLoggingOut(false) }
   }
   return <aside className={`sidebar sidebar-${role}`}>
