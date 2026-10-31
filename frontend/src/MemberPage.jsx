@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { request } from './api.js'
+import { confirmDialog } from './notifications.js'
 
 const emptyPage = {
   members: [],
@@ -94,17 +95,15 @@ export default function MemberPage({ role, onExpired }) {
   async function changeStatus(member) {
     if (actionLock.current) return
     const active = member.status?.trim() === 'active'
-    if (
-      !window.confirm(
-        `確定要${active ? '停用' : '恢復'}「${member.name}」的會員帳號嗎？`,
-      )
-    )
-      return
     actionLock.current = true
     setChanging(true)
-    setError('')
-    setMessage('')
     try {
+      if (!await confirmDialog(
+        `確定要${active ? '停用' : '恢復'}「${member.name}」的會員帳號嗎？`,
+        { title: active ? '停用會員帳號？' : '恢復會員帳號？', confirmLabel: active ? '確認停用' : '確認恢復', danger: active },
+      )) return
+      setError('')
+      setMessage('')
       await api(
         active
           ? `${base}/del/${member.accountid}`
@@ -305,6 +304,15 @@ export default function MemberPage({ role, onExpired }) {
             >
               ›
             </button>
+            <button
+              aria-label="最後一頁"
+              disabled={loading || changing || !data.hasNext}
+              onClick={() =>
+                setQuery((q) => ({ ...q, page: Math.max(0, data.totalPages - 1) }))
+              }
+            >
+              最後一頁
+            </button>
           </div>
         </div>
       </section>
@@ -393,17 +401,14 @@ function MemberDialog({ modal, admin, base, api, onClose, onSaved }) {
   async function submit(e) {
     e.preventDefault()
     if (lock.current || loading) return
-    if (
-      purchase &&
-      !window.confirm(
-        `確定為「${modal.member.name}」新增此筆 10 堂購課紀錄嗎？`,
-      )
-    )
-      return
     lock.current = true
     setBusy(true)
     setError('')
     try {
+      if (purchase && !await confirmDialog(
+        `確定為「${modal.member.name}」新增此筆 10 堂購課紀錄嗎？`,
+        { title: '確認新增購課', confirmLabel: '確認購課' },
+      )) return
       const payload = purchase
         ? { courseid: Number(courseid), coachid: Number(coachid) }
         : Object.fromEntries(

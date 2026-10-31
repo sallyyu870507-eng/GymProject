@@ -10,8 +10,8 @@ test('課程設定保留教練其他課程，移除取消勾選的關聯，略�
   const writes = []
   const current = { 1: [2, 9], 2: [2, 8], 3: [7], 4: [2, 6] }
   globalThis.fetch = async (url, init) => {
-    assert.match(url, /^\/api\/coaches\/\d+\/courses$/)
-    const id = Number(url.split('/')[3])
+    assert.match(url, /^\/api\/relation\/coaches\/\d+\/courses$/)
+    const id = Number(url.split('/')[4])
     assert.equal(init.credentials, 'include')
     if (init.method === 'GET') return json(current[id].map(courseid => ({ courseid })))
     writes.push([id, JSON.parse(init.body).courseids])
@@ -27,15 +27,15 @@ test('部分關聯儲存失敗時停止並回報端點、狀態與後端訊息',
     urls.push(url)
     return init.method === 'GET' ? json([]) : json({ message: '沒有操作權限' }, 403)
   }
-  await assert.rejects(saveCourseCoaches(2, [1, 2], [{ coachid: 1 }, { coachid: 2 }]), /PUT \/api\/coaches\/1\/courses（403）：沒有操作權限/)
+  await assert.rejects(saveCourseCoaches(2, [1, 2], [{ coachid: 1 }, { coachid: 2 }]), /PUT \/api\/relation\/coaches\/1\/courses（403）：沒有操作權限/)
   assert.equal(urls.length, 2)
 })
 
 test('列表關聯依 API 實際資料，不由專長字串推算', async () => {
   globalThis.fetch = async url => {
-    if (url === '/api/coaches') return json([{ coachid: 11, specialty: '錯誤專長文字' }])
-    if (url === '/api/courses') return json([{ courseid: 25, coursename: '新課程' }])
-    assert.equal(url, '/api/coaches/11/courses')
+    if (url === '/api/admin/coaches') return json([{ coachid: 11, specialty: '錯誤專長文字' }])
+    if (url === '/api/admin/courses') return json([{ courseid: 25, coursename: '新課程' }])
+    assert.equal(url, '/api/relation/coaches/11/courses')
     return json([{ courseid: 25 }])
   }
   const data = await loadAdminData()

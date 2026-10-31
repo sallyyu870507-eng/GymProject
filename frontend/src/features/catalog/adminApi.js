@@ -20,15 +20,15 @@ export async function adminRequest(url, method = 'GET', body, signal) {
 }
 
 export async function assignedCourses(coachid, signal) {
-  const list = await adminRequest(`/api/coaches/${coachid}/courses`, 'GET', undefined, signal)
+  const list = await adminRequest(`/api/relation/coaches/${coachid}/courses`, 'GET', undefined, signal)
   if (!Array.isArray(list)) throw new Error(`教練 ${coachid} 的課程資料格式不正確`)
   return list
 }
 
 export async function loadAdminData(signal) {
   const [coaches, courses] = await Promise.all([
-    adminRequest('/api/coaches', 'GET', undefined, signal),
-    adminRequest('/api/courses', 'GET', undefined, signal),
+    adminRequest('/api/admin/coaches', 'GET', undefined, signal),
+    adminRequest('/api/admin/courses', 'GET', undefined, signal),
   ])
   if (!Array.isArray(coaches) || !Array.isArray(courses)) throw new Error('教練或課程列表的回傳格式不是陣列')
   const lists = await Promise.all(coaches.map(async coach => ({
@@ -47,6 +47,6 @@ export async function saveCourseCoaches(courseid, selectedIds, coaches) {
     if (ids.has(courseid) === selected) continue
     if (selected) ids.add(courseid)
     else ids.delete(courseid)
-    await adminRequest(`/api/coaches/${coach.coachid}/courses`, 'PUT', { courseids: [...ids] })
+    await adminRequest(`/api/relation/coaches/${coach.coachid}/courses`, 'PUT', { courseids: [...ids] })
   }
 }

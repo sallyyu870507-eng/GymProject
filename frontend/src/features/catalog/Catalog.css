@@ -148,7 +148,7 @@
 }
 
 /* ===== 課程卡片內容 ===== */
-.cc-course-:scope {
+.cc-course-body {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -593,7 +593,7 @@
 }
 
 /* 教練卡片內容 */
-.cc-coach-:scope {
+.cc-coach-body {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -655,7 +655,7 @@
     gap: 18px;
   }
 
-  .cc-coach-:scope {
+  .cc-coach-body {
     padding: 16px;
   }
 }

@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { confirmDialog } from './notifications.js'
 import { Link, Navigate, Outlet, Route, Routes, useBeforeUnload, useBlocker, useLocation, useNavigate } from 'react-router'
 import Sidebar from './components/Sidebar.jsx'
 import MemberPage from './MemberPage.jsx'
@@ -22,15 +23,28 @@ const loginErrors = { invalid: '帳號或密碼錯誤', inactive: '帳號已停�
 function Shell({ user }) {
   const location = useLocation()
   const navigate = useNavigate()
-  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [hasUnsavedChanges, setUnsavedChanges] = useState(false)
+  const unsavedChanges = useRef(false)
+  const setHasUnsavedChanges = useCallback(value => {
+    unsavedChanges.current = value
+    setUnsavedChanges(value)
+  }, [])
   const [navigationLocked, setNavigationLocked] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  useEffect(() => {
+    const mobileViewport = window.matchMedia('(max-width: 800px)')
+    const closeOnDesktop = event => { if (!event.matches) setMobileOpen(false) }
+    mobileViewport.addEventListener('change', closeOnDesktop)
+    return () => mobileViewport.removeEventListener('change', closeOnDesktop)
+  }, [])
   useEffect(() => {
     if (!mobileOpen) return
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     document.querySelector('#gym-navigation .menu-item')?.focus()
-    const closeOnEscape = event => { if (event.key === 'Escape') setMobileOpen(false) }
+    const closeOnEscape = event => {
+      if (event.key === 'Escape' && !document.querySelector('dialog[open]')) setMobileOpen(false)
+    }
     window.addEventListener('keydown', closeOnEscape)
     return () => {
       document.body.style.overflow = previousOverflow
@@ -39,23 +53,43 @@ function Shell({ user }) {
     }
   }, [mobileOpen])
   const blocker = useBlocker(({ currentLocation, nextLocation }) =>
-    (hasUnsavedChanges || navigationLocked) && currentLocation.pathname !== nextLocation.pathname)
+    (unsavedChanges.current || navigationLocked) && currentLocation.pathname !== nextLocation.pathname)
   useEffect(() => {
     if (blocker.state !== 'blocked') return
-    if (!navigationLocked && window.confirm('尚有未儲存的內容，確定離開？')) {
-      setHasUnsavedChanges(false)
-      blocker.proceed()
-    } else blocker.reset()
+    if (navigationLocked) { blocker.reset(); return }
+    const controller = new AbortController()
+    confirmDialog('尚有未儲存的內容，確定離開？', { title: '離開此頁面？', confirmLabel: '捨棄並離開', signal: controller.signal }).then(confirmed => {
+      if (controller.signal.aborted) return
+      if (confirmed) {
+        setHasUnsavedChanges(false)
+        blocker.proceed()
+      } else blocker.reset()
+    })
+    return () => controller.abort()
   }, [blocker, navigationLocked])
   useBeforeUnload(event => {
     if (hasUnsavedChanges || navigationLocked) { event.preventDefault(); event.returnValue = '' }
   })
   const activeItem = location.pathname.startsWith('/renewal') ? 'care' : Object.keys(destinations).find(key => destinations[key] === location.pathname) || 'home'
   return <div className="integrated-app">
-    <header className="mobile-bar"><strong>POWER GYM</strong><button onClick={() => setMobileOpen(!mobileOpen)} aria-expanded={mobileOpen} aria-controls="gym-navigation">選單</button></header>
+    <header className="mobile-bar">
+      <strong>POWER GYM</strong>
+      <button
+        type="button"
+        className="mobile-menu-toggle"
+        onClick={() => setMobileOpen(open => !open)}
+        aria-label={mobileOpen ? '關閉選單' : '開啟選單'}
+        aria-expanded={mobileOpen}
+        aria-controls="gym-navigation"
+      >
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+          {mobileOpen ? <path d="m6 6 12 12M6 18 18 6" /> : <path d="M3 6h18M3 12h18M3 18h18" />}
+        </svg>
+      </button>
+    </header>
     {mobileOpen && <button className="sidebar-overlay" aria-label="關閉選單" onClick={() => setMobileOpen(false)} />}
     <div id="gym-navigation" className={`navigation-panel ${mobileOpen ? 'open' : ''}`}>
-      <Sidebar user={user} role={user.role} activeItem={activeItem} navigationDisabled={navigationLocked} onNavigate={key => { navigate(destinations[key]); setMobileOpen(false) }} onBeforeLogout={() => !navigationLocked && (!hasUnsavedChanges || window.confirm('尚有未儲存的內容，確定登出？'))} />
+      <Sidebar user={user} role={user.role} activeItem={activeItem} navigationDisabled={navigationLocked} onNavigate={key => { navigate(destinations[key]); setMobileOpen(false) }} onBeforeLogout={async () => !navigationLocked && (!hasUnsavedChanges || await confirmDialog('尚有未儲存的內容，確定登出？', { title: '確定登出？', confirmLabel: '捨棄並登出' }))} />
     </div>
     <main className="integrated-content"><Outlet context={{ userName: user.name || '', setHasUnsavedChanges, setNavigationLocked }} /></main>
   </div>

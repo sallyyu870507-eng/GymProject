@@ -1,3 +1,5 @@
+import { showToast } from '../../../notifications.js'
+const showErrorToast = message => showToast(message, { type: 'error' })
 import { useEffect, useState } from 'react'
 import Calendar from 'react-calendar'
 
@@ -71,7 +73,7 @@ function BookingCourse() {
   const loadCourses = () => {
 
     return fetch(
-      'http://localhost:8080/api/member/courses',
+      '/api/member/courses',
       {
         method: 'GET',
         credentials: 'include'
@@ -138,7 +140,7 @@ function BookingCourse() {
 
 
     fetch(
-      `http://localhost:8080/api/member/courses/${selectedCourse}/available-dates`,
+      `/api/member/courses/${selectedCourse}/available-dates`,
       {
         method: 'GET',
         credentials: 'include'
@@ -205,7 +207,7 @@ function BookingCourse() {
 
 
     fetch(
-      `http://localhost:8080/api/member/courses/${selectedCourse}/schedules?date=${dateString}`,
+      `/api/member/courses/${selectedCourse}/schedules?date=${dateString}`,
       {
         method: 'GET',
         credentials: 'include'
@@ -309,7 +311,7 @@ function BookingCourse() {
 
 
     fetch(
-      'http://localhost:8080/api/member/bookings',
+      '/api/member/bookings',
       {
         method: 'POST',
 
@@ -366,7 +368,7 @@ function BookingCourse() {
 
         setIsBooking(false)
 
-        alert(
+        showErrorToast(
           '預約失敗：' +
           error.message
         )

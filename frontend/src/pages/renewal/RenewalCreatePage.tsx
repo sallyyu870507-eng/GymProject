@@ -1,3 +1,4 @@
+import { confirmDialog } from '../../notifications.js';
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
 import { useLocation, useNavigate, useOutletContext, useParams } from "react-router";
 import { createRenewal, getRenewalOptions, RenewalApiError } from "../../services/renewalService";
@@ -83,9 +84,9 @@ export default function RenewalCreatePage() {
     }, [dirty]);
 
     function returnPath() { return `/renewal/${memberCourseId ?? idParam}${routeState?.fromDetailsSearch || "?tab=overview"}`; }
-    function leave() {
+    async function leave() {
         if (submitting || inFlight.current) return;
-        if (dirty && !window.confirm("尚有未儲存的內容，確定離開？")) return;
+        if (dirty && !await confirmDialog("尚有未儲存的內容，確定離開？")) return;
         setHasUnsavedChanges(false); navigate(returnPath(), { state: routeState });
     }
     function update<K extends keyof Values>(key: K, value: Values[K]) {
@@ -141,8 +142,8 @@ export default function RenewalCreatePage() {
         pending.current = submission;
         void send(submission);
     }
-    function confirmResolved() {
-        if (!window.confirm("請先確認原方案續約關聯。若已確認前次結果，重新提交將視為一筆新的續約操作。要解除目前提交鎖定嗎？")) return;
+    async function confirmResolved() {
+        if (!await confirmDialog("請先確認原方案續約關聯。若已確認前次結果，重新提交將視為一筆新的續約操作。要解除目前提交鎖定嗎？")) return;
         pending.current = null; setOutcomeUnknown(false); setResolvedUnknown(true); setUnknownMessage(""); setErrors({});
     }
 

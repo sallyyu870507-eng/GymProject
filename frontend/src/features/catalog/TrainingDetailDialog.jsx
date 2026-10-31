@@ -50,7 +50,7 @@ export default function TrainingDetailDialog({ initialKind, initialId, imageSrc,
     async function load() {
       try {
         const data = await fetchJson(
-          `/api/student/${current.kind === 'coach' ? 'coaches' : 'courses'}/${current.id}`,
+          `/api/member/student/${current.kind === 'coach' ? 'coaches' : 'courses'}/${current.id}`,
           signal,
         )
         if (signal.aborted) return

@@ -1,3 +1,5 @@
+import { confirmDialog, showToast } from '../../../notifications.js'
+const showErrorToast = message => showToast(message, { type: 'error' })
 
 import { useEffect, useMemo, useState } from 'react'
 import Calendar from 'react-calendar'
@@ -114,7 +116,7 @@ function CoachDashboard() {
 
   const loadDashboard = async () => {
     const response = await fetch(
-      `http://localhost:8080/api/coach/dashboard?date=${selectedDate}`,
+      `/api/coach/dashboard?date=${selectedDate}`,
       {
         method: 'GET',
         credentials: 'include'
@@ -141,7 +143,7 @@ function CoachDashboard() {
 
   const loadSchedules = async () => {
     const response = await fetch(
-      `http://localhost:8080/api/coach/schedules?date=${selectedDate}`,
+      `/api/coach/schedules?date=${selectedDate}`,
       {
         method: 'GET',
         credentials: 'include'
@@ -221,19 +223,20 @@ function CoachDashboard() {
     if (!selectedBooking || isCancelling) return
 
     if (!canManageBooking(selectedBooking)) {
-      alert('課程已開始，無法取消預約')
+      showErrorToast('課程已開始，無法取消預約')
       return
     }
 
     const bookingid = selectedBooking.bookingid
 
     if (!bookingid) {
-      alert('找不到 bookingid')
+      showErrorToast('找不到 bookingid')
       return
     }
 
-    const confirmCancel = window.confirm(
-      '確定要取消這位學員的預約嗎？'
+    const confirmCancel = await confirmDialog(
+      '確定要取消這位學員的預約嗎？',
+      { title: '取消學員預約？', confirmLabel: '確認取消預約', danger: true }
     )
 
     if (!confirmCancel) return
@@ -242,7 +245,7 @@ function CoachDashboard() {
       setIsCancelling(true)
 
       const response = await fetch(
-        `http://localhost:8080/api/coach/bookings/${bookingid}/cancel`,
+        `/api/coach/bookings/${bookingid}/cancel`,
         {
           method: 'POST',
           credentials: 'include'
@@ -255,7 +258,7 @@ function CoachDashboard() {
         throw new Error(result || '取消預約失敗')
       }
 
-      alert(result || '教練代取消成功')
+      showToast(result || '教練代取消成功', { type: 'success' })
 
       setShowBookingModal(false)
       setSelectedBooking(null)
@@ -264,7 +267,7 @@ function CoachDashboard() {
 
     } catch (error) {
       console.error('教練取消預約失敗：', error)
-      alert(`取消失敗：${error.message}`)
+      showErrorToast(`取消失敗：${error.message}`)
     } finally {
       setIsCancelling(false)
     }
@@ -279,14 +282,14 @@ function CoachDashboard() {
     if (!selectedBooking) return
 
     if (!canManageBooking(selectedBooking)) {
-      alert('課程已開始，無法修改預約')
+      showErrorToast('課程已開始，無法修改預約')
       return
     }
 
     const bookingid = selectedBooking.bookingid
 
     if (!bookingid) {
-      alert('找不到 bookingid')
+      showErrorToast('找不到 bookingid')
       return
     }
 
@@ -299,7 +302,7 @@ function CoachDashboard() {
       setSelectedScheduleId(null)
 
       const response = await fetch(
-        `http://localhost:8080/api/coach/bookings/${bookingid}/available-dates`,
+        `/api/coach/bookings/${bookingid}/available-dates`,
         {
           method: 'GET',
           credentials: 'include'
@@ -320,7 +323,7 @@ function CoachDashboard() {
 
     } catch (error) {
       console.error('取得可修改日期失敗：', error)
-      alert(error.message || '取得可修改日期失敗')
+      showErrorToast(error.message || '取得可修改日期失敗')
     } finally {
       setLoadingEditDates(false)
     }
@@ -358,7 +361,7 @@ function CoachDashboard() {
       setSelectedScheduleId(null)
 
       const response = await fetch(
-        `http://localhost:8080/api/coach/bookings/${bookingid}/schedules?date=${dateString}`,
+        `/api/coach/bookings/${bookingid}/schedules?date=${dateString}`,
         {
           method: 'GET',
           credentials: 'include'
@@ -377,7 +380,7 @@ function CoachDashboard() {
 
     } catch (error) {
       console.error('取得修改時段失敗：', error)
-      alert(error.message || '取得可修改時段失敗')
+      showErrorToast(error.message || '取得可修改時段失敗')
     } finally {
       setLoadingEditSlots(false)
     }
@@ -420,7 +423,7 @@ function CoachDashboard() {
       setIsRescheduling(true)
 
       const response = await fetch(
-        `http://localhost:8080/api/coach/bookings/${bookingid}/reschedule?newScheduleid=${selectedScheduleId}`,
+        `/api/coach/bookings/${bookingid}/reschedule?newScheduleid=${selectedScheduleId}`,
         {
           method: 'POST',
           credentials: 'include'
@@ -433,7 +436,7 @@ function CoachDashboard() {
         throw new Error(result || '修改預約失敗')
       }
 
-      alert(result || '教練修改預約日期時間成功')
+      showToast(result || '教練修改預約日期時間成功', { type: 'success' })
 
       setShowEditModal(false)
       setSelectedBooking(null)
@@ -446,7 +449,7 @@ function CoachDashboard() {
 
     } catch (error) {
       console.error('修改預約失敗：', error)
-      alert(error.message || '修改預約失敗')
+      showErrorToast(error.message || '修改預約失敗')
     } finally {
       setIsRescheduling(false)
     }

@@ -15,10 +15,11 @@ export default function Sidebar({ user, role = 'member', activeItem = 'home', on
   const [error, setError] = useState('')
   const roleName = { member: '會員', coach: '教練', admin: '管理員' }[role] || ''
   async function handleLogout() {
-    if (isLoggingOut || (onBeforeLogout && !onBeforeLogout())) return
+    if (isLoggingOut) return
     setIsLoggingOut(true)
     setError('')
     try {
+      if (onBeforeLogout && !await onBeforeLogout()) { setIsLoggingOut(false); return }
       const response = await sessionFetch('/logout', { method: 'POST', credentials: 'include' })
       if (!response.ok) throw new Error('登出失敗，請稍後再試。')
       window.location.replace('/')

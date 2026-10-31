@@ -1,3 +1,4 @@
+import { confirmDialog } from '../../notifications.js';
 import {
     useEffect,
     useRef,
@@ -183,10 +184,10 @@ export default function AttendancePage() {
         useRef(0);
 
 
-    function handleDateChange(nextDate: string) {
+    async function handleDateChange(nextDate: string) {
         if (!nextDate || nextDate === currentDateRef.current) return;
 
-        if (formDirty && !window.confirm("出席表單有尚未儲存的內容，確定捨棄並切換日期嗎？")) return;
+        if (formDirty && !await confirmDialog("出席表單有尚未儲存的內容，確定捨棄並切換日期嗎？")) return;
 
         currentDateRef.current = nextDate;
         selectedBookingIdRef.current = null;
@@ -379,12 +380,12 @@ export default function AttendancePage() {
     // 點選 Card
     // ========================================
 
-    function handleSelectBooking(
+    async function handleSelectBooking(
         bookingId: number
     ) {
 
         const isCurrentSelection = selectedBookingIdRef.current === bookingId;
-        if (formDirty && !window.confirm("出席表單有尚未儲存的內容，確定捨棄並切換課程嗎？")) return;
+        if (formDirty && !await confirmDialog("出席表單有尚未儲存的內容，確定捨棄並切換課程嗎？")) return;
 
         if (isCurrentSelection) {
             selectedBookingIdRef.current = null;

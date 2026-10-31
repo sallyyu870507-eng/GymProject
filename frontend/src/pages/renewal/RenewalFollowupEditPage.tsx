@@ -1,3 +1,4 @@
+import { confirmDialog } from '../../notifications.js';
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "react";
 import { useLocation, useNavigate, useOutletContext, useParams } from "react-router";
 import { getRenewalFollowup, getRenewalOverview, RenewalApiError, updateRenewalFollowup } from "../../services/renewalService";
@@ -92,9 +93,9 @@ export default function RenewalFollowupEditPage() {
         const search = routeState?.editReturnSearch || "?tab=followups";
         return `/renewal/${memberCourseId ?? planParam}${search}`;
     }
-    function leave() {
+    async function leave() {
         if (saving || inFlight.current) return;
-        if (dirty && !window.confirm("尚有未儲存的內容，確定離開？")) return;
+        if (dirty && !await confirmDialog("尚有未儲存的內容，確定離開？")) return;
         setHasUnsavedChanges(false);
         navigate(returnToFollowups(), { state: routeState, preventScrollReset: true });
     }

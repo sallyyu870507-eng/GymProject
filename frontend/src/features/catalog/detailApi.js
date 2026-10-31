@@ -52,17 +52,17 @@ function requireArray(value) {
 export async function loadRelated(kind, id, signal) {
   if (kind === 'coach') {
     const [assigned, active] = await Promise.all([
-      fetchJson(`/api/coaches/${id}/courses`, signal),
-      fetchJson('/api/student/courses', signal),
+		fetchJson(`/api/relation/coaches/${id}/courses`, signal),
+		fetchJson('/api/member/student/courses', signal),
     ])
     const ids = new Set(requireArray(assigned).map((c) => String(c.courseid)))
     return requireArray(active).filter((c) => ids.has(String(c.courseid)))
   }
 
-  const coaches = requireArray(await fetchJson('/api/student/coaches', signal))
+  const coaches = requireArray(await fetchJson('/api/member/student/coaches', signal))
   const matches = await Promise.all(coaches.map(async (coach) => {
     const assigned = requireArray(
-      await fetchJson(`/api/coaches/${coach.coachid}/courses`, signal),
+      await fetchJson(`/api/relation/coaches/${coach.coachid}/courses`, signal),
     )
     return assigned.some((c) => String(c.courseid) === String(id)) ? coach : null
   }))

@@ -19,11 +19,13 @@ button:focus-visible, a:focus-visible { outline: 2px solid #ff651e; outline-offs
 .mobile-bar, .sidebar-overlay { display: none; }
 @media (max-width: 800px) {
   .integrated-app { display: block; }
-  .mobile-bar { display: flex; position: sticky; top: 0; z-index: 900; align-items: center; justify-content: space-between; height: 56px; padding: 0 16px; background: white; border-bottom: 1px solid #e2e8f0; }
+  .mobile-bar { display: flex; position: sticky; top: 0; z-index: 1200; align-items: center; justify-content: space-between; height: 56px; padding: 0 16px; background: white; border-bottom: 1px solid #e2e8f0; }
+  .mobile-bar .mobile-menu-toggle { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; color: #18202b; }
+  .mobile-bar .mobile-menu-toggle:hover { background: #f1f5f9; }
   .navigation-panel { display: none; }
-  .navigation-panel.open { display: block; position: fixed; left: 0; top: 0; z-index: 1100; }
-  .navigation-panel .sidebar { width: 230px; height: 100dvh; }
-  .sidebar-overlay { display: block; position: fixed; inset: 0; width: 100%; height: 100%; z-index: 1000; border: 0; background: #14202880; }
+  .navigation-panel.open { display: block; position: fixed; left: 0; top: 56px; z-index: 1100; }
+  .navigation-panel .sidebar { width: min(230px, 85vw); height: calc(100dvh - 56px); overflow-y: auto; overscroll-behavior: contain; }
+  .sidebar-overlay { display: block; position: fixed; inset: 56px 0 0; width: 100%; height: calc(100% - 56px); z-index: 1000; border: 0; background: #14202880; }
   .feature-padding, .home-page { padding: 20px 12px; }
   .catalog-feature { padding: 16px 12px; }
 }

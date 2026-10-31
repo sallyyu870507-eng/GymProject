@@ -1,3 +1,4 @@
+import { confirmDialog } from '../../notifications.js';
 import {
     useEffect,
     useRef,
@@ -176,7 +177,7 @@ export default function AttendanceEditForm(
        剩餘堂數仍由後端 Service 處理。
        ========================================================= */
 
-    function handleStatusChange(
+    async function handleStatusChange(
         newStatus: AttendanceUpdateStatus
     ) {
 
@@ -193,7 +194,7 @@ export default function AttendanceEditForm(
         ].some(value => value.trim() !== "");
 
         if (isLeavingPresent && hasTrainingOrInBody) {
-            const confirmed = window.confirm(
+            const confirmed = await confirmDialog(
                 "改為請假或未出席後，儲存時將清除本次訓練重點\n與 InBody 資料，是否繼續？"
             );
 

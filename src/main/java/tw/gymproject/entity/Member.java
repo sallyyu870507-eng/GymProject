@@ -37,7 +37,7 @@ public class Member {
     private Useraccount account;
 
     @Nationalized
-    @Column(name = "memberno", nullable = false, length = 20)
+    @Column(name = "memberno", length = 20)
     private String memberno;
 
     @Nationalized

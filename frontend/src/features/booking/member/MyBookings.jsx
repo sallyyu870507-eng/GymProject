@@ -1,3 +1,5 @@
+import { showToast } from '../../../notifications.js'
+const showErrorToast = message => showToast(message, { type: 'error' })
 import { useEffect, useState } from 'react'
 import Calendar from 'react-calendar'
 
@@ -55,7 +57,7 @@ function MyBookings() {
 
     const response =
       await fetch(
-        'http://localhost:8080/api/member/bookings',
+        '/api/member/bookings',
         {
           method: 'GET',
           credentials: 'include'
@@ -276,7 +278,7 @@ function MyBookings() {
 
         const response =
           await fetch(
-            `http://localhost:8080/api/member/bookings/${cancelBookingData.bookingid}/cancel`,
+            `/api/member/bookings/${cancelBookingData.bookingid}/cancel`,
             {
               method: 'PUT',
               credentials: 'include'
@@ -301,7 +303,7 @@ function MyBookings() {
 
       } catch (error) {
 
-        alert(
+        showErrorToast(
           error.message ||
           '取消預約失敗'
         )
@@ -341,7 +343,7 @@ function MyBookings() {
 
         const response =
           await fetch(
-            `http://localhost:8080/api/member/courses/${booking.membercourseid}/available-dates`,
+            `/api/member/courses/${booking.membercourseid}/available-dates`,
             {
               method: 'GET',
               credentials: 'include'
@@ -362,7 +364,7 @@ function MyBookings() {
 
       } catch {
 
-        alert(
+        showErrorToast(
           '取得可修改日期失敗'
         )
       }
@@ -388,7 +390,7 @@ function MyBookings() {
 
       const response =
         await fetch(
-          `http://localhost:8080/api/member/courses/${editBookingData.membercourseid}/schedules?date=${dateString}`,
+          `/api/member/courses/${editBookingData.membercourseid}/schedules?date=${dateString}`,
           {
             method: 'GET',
             credentials: 'include'
@@ -430,7 +432,7 @@ function MyBookings() {
 
         const response =
           await fetch(
-            `http://localhost:8080/api/member/bookings/${editBookingData.bookingid}/reschedule`,
+            `/api/member/bookings/${editBookingData.bookingid}/reschedule`,
             {
               method: 'PUT',
 
@@ -467,7 +469,7 @@ function MyBookings() {
 
       } catch (error) {
 
-        alert(
+        showErrorToast(
           error.message ||
           '修改預約失敗'
         )

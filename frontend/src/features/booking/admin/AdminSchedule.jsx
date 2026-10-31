@@ -69,7 +69,7 @@ function AdminSchedule() {
 
       const response = await fetch(
 
-        `http://localhost:8080/api/admin/schedules/day?date=${selectedDate}`,
+        `/api/admin/schedules/day?date=${selectedDate}`,
 
         {
 

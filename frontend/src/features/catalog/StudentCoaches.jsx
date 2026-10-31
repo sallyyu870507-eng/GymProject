@@ -26,7 +26,7 @@ export default function StudentCoaches() {
         async function loadCoaches() {
             try {
                 const coachList = await fetchJson(
-                    '/api/student/coaches',
+                    '/api/member/student/coaches',
                     controller.signal,
                 )
 
@@ -38,7 +38,7 @@ export default function StudentCoaches() {
                 const coachDetails = await Promise.all(
                     coachList.map((coach) =>
                         fetchJson(
-                            `/api/student/coaches/${coach.coachid}`,
+                            `/api/member/student/coaches/${coach.coachid}`,
                             controller.signal,
                         ),
                     ),
