@@ -1,0 +1,14 @@
+@scope (.dashboard-feature) {
+  .trainer-home .trainer-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+  .trainer-home .card-head { flex-wrap: wrap; gap: 12px; }
+  .trainer-home .trainer-state { margin: 0; padding: 20px 16px; }
+  .trainer-home .trainer-error { color: var(--bad); }
+  .trainer-home .trainer-table-wrap { max-height: 480px; overflow: auto; }
+  .trainer-home .trainer-table { min-width: 520px; }
+  .trainer-home .trainer-time { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .trainer-home .trainer-table-caption { padding: 8px 12px; text-align: left; color: var(--muted); font-size: 13px; }
+  @media (max-width: 680px) {
+    .trainer-home .trainer-controls { width: 100%; }
+    .trainer-home .trainer-controls .date-picker { flex: 1; min-width: 0; }
+  }
+}

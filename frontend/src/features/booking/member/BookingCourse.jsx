@@ -1,6 +1,7 @@
 import { showToast } from '../../../notifications.js'
 const showErrorToast = message => showToast(message, { type: 'error' })
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import Calendar from 'react-calendar'
 
 import 'react-calendar/dist/Calendar.css'
@@ -8,6 +9,8 @@ import './BookingCourse.css'
 
 
 function BookingCourse() {
+  const [searchParams] = useSearchParams()
+  const requestedPlan = searchParams.get('membercourseid')
 
   const [currentStep, setCurrentStep] =
     useState(1)
@@ -70,13 +73,14 @@ function BookingCourse() {
   // 取得會員已購買課程
   // =====================================================
 
-  const loadCourses = () => {
+  const loadCourses = (signal) => {
 
     return fetch(
       '/api/member/courses',
       {
         method: 'GET',
-        credentials: 'include'
+        credentials: 'include',
+        signal
       }
     )
       .then(response => {
@@ -92,6 +96,8 @@ function BookingCourse() {
 
       })
       .then(data => {
+        if (!Array.isArray(data)) throw new Error('已購課程回傳格式不正確')
+        if (signal?.aborted) return data
 
         console.log(
           '會員課程：',
@@ -99,6 +105,7 @@ function BookingCourse() {
         )
 
         setCourses(data)
+        return data
 
       })
   }
@@ -109,18 +116,37 @@ function BookingCourse() {
   // =====================================================
 
   useEffect(() => {
+    const controller = new AbortController()
+    setCurrentStep(1)
+    setSelectedCourse(null)
+    setSelectedDate(null)
+    setSelectedTime(null)
+    setAvailableDates([])
+    setScheduleOptions([])
 
-    loadCourses()
+    loadCourses(controller.signal)
+      .then(data => {
+        if (controller.signal.aborted || requestedPlan === null) return
+        const id = /^[1-9]\d*$/.test(requestedPlan) ? Number(requestedPlan) : NaN
+        const course = Number.isSafeInteger(id)
+          ? data.find(item => item.membercourseid === id && item.remainingsessions > 0)
+          : null
+        if (course) setSelectedCourse(course.membercourseid)
+        else showToast('此購課方案無法預選，可能已失效或沒有剩餘堂數，請重新選擇課程。', { type: 'info' })
+      })
       .catch(error => {
+        if (controller.signal.aborted) return
 
         console.error(
           '取得課程失敗：',
           error
         )
+        showErrorToast(error.message || '取得課程失敗')
 
       })
 
-  }, [])
+    return () => controller.abort()
+  }, [requestedPlan])
 
 
   // =====================================================

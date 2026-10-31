@@ -15,6 +15,9 @@ import RenewalOverviewPage from './pages/renewal/RenewalOverviewPage'
 import RenewalFollowupCreatePage from './pages/renewal/RenewalFollowupCreatePage'
 import RenewalFollowupEditPage from './pages/renewal/RenewalFollowupEditPage'
 import RenewalCreatePage from './pages/renewal/RenewalCreatePage'
+import StudentHome from './features/dashboard/pages/student/StudentHome'
+import TrainerPage from './features/dashboard/pages/coach/TrainerPage'
+import './features/dashboard/dashboard.css'
 import './features/team-base.css'
 
 const destinations = { home: '/', members: '/members', students: '/students', courses: '/courses', coaches: '/coaches', schedule: '/schedule', attendance: '/attendance', care: '/renewal', booking: '/book-course', 'my-bookings': '/my-bookings' }
@@ -96,6 +99,18 @@ function Shell({ user }) {
 }
 
 function Home({ user }) {
+	if (user.role === 'coach') {
+	  return <div className="dashboard-feature"><div className="main"><TrainerPage coachName={user.name} /></div></div>
+	}
+	if (user.role === 'member') {
+	  return (
+	    <div className="dashboard-feature">
+	      <div className="main">
+	        <StudentHome />
+	      </div>
+	    </div>
+	  )
+	}
   const items = user.role === 'member' ? ['courses', 'coaches', 'my-bookings', 'booking'] : user.role === 'coach' ? ['students', 'schedule', 'attendance', 'care'] : ['members', 'coaches', 'courses', 'schedule']
   const labels = { courses: '課程總覽', coaches: '教練介紹', 'my-bookings': '我的預約', booking: '預約課程', students: '學員清單', schedule: '課表', attendance: '學員出席', care: '續約與關懷', members: '會員管理' }
   return <section className="home-page"><h1>你好，{user.name || '歡迎回來'}</h1><p>從選單或下方功能開始。</p><div className="home-links">{items.map(key => <Link key={key} to={destinations[key]}>{labels[key]}</Link>)}</div></section>
