@@ -1,0 +1,84 @@
+/* Scoped during integration; original selectors retained. */
+@scope (.catalog-feature) {
+.cc-linked-dialog .cc-related-section {
+  margin-top: 26px;
+}
+
+.cc-linked-dialog .cc-related-section h3 {
+  margin: 0 0 16px;
+  color: #18202b;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.cc-linked-dialog .cc-related-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.cc-linked-dialog .cc-related-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  padding: 13px 17px;
+  border: 1px solid #e4e4df;
+  border-radius: 5px;
+  background: #fff;
+  color: #18202b;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+  transition: background-color .2s, border-color .2s;
+}
+
+.cc-linked-dialog .cc-related-link:hover {
+  border-color: #efc6b5;
+  background: #fff3ec;
+}
+
+.cc-linked-dialog .cc-related-link:focus-visible {
+  outline: 2px solid #d93f0b;
+  outline-offset: 3px;
+}
+
+.cc-linked-dialog .cc-coach-detail-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.cc-linked-dialog .cc-coach-detail-info .cc-related-section {
+  margin-top: 0;
+}
+
+.cc-linked-dialog .cc-coach-contact-section {
+  margin-top: 30px;
+}
+
+.cc-linked-dialog .cc-coach-contact-title {
+  margin: 0 0 18px;
+}
+
+.cc-linked-dialog .cc-coach-detail-photo {
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.cc-linked-dialog h2:focus {
+  outline: none;
+}
+
+@media (max-width: 600px) {
+  .cc-linked-dialog .cc-coach-detail-profile {
+    flex-direction: column;
+  }
+
+  .cc-linked-dialog .cc-coach-detail-info {
+    width: 100%;
+  }
+}
+
+}

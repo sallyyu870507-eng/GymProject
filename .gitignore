@@ -49,3 +49,7 @@ target/
 
 
 /src/main/resources/META-INF/persistence.xml
+# Local-only backend configuration
+/src/main/resources/application-local.properties
+.idea/
+*.iml

@@ -8,10 +8,6 @@ import lombok.Setter;
 @Setter
 public class CoachCreateRequest {
 
-    @NotNull(message = "帳號ID不可空白")
-    @Positive(message = "帳號ID必須大於0")
-    private Integer accountid;
-
     @NotBlank(message = "教練編號不可空白")
     @Size(max = 20, message = "教練編號最多20個字元")
     private String coachno;
@@ -23,6 +19,7 @@ public class CoachCreateRequest {
     @Size(max = 10, message = "性別最多10個字元")
     private String gender;
 
+    @NotBlank(message = "電話不可空白，將作為初始登入密碼")
     @Size(max = 20, message = "電話最多20個字元")
     private String phone;
 

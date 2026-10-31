@@ -1,118 +1,111 @@
 package tw.gymproject.exception;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import jakarta.persistence.EntityNotFoundException;
-
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-	
-	
-	// 攔截 Service 刪除寫的 EntityNotFoundException (找不到資料)
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleEntityNotFound(EntityNotFoundException ex) {
-        // 回傳 HTTP 404 Not Found 狀態碼，並把 "找不到該帳號" 的訊息傳給前端
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body(Map.of(
-                    "success", false,
-                    "message", ex.getMessage()
-                ));
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler({
+            BusinessException.class,
+            IllegalArgumentException.class,
+            MethodArgumentNotValidException.class,
+            MethodArgumentTypeMismatchException.class,
+            HttpMessageNotReadableException.class,
+            MissingServletRequestParameterException.class,
+            ConstraintViolationException.class
+    })
+    public ResponseEntity<Map<String, Object>> handleBadRequest(Exception ex) {
+        String message;
+         if( ex instanceof MethodArgumentNotValidException validation){
+            message = validation.getBindingResult().getFieldErrors().stream()
+                        .findFirst()
+                        .map(error -> error.getDefaultMessage())
+                        .orElse("請求資料不正確");
+        }else if (ex instanceof HttpMessageNotReadableException) {
+            message = "請求內容格式不正確";
+        } else if (ex instanceof MethodArgumentTypeMismatchException) {
+            message = "參數格式不正確";
+        } else if (ex instanceof MissingServletRequestParameterException) {
+            message = "缺少必要參數";
+        } else {
+            message = ex.getMessage();
+        }
+        return error(HttpStatus.BAD_REQUEST, "Bad Request", safeMessage(message, "請求資料不正確"));
     }
 
-    // 攔截參數不合法或商業邏輯違反的例外
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleIllegalArgument(IllegalArgumentException ex) {
-        // 回傳 HTTP 400 Bad Request
-        return ResponseEntity.badRequest()
-                .body(Map.of(
-                        "success", false,
-                        "message", ex.getMessage()
-                    ));
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<Map<String, Object>> handleUnauthorized(UnauthorizedException ex) {
+        return error(HttpStatus.UNAUTHORIZED, "Unauthorized", safeMessage(ex.getMessage(), "尚未登入或登入已失效"));
     }
-    //找不到資源的例外處理404
-    @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleResourceNotFound(
-            NoResourceFoundException ex) {
 
-        return ResponseEntity
-        		.status(HttpStatus.NOT_FOUND)
-                .body(Map.of(
-                    "success", false,
-                    "message", "找不到指定的資源"
-                ));
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<Map<String, Object>> handleForbidden(ForbiddenException ex) {
+        return error(HttpStatus.FORBIDDEN, "Forbidden", safeMessage(ex.getMessage(), "沒有操作權限"));
     }
-    //404找不到要編輯的會員
+//404
+    @ExceptionHandler({
+            ResourceNotFoundException.class,
+            EntityNotFoundException.class,
+            NoResourceFoundException.class
+    })
+    public ResponseEntity<Map<String, Object>> handleNotFound(Exception ex) {
+        return error(HttpStatus.NOT_FOUND, "Not Found", safeMessage(ex.getMessage(), "找不到指定的資源"));
+    }
+//409
+    @ExceptionHandler({ConflictException.class, DuplicateUsernameException.class,IllegalStateException.class})
+    public ResponseEntity<Map<String, Object>> handleConflict(Exception ex) {
+        return error(HttpStatus.CONFLICT, "Conflict", safeMessage(ex.getMessage(), "資料衝突"));
+    }
+
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, Object>> handleStatusException(
-    		ResponseStatusException ex) {
-    	
-    	return ResponseEntity
-    			.status(HttpStatus.NOT_FOUND)
-    			.body(Map.of(
-    					"success", false,
-    					"message", ex.getMessage()
-    					));
+    public ResponseEntity<Map<String, Object>> handleResponseStatus(ResponseStatusException ex) {
+        HttpStatusCode status = ex.getStatusCode();
+        String message = ex.getReason();
+        if (status.is5xxServerError()) {
+            log.error("Request failed with status {}", status.value(), ex);
+            message = "系統發生未預期錯誤";
+        }
+        return error(status, status.toString(), safeMessage(message, "請求無法完成"));
     }
-    //400，DTO驗證用
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleValidation(
-            MethodArgumentNotValidException e) {
-    	  Map<String, String> errors = new HashMap<>();
 
-          // 2. 取得所有欄位驗證錯誤
-          e.getBindingResult()
-           .getFieldErrors()
-           .forEach(error -> {
-
-               String field = error.getField();
-               String message = error.getDefaultMessage();
-
-               errors.putIfAbsent(field, message);
-           });
-          //回傳400 badrequest
-          return ResponseEntity
-        	        .badRequest()
-        	        .body(Map.of(
-        	            "success", false,
-        	            "errors", errors
-        	        ));
-    	}
-
-    //來自Service帳號重複的例外409
-    @ExceptionHandler(DuplicateUsernameException.class)
-    public ResponseEntity<Map<String, Object>> handleDuplicate(
-            DuplicateUsernameException e) {
-
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(Map.of(
-                    "success", false,
-                    "message", e.getMessage()  //這邊就會收到從service那邊填的拋出例外訊息內容
-                ));
-    }
-    
-    // 攔截其他所有沒預期到的系統錯誤 (例如資料庫斷線、空指標等)
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> handleAllException(Exception ex) {
-    	System.out.println("===== 進入我的 ExceptionHandler =====");
-
-       ex.printStackTrace(); //紀錄log
-        // 回傳 HTTP 500 Internal Server Error，並隱藏內部細節避免資安漏洞
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-        					.body(Map.of(
-        							"success", false,
-        							"message", "系統發生錯誤請稍後再試。"));
+    public ResponseEntity<Map<String, Object>> handleUnexpected(Exception ex) {
+        log.error("Unexpected request failure", ex);
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "系統發生未預期錯誤");
     }
-	
 
+    private ResponseEntity<Map<String, Object>> error(
+            HttpStatusCode status,
+            String error,
+            String message) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("success", false);
+        body.put("status", status.value());
+        body.put("error", error);
+        body.put("message", message);
+        return ResponseEntity.status(status).body(body);
+    }
+
+    private String safeMessage(String value, String fallback) {
+        return value == null || value.isBlank() ? fallback : value;
+    }
 }

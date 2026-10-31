@@ -1,117 +1,64 @@
 package tw.gymproject.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Nationalized;
 
 @Entity
-@Table(name="coach")
+@Table(name = "coach", schema = "dbo")
+@Getter
+@Setter
 public class Coach {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer coachid;
-	
-	private String coachno;
-	
-	private String name;
-	
-	private String gender;
-	
-	private String phone;
 
-	private String email;
-	
-	private String specialty;
-	
-	private String status;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "coachid")
+    private Integer coachid;
 
-	public Integer getCoachid() {
-		return coachid;
-	}
+    @Nationalized
+    @Column(name = "coachno", nullable = false, length = 20)
+    private String coachno;
 
-	public void setCoachid(Integer coachid) {
-		this.coachid = coachid;
-	}
+    @Nationalized
+    @Column(name = "name", nullable = false, length = 50)
+    private String name;
 
+    @Nationalized
+    @Column(name = "gender", nullable = false, length = 10)
+    private String gender;
 
-	public String getCoachno() {
-		return coachno;
-	}
+    @Nationalized
+    @Column(name = "phone", nullable = false, length = 50)
+    private String phone;
 
-	public void setCoachno(String coachno) {
-		this.coachno = coachno;
-	}
+    @Nationalized
+    @Column(name = "email", nullable = false, length = 100)
+    private String email;
 
-	public String getName() {
-		return name;
-	}
+    @Nationalized
+    @Column(name = "specialty", nullable = false, length = 100)
+    private String specialty;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    @Nationalized
+    @Column(name = "status", nullable = false, length = 20)
+    private String status;
 
-	public String getGender() {
-		return gender;
-	}
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "accountid", nullable = false, unique = true)
+    private Useraccount account;
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
-
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getSpecialty() {
-		return specialty;
-	}
-
-	public void setSpecialty(String specialty) {
-		this.specialty = specialty;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-
-	//---------//
-	@OneToOne
-	@JoinColumn(name="accountid", nullable = false, unique = true)
-	private Useraccount account;
-
-	@JsonIgnore
-	public Useraccount getAccount() {
-		return account;
-	}
-
-	public void setAccount(Useraccount account) {
-		this.account = account;
-	}
-
-	public Integer getAccountid() {
-		return account == null ? null : account.getAccountid();
-	}
-	
+    public Integer getAccountid() {
+        return account == null ? null : account.getAccountid();
+    }
 }

@@ -11,7 +11,7 @@ import java.util.Map;
 import tw.gymproject.entity.Course;
 
 @RestController
-@RequestMapping("/api/coaches")
+@RequestMapping("/api/relation/coaches")
 public class CoachCourseController {
 
     private final CoachCourseService coachCourseService;
