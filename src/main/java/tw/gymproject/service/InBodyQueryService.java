@@ -39,6 +39,10 @@ public class InBodyQueryService {
 
     private static final int TREND_LIMIT = 6;
 
+    private static final String PLAN_SCOPE = "PLAN";
+
+    private static final String COACH_MEMBER_SCOPE = "COACH_MEMBER";
+
     private final MemberCourseRepo memberCourseRepo;
     private final InBodyRecordRepo inBodyRecordRepo;
 
@@ -58,7 +62,8 @@ public class InBodyQueryService {
             Integer coachId,
             Integer memberCourseId,
             Integer page,
-            Integer size
+            Integer size,
+            String requestedScope
     ) {
         // 同一次請求固定使用同一個台北時間
         LocalDateTime asOfDateTime =
@@ -95,6 +100,17 @@ public class InBodyQueryService {
             );
         }
 
+        String scope = requestedScope == null
+                ? PLAN_SCOPE
+                : requestedScope;
+
+        if (!PLAN_SCOPE.equals(scope)
+                && !COACH_MEMBER_SCOPE.equals(scope)) {
+            throw new BusinessException(
+                    "scope 只允許 PLAN 或 COACH_MEMBER"
+            );
+        }
+
         // 2. 查方案並確認教練權限
         Membercourse plan = memberCourseRepo
                 .findOverviewById(memberCourseId)
@@ -113,11 +129,16 @@ public class InBodyQueryService {
             );
         }
 
+        Integer memberId = plan.getMember().getMemberid();
+
         // 停用會員仍可查詢歷史量測
         // 記錄被 B2 排除的歷史資料，供後續修正流程追查
         List<InBodyRecordRepo.InBodyAnomaly> anomalies =
-                inBodyRecordRepo.findPlanInBodyAnomalies(
+                inBodyRecordRepo.findInBodyAnomalies(
                         memberCourseId,
+                        memberId,
+                        coachId,
+                        scope,
                         asOfDate,
                         asOfTime
                 );
@@ -136,8 +157,11 @@ public class InBodyQueryService {
 
         // 3. 先查表格第一頁，取得總筆數及總頁數
         Page<InBodyRecordRepo.InBodyRow> firstPage =
-                inBodyRecordRepo.findPlanInBodyPage(
+                inBodyRecordRepo.findInBodyPage(
                         memberCourseId,
+                        memberId,
+                        coachId,
+                        scope,
                         asOfDate,
                         asOfTime,
                         PageRequest.of(0, PAGE_SIZE)
@@ -160,8 +184,11 @@ public class InBodyQueryService {
             selectedPage = firstPage;
         } else {
             selectedPage =
-                    inBodyRecordRepo.findPlanInBodyPage(
+                    inBodyRecordRepo.findInBodyPage(
                             memberCourseId,
+                            memberId,
+                            coachId,
+                            scope,
                             asOfDate,
                             asOfTime,
                             PageRequest.of(
@@ -173,8 +200,11 @@ public class InBodyQueryService {
 
         // 5. 最新摘要：只取最新一筆有日期的有效量測
         List<InBodyRecordRepo.InBodyRow> latestRows =
-                inBodyRecordRepo.findDatedPlanInBody(
+                inBodyRecordRepo.findDatedInBody(
                         memberCourseId,
+                        memberId,
+                        coachId,
+                        scope,
                         asOfDate,
                         asOfTime,
                         "ALL",
@@ -193,6 +223,9 @@ public class InBodyQueryService {
         trends.setWeight(
                 loadTrend(
                         memberCourseId,
+                        memberId,
+                        coachId,
+                        scope,
                         asOfDate,
                         asOfTime,
                         "WEIGHT"
@@ -202,6 +235,9 @@ public class InBodyQueryService {
         trends.setBodyFatPct(
                 loadTrend(
                         memberCourseId,
+                        memberId,
+                        coachId,
+                        scope,
                         asOfDate,
                         asOfTime,
                         "BODY_FAT"
@@ -211,6 +247,9 @@ public class InBodyQueryService {
         trends.setMuscleMass(
                 loadTrend(
                         memberCourseId,
+                        memberId,
+                        coachId,
+                        scope,
                         asOfDate,
                         asOfTime,
                         "MUSCLE_MASS"
@@ -233,6 +272,7 @@ public class InBodyQueryService {
                 new InBodyPageResponse();
 
         response.setMemberCourseId(memberCourseId);
+        response.setScope(scope);
         response.setAsOfDateTime(asOfDateTime);
         response.setLatestRecord(latestRecord);
         response.setTrends(trends);
@@ -252,13 +292,19 @@ public class InBodyQueryService {
     // 查最近 6 筆，再反轉成時間由舊到新，供趨勢圖使用
     private List<InBodyPageResponse.TrendPoint> loadTrend(
             Integer memberCourseId,
+            Integer memberId,
+            Integer coachId,
+            String scope,
             LocalDate asOfDate,
             LocalTime asOfTime,
             String metric
     ) {
         List<InBodyRecordRepo.InBodyRow> rows =
-                inBodyRecordRepo.findDatedPlanInBody(
+                inBodyRecordRepo.findDatedInBody(
                         memberCourseId,
+                        memberId,
+                        coachId,
+                        scope,
                         asOfDate,
                         asOfTime,
                         metric,
@@ -316,6 +362,8 @@ public class InBodyQueryService {
 
         item.setInBodyId(row.getInBodyId());
         item.setAttendanceId(row.getAttendanceId());
+        item.setMemberCourseId(row.getMemberCourseId());
+        item.setCourseName(row.getCourseName());
         item.setRecordDate(row.getRecordDate());
 
         item.setClassStartDateTime(

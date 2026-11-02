@@ -29,6 +29,6 @@ public class AttendanceUpdateRequest {
     // Attendance.note
     private String note;
 
-    // PRESENT 時可選
+    // PRESENT 時可選；null 或三欄皆 null 會清除該次既有量測。
     private InBodyRequest inBody;
 }

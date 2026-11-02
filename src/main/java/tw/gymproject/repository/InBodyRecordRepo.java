@@ -32,6 +32,8 @@ public interface InBodyRecordRepo
             select
                 i.inbodyid as inBodyId,
                 i.attendanceid as attendanceId,
+                mc.membercourseid as memberCourseId,
+                c.coursename as courseName,
                 i.recorddate as recordDate,
                 s.classdate as classDate,
                 s.starttime as classStartTime,
@@ -41,7 +43,7 @@ public interface InBodyRecordRepo
             """;
 
     // B2 有效集合：
-    // 指定方案、會員一致、PRESENT、未取消、課程已開始、
+    // 指定方案或同會員同教練、會員一致、PRESENT、未取消、課程已開始、
     // 至少一個數值，以及量測日期不是未來
     String B2_FROM_WHERE = """
             from inbodyrecords i
@@ -51,9 +53,18 @@ public interface InBodyRecordRepo
                 on b.bookingid = a.bookingid
             join membercourse mc
                 on mc.membercourseid = b.membercourseid
+            join course c
+                on c.courseid = mc.courseid
             join classschedule s
                 on s.scheduleid = b.scheduleid
-            where b.membercourseid = :memberCourseId
+            where (
+                  (:scope = 'PLAN' and b.membercourseid = :memberCourseId)
+                  or (
+                      :scope = 'COACH_MEMBER'
+                      and mc.memberid = :memberId
+                      and mc.coachid = :coachId
+                  )
+              )
               and i.memberid = mc.memberid
               and a.attendancestatus = 'PRESENT'
               and lower(b.bookingstatus) <> 'cancelled'
@@ -92,8 +103,11 @@ public interface InBodyRecordRepo
             countQuery = "select count_big(*) " + B2_FROM_WHERE,
             nativeQuery = true
     )
-    Page<InBodyRow> findPlanInBodyPage(
+    Page<InBodyRow> findInBodyPage(
             @Param("memberCourseId") Integer memberCourseId,
+            @Param("memberId") Integer memberId,
+            @Param("coachId") Integer coachId,
+            @Param("scope") String scope,
             @Param("asOfDate") LocalDate asOfDate,
             @Param("asOfTime") LocalTime asOfTime,
             Pageable pageable
@@ -134,8 +148,11 @@ public interface InBodyRecordRepo
                     """,
             nativeQuery = true
     )
-    List<InBodyRow> findDatedPlanInBody(
+    List<InBodyRow> findDatedInBody(
             @Param("memberCourseId") Integer memberCourseId,
+            @Param("memberId") Integer memberId,
+            @Param("coachId") Integer coachId,
+            @Param("scope") String scope,
             @Param("asOfDate") LocalDate asOfDate,
             @Param("asOfTime") LocalTime asOfTime,
             @Param("metric") String metric,
@@ -148,6 +165,10 @@ public interface InBodyRecordRepo
         Integer getInBodyId();
 
         Integer getAttendanceId();
+
+        Integer getMemberCourseId();
+
+        String getCourseName();
 
         LocalDate getRecordDate();
 
@@ -225,7 +246,14 @@ public interface InBodyRecordRepo
                 join classschedule s
                     on s.scheduleid = b.scheduleid
 
-                where b.membercourseid = :memberCourseId
+                where (
+                      (:scope = 'PLAN' and b.membercourseid = :memberCourseId)
+                      or (
+                          :scope = 'COACH_MEMBER'
+                          and mc.memberid = :memberId
+                          and mc.coachid = :coachId
+                      )
+                  )
                   and (
                       i.memberid <> mc.memberid
                       or a.attendancestatus is null
@@ -250,8 +278,11 @@ public interface InBodyRecordRepo
                 """,
             nativeQuery = true
     )
-    List<InBodyAnomaly> findPlanInBodyAnomalies(
+    List<InBodyAnomaly> findInBodyAnomalies(
             @Param("memberCourseId") Integer memberCourseId,
+            @Param("memberId") Integer memberId,
+            @Param("coachId") Integer coachId,
+            @Param("scope") String scope,
             @Param("asOfDate") LocalDate asOfDate,
             @Param("asOfTime") LocalTime asOfTime
     );

@@ -60,6 +60,9 @@ public class RenewalController {
     private static final Set<String> PAGING_QUERY_PARAMS =
             Set.of("page", "size");
 
+    private static final Set<String> INBODY_QUERY_PARAMS =
+            Set.of("page", "size", "scope");
+
     private final CoachSessionService coachSessionService;
     private final RenewalWorkbenchService workbenchService;
     private final RenewalOverviewService renewalOverviewService;
@@ -348,19 +351,23 @@ public class RenewalController {
             Integer page,
 
             @RequestParam(name = "size", required = false)
-            Integer size
+            Integer size,
+
+            @RequestParam(name = "scope", required = false)
+            String scope
     ) {
         Integer coachId = coachSessionService.getCurrentCoachId(
                 request.getSession(false)
         );
 
-        validateQueryParameters(request, PAGING_QUERY_PARAMS);
+        validateQueryParameters(request, INBODY_QUERY_PARAMS);
 
         return inBodyQueryService.getInBody(
                 coachId,
                 memberCourseId,
                 page == null ? 1 : page,
-                size == null ? 5 : size
+                size == null ? 5 : size,
+                scope
         );
     }
 

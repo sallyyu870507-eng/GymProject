@@ -313,23 +313,7 @@ public class AttendanceService {
 
 
     // =========================================================
-    //InBody 規則：
-    /*
-         PRESENT + inBody = null
-        → 通過 validate
-        → hasInBodyValue = false
-        → return
-        → 不建立、不改既有 InBody
-
-        PRESENT + 三個都有值
-        → 通過 validate
-        → hasInBodyValue = true
-        → 建立或更新 InBody
-
-        PRESENT + 只填 1～2 個
-        → validateCompleteInBody()
-        → BusinessException
-     */
+    // PRESENT + inBody 為 null 或三欄全 null 時，清除該次量測。
     // =========================================================
     // 4. 處理 InBody
     // =========================================================
@@ -367,8 +351,9 @@ public class AttendanceService {
          */
         validateCompleteInBody(request);
 
-        // 完全沒有輸入 InBody → 不建立，也不修改既有 InBody
+        // PRESENT 下明確未提供量測，代表清除該次既有量測。
         if (!hasInBodyValue(request)) {
+            existingRecord.ifPresent(inBodyRecordRepo::delete);
             return;
         }
 
