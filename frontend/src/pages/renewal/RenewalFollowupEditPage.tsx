@@ -3,10 +3,11 @@ import { useEffect, useLayoutEffect, useRef, useState, type FormEvent } from "re
 import { useLocation, useNavigate, useOutletContext, useParams } from "react-router";
 import { getRenewalFollowup, getRenewalOverview, RenewalApiError, updateRenewalFollowup } from "../../services/renewalService";
 import type { FollowupRecord, RenewalOverviewResponse } from "../../types/Renewal";
+import FollowupContentShortcuts from "./FollowupContentShortcuts";
 import "../../components/renewal/RenewalContentContainer.css";
 import "./RenewalFollowupCreatePage.css";
 
-type LayoutContext = { setHasUnsavedChanges: (value: boolean) => void; setNavigationLocked: (value: boolean) => void };
+type LayoutContext = { setHasUnsavedChanges: (value: boolean) => void; setNavigationLocked: (value: boolean) => void; allowNavigationTo: (destination: string) => void };
 type NavigationState = { restoreFilters?: unknown; returnScrollY?: number; editReturnSearch?: string; [key: string]: unknown };
 type FormValues = { createdDate: string; contactHour: string; contactMinute: string; contactMethod: string; status: string; note: string };
 type Errors = Partial<Record<keyof FormValues, string>> & { form?: string };
@@ -49,7 +50,7 @@ export default function RenewalFollowupEditPage() {
     const navigate = useNavigate();
     const location = useLocation();
     const routeState = location.state as NavigationState | null;
-    const { setHasUnsavedChanges, setNavigationLocked } = useOutletContext<LayoutContext>();
+    const { setHasUnsavedChanges, setNavigationLocked, allowNavigationTo } = useOutletContext<LayoutContext>();
     const [plan, setPlan] = useState<RenewalOverviewResponse | null>(null);
     const [record, setRecord] = useState<FollowupRecord | null>(null);
     const [values, setValues] = useState<FormValues>(emptyValues);
@@ -128,7 +129,9 @@ export default function RenewalFollowupEditPage() {
         try {
             await updateRenewalFollowup(memberCourseId, followupId, body);
             setDirty(false); setHasUnsavedChanges(false);
-            navigate(`/renewal/${memberCourseId}?tab=followups`, { replace: true, state: { ...routeState, followupUpdated: true } });
+            const destination = `/renewal/${memberCourseId}?tab=followups`;
+            allowNavigationTo(destination);
+            navigate(destination, { replace: true, state: { ...routeState, followupUpdated: true } });
         } catch (error) {
             setErrors({ form: apiErrorText(error) });
         } finally { inFlight.current = false; setSaving(false); }
@@ -164,6 +167,7 @@ export default function RenewalFollowupEditPage() {
                     <label className="renewal-create-field"><span>聯絡方式＊</span><select value={values.contactMethod} disabled={saving} onChange={(e) => update("contactMethod", e.target.value)}><option value="">請選擇</option>{methodOptions.map(([code, label]) => <option key={code} value={code}>{label}</option>)}</select>{errors.contactMethod && <small className="renewal-create-field-error">{errors.contactMethod}</small>}</label>
                     <label className="renewal-create-field"><span>跟進結果＊</span><select value={values.status} disabled={saving} onChange={(e) => update("status", e.target.value)}><option value="">請選擇</option>{statusOptions.map(([code, label]) => <option key={code} value={code}>{label}</option>)}</select>{errors.status && <small className="renewal-create-field-error">{errors.status}</small>}</label>
                 </div>
+                <FollowupContentShortcuts value={values.note} disabled={saving} onChange={(value) => update("note", value)} />
                 <label className="renewal-create-field renewal-create-note-field"><span>聯繫內容（選填）</span><textarea rows={5} value={values.note} disabled={saving} placeholder="請輸入本次聯繫內容…" onChange={(e) => update("note", e.target.value)} aria-invalid={Boolean(errors.note)} /><span className="renewal-create-note-count">{stripWhitespace(values.note).length}／500</span>{errors.note && <small className="renewal-create-field-error">{errors.note}</small>}</label>
                 <div className="renewal-create-footer"><div className="renewal-create-guidance"><p>可修改聯繫時間、聯絡方式、跟進結果及備註。</p><p>更新後仍為同一筆跟進紀錄。</p></div><div className="renewal-create-actions"><button type="button" className="renewal-create-cancel" onClick={leave} disabled={saving}>取消</button><button type="submit" className="renewal-create-submit" disabled={saving}>{saving ? "儲存中…" : "儲存修改"}</button><small>儲存後返回關懷紀錄。</small></div></div>
             </form>

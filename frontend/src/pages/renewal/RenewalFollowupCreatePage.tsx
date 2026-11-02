@@ -4,12 +4,14 @@ import { useLocation, useNavigate, useOutletContext, useParams } from "react-rou
 import { createRenewalFollowup, getRenewalOverview, RenewalApiError, type CreateFollowupRequest } from "../../services/renewalService";
 import type { RenewalOverviewResponse } from "../../types/Renewal";
 import RenewalPlanIdentity from "../../components/renewal/RenewalPlanIdentity";
+import FollowupContentShortcuts from "./FollowupContentShortcuts";
 import "../../components/renewal/RenewalContentContainer.css";
 import "./RenewalFollowupCreatePage.css";
 
 type LayoutContext = {
     setHasUnsavedChanges: (value: boolean) => void;
     setNavigationLocked: (value: boolean) => void;
+    allowNavigationTo: (destination: string) => void;
 };
 type NavigationState = {
     restoreFilters?: unknown;
@@ -107,7 +109,7 @@ function RenewalFollowupCreatePage() {
     const navigate = useNavigate();
     const location = useLocation();
     const routeState = location.state as NavigationState | null;
-    const { setHasUnsavedChanges, setNavigationLocked } = useOutletContext<LayoutContext>();
+    const { setHasUnsavedChanges, setNavigationLocked, allowNavigationTo } = useOutletContext<LayoutContext>();
     const [plan, setPlan] = useState<RenewalOverviewResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [loadError, setLoadError] = useState<unknown>(null);
@@ -233,7 +235,9 @@ function RenewalFollowupCreatePage() {
             setDirty(false);
             setHasUnsavedChanges(false);
             const query = new URLSearchParams({ tab: "followups" });
-            navigate(`/renewal/${memberCourseId}?${query.toString()}`, {
+            const destination = `/renewal/${memberCourseId}?${query.toString()}`;
+            allowNavigationTo(destination);
+            navigate(destination, {
                 replace: true,
                 state: { ...routeState, followupCreated: true },
             });
@@ -384,6 +388,7 @@ function RenewalFollowupCreatePage() {
                         </div>
                         {values.status === "NO_RESPONSE" && <p className="renewal-create-status-hint">已嘗試聯絡，尚未取得會員回應。</p>}
 
+                        <FollowupContentShortcuts value={values.note} disabled={formLocked} onChange={(value) => updateField("note", value)} />
                         <label className="renewal-create-field renewal-create-note-field">
                             <span>聯繫內容（選填）</span>
                             <textarea ref={noteRef} rows={5} value={values.note} disabled={formLocked} placeholder="請輸入本次聯繫內容…" onChange={(event) => updateField("note", event.target.value)} aria-invalid={Boolean(errors.note)} />
