@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import tw.gymproject.entity.Member;
-import tw.gymproject.entity.Useraccount;
 
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Integer>{
@@ -24,13 +23,28 @@ public interface MemberRepository extends JpaRepository<Member, Integer>{
 	//這邊只抓出剩餘課堂數、課程名稱，會員資料從Entity去抓之後分頁比較準
 	String SQL_MEMBCOUR ="""
 			    SELECT	mc.memberid,
+			    			c.courseid,
 				        c.coursename,
-				        mc.remainingsessions
+				        co.coachid,
+			     		co.name,
+				        SUM(mc.remainingsessions) AS remainingsessions
 			    FROM membercourse mc
 			    INNER JOIN course c
-			    ON mc.courseid = c.courseid
+			     ON mc.courseid = c.courseid
+			    LEFT JOIN coach co
+			     ON mc.coachid = co.coachid
 			    WHERE mc.memberid IN (:memberIds)
-			    AND mc.remainingsessions > 0
+			    GROUP BY
+			        mc.memberid,
+			        c.courseid,
+			        c.coursename,
+			        co.coachid,
+			     	co.name    
+			    HAVING SUM(mc.remainingsessions) > 0
+			    ORDER BY
+			        mc.memberid,
+			        c.coursename,
+			        co.name
 			""";
 	
 	@Query(value = SQL_MEMBCOUR, nativeQuery=true)

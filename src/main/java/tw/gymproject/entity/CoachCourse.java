@@ -23,20 +23,12 @@ public class CoachCourse {
     public CoachCourse(Integer coachid, Integer courseid) {
         this.id = new CoachCourseId(coachid, courseid);
     }
-    //管理員端會員購課用，讓JPQL查詢使用
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-        name = "coachid",
-        insertable = false,
-        updatable = false
-    )
+    @JoinColumn(name = "coachid", insertable = false, updatable = false)
     private Coach coach;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-        name = "courseid",
-        insertable = false,
-        updatable = false
-    )
+    @JoinColumn(name = "courseid", insertable = false, updatable = false)
     private Course course;
 }

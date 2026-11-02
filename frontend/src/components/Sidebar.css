@@ -1,0 +1,530 @@
+/* =========================
+   Sidebar 整體
+========================= */
+
+.sidebar {
+  width: 230px;
+  height: 100vh;
+
+  position: sticky;
+  top: 0;
+
+  flex-shrink: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  box-sizing: border-box;
+
+  padding: 24px 16px;
+
+  background-color: #FFFFFF;
+
+  border-right:
+    1px solid #E2E8F0;
+
+  overflow: hidden;
+
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+
+/* =========================
+   Logo
+========================= */
+
+.logo-area {
+  display: flex;
+
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  margin-bottom: 18px;
+}
+
+
+.logo {
+  width: 150px;
+  max-width: 40%;
+
+  height: auto;
+
+  display: block;
+}
+
+
+/* =========================
+   品牌名稱
+========================= */
+
+.brand-name {
+  margin-top: 10px;
+
+  color: #18202B;
+
+  font-size: 22px;
+  font-weight: 800;
+
+  letter-spacing: 5px;
+
+  text-align: center;
+}
+
+
+/* =========================
+   登入者資訊
+========================= */
+
+.role-area {
+  display: flex;
+
+  justify-content: center;
+
+  margin-bottom: 24px;
+}
+
+
+.role-label {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding:
+    10px 12px;
+
+  background-color: #FFF3EC;
+
+  border:
+    1px solid #FFE0D0;
+
+  border-radius: 8px;
+
+  color: #FF651E;
+
+  text-align: center;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  line-height: 1.5;
+}
+
+
+/* =========================
+   Menu
+========================= */
+
+.menu {
+  flex: 1;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 8px;
+
+  overflow-y: auto;
+
+  padding-right: 2px;
+}
+
+
+.menu-item {
+  width: 100%;
+
+  padding:
+    14px 18px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background-color: transparent;
+
+  color: #18202B;
+
+  text-align: left;
+
+  font-family:
+    Arial,
+    "Microsoft JhengHei",
+    sans-serif;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.15s ease;
+}
+
+
+/* 滑過 */
+
+.menu-item:hover {
+  background-color: #FFF3EC;
+
+  color: #FF651E;
+}
+
+
+/* 目前頁面 */
+
+.menu-item.active {
+  background-color: #FF651E;
+
+  color: #FFFFFF;
+
+  font-weight: 700;
+}
+
+
+.menu-item.active:hover {
+  background-color: #F25B17;
+
+  color: #FFFFFF;
+}
+
+
+/* =========================
+   Sidebar Bottom
+========================= */
+
+.sidebar-bottom {
+  flex-shrink: 0;
+
+  margin-top: auto;
+
+  padding-top: 18px;
+
+  background-color: #FFFFFF;
+}
+
+
+/* =========================
+   登出
+========================= */
+
+.logout-button {
+  width: 100%;
+  height: 44px;
+
+  margin-bottom: 18px;
+
+  border:
+    1px solid #FF651E;
+
+  border-radius: 8px;
+
+  background-color: #FFFFFF;
+
+  color: #FF651E;
+
+  font-family:
+    Arial,
+    "Microsoft JhengHei",
+    sans-serif;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+
+.logout-button:hover:not(:disabled) {
+  background-color: #FF651E;
+
+  color: #FFFFFF;
+}
+
+
+.logout-button:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+
+/* =========================
+   Footer
+========================= */
+
+.sidebar-footer {
+  padding-top: 18px;
+
+  border-top:
+    1px solid #E2E8F0;
+
+  text-align: center;
+
+  color: #64748B;
+}
+
+
+.sidebar-footer p {
+  margin:
+    0 0 6px;
+
+  color: #18202B;
+
+  font-size: 15px;
+  font-weight: 800;
+
+  letter-spacing: 0.5px;
+}
+
+
+.sidebar-footer span {
+  display: block;
+
+  color: #64748B;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+
+/* =========================
+   Scrollbar
+========================= */
+
+.menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+
+.menu::-webkit-scrollbar-track {
+  background-color:
+    transparent;
+}
+
+
+.menu::-webkit-scrollbar-thumb {
+  background-color: #CBD5E1;
+
+  border-radius: 999px;
+}
+
+
+/* =====================================================
+   管理員深藍色 Sidebar
+===================================================== */
+
+.sidebar-admin {
+  background-color: #102A43;
+
+  border-right:
+    1px solid #243B53;
+}
+
+
+/* =========================
+   管理員品牌名稱
+========================= */
+
+.sidebar-admin .brand-name {
+  color: #FFFFFF;
+}
+
+
+/* =========================
+   管理員登入資訊
+========================= */
+
+.sidebar-admin .role-label {
+  background-color: #1B3A57;
+
+  border:
+    1px solid #486581;
+
+  color: #FFFFFF;
+}
+
+
+/* =========================
+   管理員 Menu
+========================= */
+
+.sidebar-admin .menu-item {
+  color: #E6EEF5;
+}
+
+
+/* 管理員 hover */
+
+.sidebar-admin .menu-item:hover {
+  background-color:
+    rgba(255, 255, 255, 0.08);
+
+  color: #FFFFFF;
+}
+
+
+/* 管理員目前頁面 */
+
+.sidebar-admin .menu-item.active {
+  background-color: #2F5F8F;
+
+  color: #FFFFFF;
+
+  font-weight: 700;
+}
+
+
+/* active hover */
+
+.sidebar-admin .menu-item.active:hover {
+  background-color: #376FA5;
+
+  color: #FFFFFF;
+}
+
+
+/* =========================
+   管理員 Bottom
+========================= */
+
+.sidebar-admin .sidebar-bottom {
+  background-color: #102A43;
+}
+
+
+/* =========================
+   管理員登出
+========================= */
+
+.sidebar-admin .logout-button {
+  background-color: transparent;
+
+  border:
+    1px solid #D9E2EC;
+
+  color: #FFFFFF;
+}
+
+
+.sidebar-admin
+.logout-button:hover:not(:disabled) {
+  background-color: #FFFFFF;
+
+  border-color: #FFFFFF;
+
+  color: #102A43;
+}
+
+
+/* =========================
+   管理員 Footer
+========================= */
+
+.sidebar-admin .sidebar-footer {
+  border-top:
+    1px solid #486581;
+
+  color: #BCCCDC;
+}
+
+
+.sidebar-admin .sidebar-footer p {
+  color: #FFFFFF;
+}
+
+
+.sidebar-admin .sidebar-footer span {
+  color: #BCCCDC;
+}
+
+
+/* =========================
+   管理員 scrollbar
+========================= */
+
+.sidebar-admin
+.menu::-webkit-scrollbar-thumb {
+  background-color: #486581;
+}
+
+
+/* =========================
+   RWD
+========================= */
+
+@media (max-width: 900px) {
+
+  .sidebar {
+    width: 210px;
+
+    padding:
+      20px 12px;
+  }
+
+
+  .logo {
+    width: 135px;
+  }
+
+
+  .menu-item {
+    padding:
+      13px 14px;
+
+    font-size: 15px;
+  }
+
+
+  .role-label {
+    font-size: 13px;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .sidebar {
+    width: 190px;
+  }
+
+
+  .logo {
+    width: 120px;
+  }
+
+
+  .menu-item {
+    padding: 12px;
+
+    font-size: 14px;
+  }
+
+
+  .logout-button {
+    font-size: 13px;
+  }
+
+
+  .sidebar-footer p {
+    font-size: 14px;
+  }
+
+
+  .sidebar-footer span {
+    font-size: 11px;
+  }
+
+}

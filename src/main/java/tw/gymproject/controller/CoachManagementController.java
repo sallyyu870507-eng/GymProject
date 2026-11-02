@@ -14,7 +14,7 @@ import tw.gymproject.dto.CoachUpdateRequest;
 import tw.gymproject.dto.CoachStatusRequest;
 
 @RestController
-@RequestMapping("/api/coaches")
+@RequestMapping("/api/admin/coaches")
 public class CoachManagementController {
 
     private final CoachManagementService coachManagementService;

@@ -1,6 +1,11 @@
 package tw.gymproject.repository;
 
 import java.util.List;
+import java.util.Optional;
+import java.time.LocalDate;
+
+import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.Lock;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -178,5 +183,21 @@ public interface BookingRepository
     int countBookingByCoach(
             @Param("bookingid") Integer bookingid,
             @Param("coachid") Integer coachid
+    );
+    // 出席管理：依日期及教練查預約。
+    List<Booking> findBySchedule_ClassdateAndMembercourse_Coach_Coachid(
+            LocalDate classdate,
+            Integer coachid
+    );
+
+    // 更新出席前鎖定預約；必須在交易內呼叫。
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            select b
+            from Booking b
+            where b.bookingid = :bookingId
+            """)
+    Optional<Booking> findByIdForUpdate(
+            @Param("bookingId") Integer bookingId
     );
 }

@@ -1,6 +1,5 @@
 package tw.gymproject.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -8,7 +7,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import tw.gymproject.interceptor.LoginInterceptor;
 
 @Configuration
-//設定區   哪些網址需要經過interceptor檢查
 public class WebConfig implements WebMvcConfigurer {
 
 	//把interceptor帶入備用
@@ -24,16 +22,16 @@ public class WebConfig implements WebMvcConfigurer {
         .addPathPatterns(
         		"/api/admin/**",
                 "/admin/**",
-                "/admin",
-                "/api/coach/**",
                 "/coach/**",
-                "/coach",
+                "/api/coach/**",
+                "/coaches/**",
                 "/member/**",
-                "/member",
+                "/members/**", 
+                "/api/member/**", 
                 "/admin.html",
                 "/coach.html",
                 "/member.html",
-                "/api/attendance/**"
+                "/api/relation/**" //member+admin
         );
 	}
 }

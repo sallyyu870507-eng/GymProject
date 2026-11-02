@@ -18,221 +18,369 @@ import tw.gymproject.dto.RescheduleDTO;
 import tw.gymproject.entity.Booking;
 import tw.gymproject.service.BookingService;
 
+
 @RestController
-@RequestMapping("/booking")
+@RequestMapping("/api/member/bookings")
 public class BookingController {
 
-    // 會員端 controller-2
+    // =====================================================
+    // 會員端 Controller - 預約
+    // =====================================================
+
     private final BookingService bookingService;
 
-    public BookingController(BookingService bookingService) {
-        this.bookingService = bookingService;
+
+    public BookingController(
+            BookingService bookingService) {
+
+        this.bookingService =
+                bookingService;
     }
 
 
-    /*
-     * STEP4
-     * 會員新增預約
-     */
+    // =====================================================
+    // STEP 4
+    // 會員新增預約
+    //
+    // POST
+    // /api/member/bookings
+    // =====================================================
+
     @PostMapping
     public ResponseEntity<?> createBooking(
             @RequestBody Booking booking,
             HttpSession session) {
 
+
         // 1. 從 Session 取得正式登入者
         LoginResultDTO user =
-                (LoginResultDTO) session.getAttribute("user");
+                (LoginResultDTO)
+                session.getAttribute(
+                        "user"
+                );
+
 
         // 2. 確認是否登入
         if (user == null) {
+
             return ResponseEntity
                     .status(401)
-                    .body("會員尚未登入");
+                    .body(
+                            "會員尚未登入"
+                    );
         }
+
 
         // 3. 確認是不是會員
-        if (!"member".equals(user.getRole())) {
+        if (!"member".equals(
+                user.getRole()
+        )) {
+
             return ResponseEntity
                     .status(403)
-                    .body("沒有會員權限");
+                    .body(
+                            "沒有會員權限"
+                    );
         }
+
 
         // 4. 取得登入會員 memberid
-        Integer memberid = user.getMemberid();
+        Integer memberid =
+                user.getMemberid();
+
 
         if (memberid == null) {
+
             return ResponseEntity
                     .status(401)
-                    .body("找不到登入會員資料");
+                    .body(
+                            "找不到登入會員資料"
+                    );
         }
+
 
         // 5. 建立預約
         try {
 
             BookingResponseDTO result =
-                    bookingService.createBooking(
-                            booking,
-                            memberid
-                    );
+                    bookingService
+                            .createBooking(
+                                    booking,
+                                    memberid
+                            );
 
-            return ResponseEntity.ok(result);
+
+            return ResponseEntity
+                    .ok(result);
+
 
         } catch (RuntimeException e) {
 
             return ResponseEntity
                     .badRequest()
-                    .body(e.getMessage());
+                    .body(
+                            e.getMessage()
+                    );
         }
     }
 
 
-    /*
-     * 會員查詢自己的預約
-     */
-    @GetMapping("/my")
+    // =====================================================
+    // 會員查詢自己的預約
+    //
+    // GET
+    // /api/member/bookings
+    // =====================================================
+
+    @GetMapping
     public ResponseEntity<?> getBookings(
             HttpSession session) {
 
+
         // 1. 取得正式登入者
         LoginResultDTO user =
-                (LoginResultDTO) session.getAttribute("user");
+                (LoginResultDTO)
+                session.getAttribute(
+                        "user"
+                );
+
 
         // 2. 沒有登入
         if (user == null) {
+
             return ResponseEntity
                     .status(401)
-                    .body("會員尚未登入");
+                    .body(
+                            "會員尚未登入"
+                    );
         }
+
 
         // 3. 權限判斷
-        if (!"member".equals(user.getRole())) {
+        if (!"member".equals(
+                user.getRole()
+        )) {
+
             return ResponseEntity
                     .status(403)
-                    .body("沒有會員權限");
+                    .body(
+                            "沒有會員權限"
+                    );
         }
+
 
         // 4. 取得登入會員 memberid
-        Integer memberid = user.getMemberid();
+        Integer memberid =
+                user.getMemberid();
+
 
         if (memberid == null) {
+
             return ResponseEntity
                     .status(401)
-                    .body("找不到登入會員資料");
+                    .body(
+                            "找不到登入會員資料"
+                    );
         }
+
 
         // 5. 查自己的預約
         List<BookingResponseDTO> bookings =
-                bookingService.getMyBookings(memberid);
+                bookingService
+                        .getMyBookings(
+                                memberid
+                        );
 
-        return ResponseEntity.ok(bookings);
+
+        return ResponseEntity
+                .ok(bookings);
     }
 
 
-    /*
-     * 會員取消自己的預約
-     */
+    // =====================================================
+    // 會員取消自己的預約
+    //
+    // PUT
+    // /api/member/bookings/{bookingid}/cancel
+    // =====================================================
+
     @PutMapping("/{bookingid}/cancel")
     public ResponseEntity<?> cancelBooking(
             @PathVariable Integer bookingid,
             HttpSession session) {
 
+
         // 1. 取得正式登入者
         LoginResultDTO user =
-                (LoginResultDTO) session.getAttribute("user");
+                (LoginResultDTO)
+                session.getAttribute(
+                        "user"
+                );
+
 
         // 2. 沒有登入
         if (user == null) {
+
             return ResponseEntity
                     .status(401)
-                    .body("會員尚未登入");
+                    .body(
+                            "會員尚未登入"
+                    );
         }
+
 
         // 3. 權限判斷
-        if (!"member".equals(user.getRole())) {
+        if (!"member".equals(
+                user.getRole()
+        )) {
+
             return ResponseEntity
                     .status(403)
-                    .body("沒有會員權限");
+                    .body(
+                            "沒有會員權限"
+                    );
         }
+
 
         // 4. 取得 memberid
-        Integer memberid = user.getMemberid();
+        Integer memberid =
+                user.getMemberid();
+
 
         if (memberid == null) {
+
             return ResponseEntity
                     .status(401)
-                    .body("找不到登入會員資料");
+                    .body(
+                            "找不到登入會員資料"
+                    );
         }
+
 
         // 5. 取消預約
         try {
 
             String result =
-                    bookingService.cancelBooking(
-                            bookingid,
-                            memberid
-                    );
+                    bookingService
+                            .cancelBooking(
+                                    bookingid,
+                                    memberid
+                            );
 
-            return ResponseEntity.ok(result);
+
+            return ResponseEntity
+                    .ok(result);
+
 
         } catch (RuntimeException e) {
 
             return ResponseEntity
                     .badRequest()
-                    .body(e.getMessage());
+                    .body(
+                            e.getMessage()
+                    );
         }
     }
-    
-    /*會員修改日期時段*/
+
+
+    // =====================================================
+    // 會員修改日期與時段
+    //
+    // PUT
+    // /api/member/bookings/{bookingid}/reschedule
+    // =====================================================
+
     @PutMapping("/{bookingid}/reschedule")
     public ResponseEntity<?> rescheduleBooking(
-    		@PathVariable Integer bookingid,
-    		@RequestBody RescheduleDTO request,
-    		HttpSession session){
-    	// 1. 取得正式登入者
+            @PathVariable Integer bookingid,
+            @RequestBody RescheduleDTO request,
+            HttpSession session) {
+
+
+        // 1. 取得正式登入者
         LoginResultDTO user =
-                (LoginResultDTO) session.getAttribute("user");
+                (LoginResultDTO)
+                session.getAttribute(
+                        "user"
+                );
+
 
         // 2. 沒有登入
         if (user == null) {
+
             return ResponseEntity
                     .status(401)
-                    .body("會員尚未登入");
+                    .body(
+                            "會員尚未登入"
+                    );
         }
+
 
         // 3. 權限判斷
-        if (!"member".equals(user.getRole())) {
+        if (!"member".equals(
+                user.getRole()
+        )) {
+
             return ResponseEntity
                     .status(403)
-                    .body("沒有會員權限");
+                    .body(
+                            "沒有會員權限"
+                    );
         }
+
 
         // 4. 取得 memberid
-        Integer memberid = user.getMemberid();
+        Integer memberid =
+                user.getMemberid();
+
 
         if (memberid == null) {
+
             return ResponseEntity
                     .status(401)
-                    .body("找不到登入會員資料");
+                    .body(
+                            "找不到登入會員資料"
+                    );
         }
-        
-        //5.確認傳新的scheduleid
-        if (request.getNewScheduleid() == null) {
-        	return ResponseEntity
-        			.badRequest()
-        			.body("請選擇新的日期與時間");
-		}
-        
-        //6.修改預約
+
+
+        // 5. 確認有傳新的 scheduleid
+        if (
+            request == null ||
+            request.getNewScheduleid() == null
+        ) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            "請選擇新的日期與時間"
+                    );
+        }
+
+
+        // 6. 修改預約
         try {
-			String result =
-					bookingService.rescheduleBooking(bookingid, memberid, request.getNewScheduleid());
-			
-			return ResponseEntity.ok(result);
-		} catch (RuntimeException e) {
-			return ResponseEntity
-					.badRequest()
-					.body(e.getMessage());
-		}
- 
+
+            String result =
+                    bookingService
+                            .rescheduleBooking(
+                                    bookingid,
+                                    memberid,
+                                    request.getNewScheduleid()
+                            );
+
+
+            return ResponseEntity
+                    .ok(result);
+
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(
+                            e.getMessage()
+                    );
+        }
     }
 }

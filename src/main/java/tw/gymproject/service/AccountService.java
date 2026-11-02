@@ -60,14 +60,13 @@ public class AccountService {
 		
 		 //註冊、建立帳號
 		Useraccount account = new Useraccount();
-		account.setUsername(dto.getUsername());
+		account.setUsername(dto.getUsername().trim());
 		account.setPassword(BCrypt.hashpw(dto.getPassword(), BCrypt.gensalt()));
 		account.setRole("member");
-		//account.setStatus("active");已經在設定active預設值
+		account.setStatus("active");
 		
 		//裝到變數內較清楚，後面與member表資料連接用
 		Useraccount savedUseraccount = repository.save(account);
-		System.out.println(savedUseraccount);
 		
 		//建立會員資料
 		Member member = new Member();
@@ -77,7 +76,7 @@ public class AccountService {
 		member.setPhone(dto.getPhone());
 		member.setEmail(dto.getEmail());
 		member.setBirthday(dto.getBirthday());
-		//member.setStatus("active");
+		member.setStatus("active");
 		
 		Member savedMember = memberRepository.save(member);
 		//System.out.println("還沒有編號:" + savedMember);
@@ -87,7 +86,6 @@ public class AccountService {
 		savedMember.setMemberno(membercode);
 		
 		memberRepository.save(savedMember);
-		System.out.println("生成編號加入資料表:" +savedMember.getMemberno());
 
 		return true; //註冊成功
 	}
@@ -107,6 +105,7 @@ public class AccountService {
 		
 		//如果有帳號才往下
 		Useraccount account = userOpt.get();
+		System.out.println(account.getUsername());
 		//帳號停用
 		if("inactive".equals(account.getStatus())) {
 			result.setSuccess(false);
@@ -174,8 +173,6 @@ public class AccountService {
 		//設定當前分頁該顯示的會員的分頁條件
 		Pageable pageable = PageRequest.of(page, size, Sort.by("memberid").ascending());//建立分頁條件
 		//把分頁條件交給repository去執行撈entity的工作
-		String searchText = keyword == null ? "" : keyword.trim();
-		System.out.println("searchText:" + searchText);
 		Page<Member> memberPage =
 		        memberRepository.searchMembers(keyword,
 								                status,
@@ -223,8 +220,11 @@ public class AccountService {
 			MemberListDTO memberListDTO = memberMap.get(memberId); //取得指定id會員元素
 			MemberCourseDTO memberCourseDTO = new MemberCourseDTO();
 			
-			memberCourseDTO.setCoursename((String)rowObjects[1]);
-			memberCourseDTO.setRemainingsessions(((Number)rowObjects[2]).intValue());
+			memberCourseDTO.setCourseid(((Number) rowObjects[1]).intValue());
+			memberCourseDTO.setCoursename((String)rowObjects[2]);
+			memberCourseDTO.setCoachid(((Number)rowObjects[3]).intValue());
+			memberCourseDTO.setName((String) rowObjects[4]);
+			memberCourseDTO.setRemainingsessions(((Number)rowObjects[5]).intValue());
 			
 			memberListDTO.getCourses().add(memberCourseDTO); 
 			//用加的，如果直接set，每跑一次迴圈上一圈的內容就會被新的覆蓋掉			
@@ -347,7 +347,15 @@ public class AccountService {
 	    account.setStatus("active");
 	    member.setStatus("active");
 	}
-	
+
+	//檢查密碼是否符合當初輸入的
+//	public boolean verifyPassword(String username, String rawPassword) {
+//	    Useraccount account = repository
+//	        .findFirstByUsernameOrderByAccountidDesc(username)
+//	        .orElseThrow(() -> new IllegalArgumentException("找不到帳號"));
+//
+//	    return BCrypt.checkpw(rawPassword, account.getPassword());
+//	}
 }
 
 

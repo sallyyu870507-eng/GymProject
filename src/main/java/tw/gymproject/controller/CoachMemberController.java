@@ -15,8 +15,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import tw.gymproject.dto.CoachMemberUpdateDTO;
 import tw.gymproject.dto.LoginResultDTO;
-import tw.gymproject.dto.MemberUpdateDTO;
-import tw.gymproject.service.AccountService;
 import tw.gymproject.service.CoachMemberService;
 
 @RestController
@@ -24,11 +22,9 @@ import tw.gymproject.service.CoachMemberService;
 public class CoachMemberController {
 //放教練頁面的學員管理功能
 	
-	private final  AccountService service;
 	private final CoachMemberService coachService;
 
-	CoachMemberController(AccountService service, CoachMemberService coachService) {
-		this.service = service;
+	CoachMemberController(CoachMemberService coachService) {
 		this.coachService = coachService;
 	}
 	
