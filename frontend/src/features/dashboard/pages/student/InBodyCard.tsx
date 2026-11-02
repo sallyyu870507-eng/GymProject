@@ -87,23 +87,11 @@ export default function InBodyCard() {
             最新檢測：{latest.recorddate || '未提供日期'}
           </p>
 
-          <div className="mini-stats">
-            <div>
-              <b>{metric(latest.weight)}</b>
-              <span>體重 kg</span>
-            </div>
-            <div>
-              <b>{metric(latest.musclemass)}</b>
-              <span>肌肉量 kg</span>
-            </div>
-            <div>
-              <b>{metric(latest.bodyfatpct)}</b>
-              <span>體脂率 %</span>
-            </div>
-            <div>
-              <b>{metric(fatMass)}</b>
-              <span>體脂肪重 kg（估算）</span>
-            </div>
+          <div className="member-dashboard-stats member-inbody-stats">
+            <div className="member-dashboard-stat"><span className="member-dashboard-stat-label">體重</span><strong>{metric(latest.weight)}<small>kg</small></strong></div>
+            <div className="member-dashboard-stat"><span className="member-dashboard-stat-label">肌肉量</span><strong>{metric(latest.musclemass)}<small>kg</small></strong></div>
+            <div className="member-dashboard-stat"><span className="member-dashboard-stat-label">體脂率</span><strong>{metric(latest.bodyfatpct)}<small>%</small></strong></div>
+            <div className="member-dashboard-stat"><span className="member-dashboard-stat-label">體脂肪重（估算）</span><strong>{metric(fatMass)}<small>kg</small></strong></div>
           </div>
 
           <InBodyChart records={records} />

@@ -30,21 +30,29 @@ export default function RenewalAttendanceInBodyPanel({ memberCourseId }: { membe
     const page = Number.isSafeInteger(pageParam) && pageParam > 0 ? pageParam : 1;
     const metricParam = query.get("metric");
     const metric: Metric = metricParam === "bodyFatPct" || metricParam === "muscleMass" ? metricParam : "weight";
+    const requestKey = `${memberCourseId}:${page}`;
     const previousPlanId = useRef<number | null>(null);
     const [summary, setSummary] = useState<AttendanceSummary | null>(null);
     const [summaryLoading, setSummaryLoading] = useState(true);
     const [summaryError, setSummaryError] = useState<unknown>(null);
     const [summaryAttempt, setSummaryAttempt] = useState(0);
     const [inBody, setInBody] = useState<InBodyPageResponse | null>(null);
+    const [inBodyDataKey, setInBodyDataKey] = useState<string | null>(null);
     const [inBodyLoading, setInBodyLoading] = useState(true);
     const [inBodyError, setInBodyError] = useState<unknown>(null);
+    const [inBodyErrorKey, setInBodyErrorKey] = useState<string | null>(null);
     const [inBodyAttempt, setInBodyAttempt] = useState(0);
+    const visibleInBody = inBodyDataKey === requestKey ? inBody : null;
+    const visibleInBodyError = inBodyErrorKey === requestKey ? inBodyError : null;
+    const visibleInBodyLoading = inBodyLoading
+        || (inBodyDataKey !== requestKey && inBodyErrorKey !== requestKey);
 
     useEffect(() => {
         if (previousPlanId.current !== null && previousPlanId.current !== memberCourseId) {
             const next = new URLSearchParams(location.search);
             next.delete("metric");
             next.delete("inbodyPage");
+            next.delete("inbodyScope");
             navigate(`${location.pathname}?${next.toString()}`, { state: location.state, replace: true, preventScrollReset: true });
         }
         previousPlanId.current = memberCourseId;
@@ -62,11 +70,12 @@ export default function RenewalAttendanceInBodyPanel({ memberCourseId }: { membe
 
     useEffect(() => {
         const controller = new AbortController();
-        setInBody(null); setInBodyError(null); setInBodyLoading(true);
+        setInBody(null); setInBodyDataKey(null); setInBodyError(null); setInBodyErrorKey(null); setInBodyLoading(true);
         void getRenewalInBody(memberCourseId, page, controller.signal)
             .then((result) => {
                 if (controller.signal.aborted) return;
                 setInBody(result);
+                setInBodyDataKey(requestKey);
                 if (result.page.number !== page) {
                     const next = new URLSearchParams(location.search);
                     if (result.page.number <= 1) next.delete("inbodyPage");
@@ -74,7 +83,12 @@ export default function RenewalAttendanceInBodyPanel({ memberCourseId }: { membe
                     navigate(`${location.pathname}?${next.toString()}`, { state: location.state, replace: true, preventScrollReset: true });
                 }
             })
-            .catch((error: unknown) => { if (!controller.signal.aborted) setInBodyError(error); })
+            .catch((error: unknown) => {
+                if (!controller.signal.aborted) {
+                    setInBodyError(error);
+                    setInBodyErrorKey(requestKey);
+                }
+            })
             .finally(() => { if (!controller.signal.aborted) setInBodyLoading(false); });
         return () => controller.abort();
     }, [memberCourseId, page, inBodyAttempt]);
@@ -100,39 +114,40 @@ export default function RenewalAttendanceInBodyPanel({ memberCourseId }: { membe
         </section>
 
         <section className="renewal-inbody-block" aria-labelledby="renewal-inbody-heading">
-            <div className="renewal-inbody-section-heading"><div><h2 className="renewal-section-heading" id="renewal-inbody-heading">InBody 趨勢</h2><p>資料範圍：目前方案</p></div>
+            <div className="renewal-inbody-section-heading">
+                <div className="renewal-inbody-heading-info"><h2 className="renewal-section-heading" id="renewal-inbody-heading">InBody 趨勢</h2><p>此學員於本教練名下的歷史量測，包含不同方案與課程。</p></div>
                 <div className="renewal-inbody-metric-tabs" role="group" aria-label="趨勢指標">
                     {(Object.keys(metricLabels) as Metric[]).map((key) => <button key={key} type="button" className={metric === key ? "is-active" : ""} aria-pressed={metric === key} onClick={() => changeQuery(page, key)}>{metricLabels[key].label}</button>)}
                 </div>
             </div>
-            {inBodyLoading && <div className="renewal-inbody-state" role="status">InBody 資料載入中…</div>}
-            {!inBodyLoading && inBodyError !== null && <div className="renewal-attendance-error" role="alert"><p>{errorLabel(inBodyError)}</p><button type="button" onClick={() => setInBodyAttempt((n) => n + 1)}>重試 InBody 資料</button></div>}
-            {!inBodyLoading && inBodyError === null && inBody && <>
+            {visibleInBodyLoading && <div className="renewal-inbody-state" role="status">InBody 資料載入中…</div>}
+            {!visibleInBodyLoading && visibleInBodyError !== null && <div className="renewal-attendance-error" role="alert"><p>{errorLabel(visibleInBodyError)}</p><button type="button" onClick={() => setInBodyAttempt((n) => n + 1)}>重試 InBody 資料</button></div>}
+            {!visibleInBodyLoading && visibleInBodyError === null && visibleInBody && <>
                 <div className="renewal-inbody-latest">
                     <h3 className="renewal-section-heading">最近量測摘要</h3>
-                    {!inBody.latestRecord ? <p className="renewal-inbody-empty">尚無量測紀錄</p> : <>
+                    {!visibleInBody.latestRecord ? <p className="renewal-inbody-empty">尚無量測紀錄</p> : <>
                         <div className="renewal-inbody-latest-values">
-                            <MetricValue label="體重" value={inBody.latestRecord.weight} unit="kg" />
-                            <MetricValue label="體脂率" value={inBody.latestRecord.bodyFatPct} unit="%" />
-                            <MetricValue label="肌肉量" value={inBody.latestRecord.muscleMass} unit="kg" />
-                            <div className="renewal-inbody-latest-date-card"><span>最近測量日期</span><strong>{dateLabel(inBody.latestRecord.recordDate)}</strong></div>
+                            <MetricValue label="體重" value={visibleInBody.latestRecord.weight} unit="kg" />
+                            <MetricValue label="體脂率" value={visibleInBody.latestRecord.bodyFatPct} unit="%" />
+                            <MetricValue label="肌肉量" value={visibleInBody.latestRecord.muscleMass} unit="kg" />
+                            <div className="renewal-inbody-latest-date-card"><span>最近測量日期</span><strong>{dateLabel(visibleInBody.latestRecord.recordDate)}</strong></div>
                         </div>
                     </>}
                 </div>
                 <div className="renewal-inbody-chart-card">
                     <h3 className="renewal-section-heading">{metricLabels[metric].label}趨勢 <small>({metricLabels[metric].unit})</small></h3>
-                    <TrendChart points={inBody.trends[metric]} unit={metricLabels[metric].unit} />
+                    <TrendChart points={visibleInBody.trends[metric]} unit={metricLabels[metric].unit} />
                 </div>
                 <div className="renewal-inbody-history">
-                    <div className="renewal-inbody-history-heading"><h3 className="renewal-section-heading">最近量測紀錄</h3><span>共 {inBody.page.totalElements} 筆／每頁 {inBody.page.size} 筆</span></div>
-                    {inBody.items.length === 0 ? <p className="renewal-inbody-empty">尚無量測紀錄</p> : <div className="renewal-inbody-table-scroll"><table><thead><tr><th scope="col">日期</th><th scope="col">體重（kg）</th><th scope="col">體脂率（%）</th><th scope="col">肌肉量（kg）</th></tr></thead><tbody>
-                        {inBody.items.map((item) => <tr key={item.inBodyId}><td>{dateLabel(item.recordDate)}</td><td>{valueLabel(item.weight, "kg")}</td><td>{valueLabel(item.bodyFatPct, "%")}</td><td>{valueLabel(item.muscleMass, "kg")}</td></tr>)}
+                    <div className="renewal-inbody-history-heading"><h3 className="renewal-section-heading">最近量測紀錄</h3><span>共 {visibleInBody.page.totalElements} 筆／每頁 {visibleInBody.page.size} 筆</span></div>
+                    {visibleInBody.items.length === 0 ? <p className="renewal-inbody-empty">尚無量測紀錄</p> : <div className="renewal-inbody-table-scroll"><table><thead><tr><th scope="col">日期</th><th scope="col">來源課程／方案</th><th scope="col">體重（kg）</th><th scope="col">體脂率（%）</th><th scope="col">肌肉量（kg）</th></tr></thead><tbody>
+                        {visibleInBody.items.map((item) => <tr key={item.inBodyId}><td>{dateLabel(item.recordDate)}</td><td>{item.courseName}／方案 #{item.memberCourseId}</td><td>{valueLabel(item.weight, "kg")}</td><td>{valueLabel(item.bodyFatPct, "%")}</td><td>{valueLabel(item.muscleMass, "kg")}</td></tr>)}
                     </tbody></table></div>}
-                    <div className="renewal-inbody-pagination"><span>第 {inBody.page.number} 頁／共 {inBody.page.totalPages} 頁</span><button type="button" disabled={!inBody.page.hasPrevious || inBodyLoading} onClick={() => changeQuery(page - 1, metric)}>上一頁</button><button type="button" disabled={!inBody.page.hasNext || inBodyLoading} onClick={() => changeQuery(page + 1, metric)}>下一頁</button></div>
+                    <div className="renewal-inbody-pagination"><span>第 {visibleInBody.page.number} 頁／共 {visibleInBody.page.totalPages} 頁</span><button type="button" disabled={!visibleInBody.page.hasPrevious || visibleInBodyLoading} onClick={() => changeQuery(page - 1, metric)}>上一頁</button><button type="button" disabled={!visibleInBody.page.hasNext || visibleInBodyLoading} onClick={() => changeQuery(page + 1, metric)}>下一頁</button></div>
                 </div>
             </>}
         </section>
-        <p className="renewal-inbody-footnote">僅統計目前方案；InBody 僅顯示實際量測資料。</p>
+        <p className="renewal-inbody-footnote">出席統計仍以目前方案計算；InBody 依所選範圍顯示實際量測資料。</p>
     </section>;
 }
 

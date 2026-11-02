@@ -281,6 +281,359 @@ h3 {
   color: var(--muted);
 }
 
+.member-dashboard-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.member-dashboard-stat {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: var(--panel);
+}
+
+.member-dashboard-stat-label {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.member-dashboard-stat strong {
+  color: var(--fg);
+  font-size: 21px;
+  font-weight: 650;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.member-dashboard-stat strong small {
+  margin-left: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.member-inbody-chart {
+  width: 100%;
+  min-width: 0;
+  margin-top: 14px;
+}
+
+.member-chart-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 6px 0 2px;
+  color: var(--fg);
+}
+
+.member-chart-heading strong {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.member-chart-heading span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.member-inbody-metric-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.member-inbody-metric-tabs button {
+  min-height: 36px;
+  min-width: 0;
+  padding: 6px 14px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  background: var(--well);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 120ms ease, background-color 120ms ease, border-color 120ms ease;
+}
+
+.member-inbody-metric-tabs button.is-active {
+  border-color: #f97316;
+  color: #fff;
+  background: #f97316;
+}
+
+.member-inbody-metric-tabs button:focus-visible,
+.member-inbody-point:focus-visible circle {
+  outline: 3px solid #f97316;
+  outline-offset: 2px;
+}
+
+.member-inbody-chart-plot {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.member-inbody-chart-plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.member-inbody-axis-unit,
+.member-inbody-grid-line text,
+.member-inbody-date-label {
+  fill: var(--muted);
+  font-size: 12px;
+}
+
+.member-inbody-grid-line line {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.member-inbody-line {
+  fill: none;
+  stroke: #f97316;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.member-inbody-point {
+  cursor: pointer;
+  outline: none;
+}
+
+.member-inbody-point circle {
+  r: 3.5;
+  fill: #f97316;
+  stroke: #f97316;
+  stroke-width: 2;
+}
+
+.member-inbody-point:hover circle,
+.member-inbody-point:focus-visible circle {
+  r: 5;
+  stroke-width: 2.5;
+}
+
+.member-inbody-tooltip {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  gap: 2px;
+  max-width: calc(100% - 16px);
+  transform: translate(-50%, -100%);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 6px 9px;
+  color: var(--fg);
+  background: var(--panel);
+  box-shadow: 0 3px 12px rgb(15 23 42 / 12%);
+  font-size: 12px;
+  line-height: 1.4;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.member-inbody-chart-empty {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.member-attendance-figure {
+  margin: 16px 0 0;
+}
+
+.member-attendance-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.member-attendance-caption {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.member-attendance-chart {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  gap: 6px;
+  min-width: 0;
+}
+
+.member-attendance-y-axis {
+  position: relative;
+  height: 136px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.member-attendance-y-axis > span:not(.member-attendance-y-unit) {
+  position: absolute;
+  right: 0;
+  transform: translateY(-50%);
+}
+
+.member-attendance-y-unit {
+  position: absolute;
+  top: -18px;
+  right: 0;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.member-attendance-plot {
+  position: relative;
+  height: 136px;
+  min-width: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.member-attendance-grid-line {
+  position: absolute;
+  z-index: 0;
+  right: 0;
+  left: 0;
+  transform: translateY(-50%);
+  height: 1px;
+  background: var(--line);
+  opacity: 0.75;
+  pointer-events: none;
+}
+
+.member-attendance-columns {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.member-attendance-column {
+  position: relative;
+  height: 100%;
+  display: flex;
+  min-width: 0;
+  align-items: stretch;
+  justify-content: stretch;
+  border: 0;
+  border-radius: 5px 5px 0 0;
+  padding: 0;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.member-attendance-column:focus-visible {
+  outline: 3px solid #f97316;
+  outline-offset: 2px;
+  z-index: 2;
+}
+
+.member-attendance-count {
+  position: absolute;
+  right: 0;
+  left: 0;
+  height: 16px;
+  transform: translateY(-50%);
+  color: var(--fg);
+  font-size: 11px;
+  line-height: 16px;
+  font-variant-numeric: tabular-nums;
+}
+
+.member-attendance-count.is-zero {
+  visibility: hidden;
+}
+
+.member-attendance-bar {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(72%, 24px);
+  border-radius: 5px 5px 1px 1px;
+  background: #f97316;
+  transition: filter 120ms ease, opacity 120ms ease;
+}
+
+.member-attendance-bar.is-zero {
+  background: transparent;
+}
+
+.member-attendance-column:hover .member-attendance-bar,
+.member-attendance-column.is-selected .member-attendance-bar {
+  filter: brightness(0.92);
+}
+
+.member-attendance-x-axis {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 3px;
+  margin: 4px 0 0 34px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.member-attendance-x-axis span {
+  white-space: nowrap;
+}
+
+.member-attendance-x-title {
+  margin: 7px 0 0 34px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1;
+}
+
+.member-attendance-detail {
+  margin: 8px 0 0 34px;
+  border-radius: 7px;
+  padding: 7px 10px;
+  color: var(--fg);
+  background: var(--well);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 680px) {
+  .member-dashboard-stats,
+  .member-attendance-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .member-dashboard-stat { padding: 10px 11px; }
+  .member-dashboard-stat strong { font-size: 19px; }
+  .member-inbody-metric-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .member-inbody-metric-tabs button { padding: 6px 7px; }
+  .member-inbody-axis-unit,
+  .member-inbody-grid-line text,
+  .member-inbody-date-label { font-size: 11px; }
+  .member-attendance-chart { grid-template-columns: 24px minmax(0, 1fr); gap: 4px; }
+  .member-attendance-columns, .member-attendance-x-axis { gap: 1px; }
+  .member-attendance-x-axis { margin-left: 28px; font-size: 9px; }
+  .member-attendance-x-title { margin-left: 28px; }
+  .member-attendance-detail { margin-left: 28px; }
+}
+
 /* ───────────── 課程 ───────────── */
 .course-list {
   display: flex;
@@ -1387,6 +1740,12 @@ img.avatar {
 .avatar.avatar-empty {
   background: var(--well);
   border: 1px dashed var(--line);
+}
+
+.avatar.avatar-empty svg {
+  width: 48px;
+  height: 48px;
+  color: var(--muted);
 }
 
 /* ───────────── 延伸到視窗底部（教練首頁的今日教學課表） ───────────── */
