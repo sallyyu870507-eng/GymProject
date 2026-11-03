@@ -59,12 +59,12 @@ export function EmptyTable({ columns, numeric = [], emptyText = '尚無資料', 
   );
 }
 
-/** 「欄位名稱：值」清單，值先顯示「—」 */
-export function MetaList({ fields, large }: { fields: string[]; large?: boolean }) {
+/** 「欄位名稱：值」清單，沒有值時顯示「—」 */
+export function MetaList({ fields, values, large }: { fields: string[]; values?: ReactNode[]; large?: boolean }) {
   return (
     <dl className={`meta ${large ? 'meta-lg' : ''}`}>
-      {fields.map((f) => (
-        <Field key={f} label={f} />
+      {fields.map((f, i) => (
+        <Field key={f} label={f} value={values?.[i] ?? '—'} />
       ))}
     </dl>
   );
@@ -80,12 +80,12 @@ function Field({ label, value = '—' }: { label: string; value?: ReactNode }) {
 }
 
 /** 數字小格（首頁卡片裡的三、四個數字） */
-export function MiniStats({ labels }: { labels: string[] }) {
+export function MiniStats({ labels, values }: { labels: string[]; values?: ReactNode[] }) {
   return (
     <div className="mini-stats">
-      {labels.map((l) => (
+      {labels.map((l, i) => (
         <div key={l}>
-          <b>—</b>
+          <b>{values?.[i] ?? '—'}</b>
           <span>{l}</span>
         </div>
       ))}

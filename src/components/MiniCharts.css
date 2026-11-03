@@ -1,0 +1,134 @@
+/* ───────────── 小圖（MiniCharts.tsx） ───────────── */
+.mc {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.mc-axis {
+  stroke: var(--d-line);
+}
+.mc-grid {
+  stroke: var(--d-line);
+  stroke-dasharray: 2 4;
+}
+.mc-bar {
+  fill: var(--d-slate);
+  transform-box: fill-box;
+  transform-origin: bottom;
+}
+.mc-bar-now {
+  fill: var(--d-orange);
+}
+.mc-zero {
+  fill: var(--d-line-strong);
+}
+.mc-val,
+.mc-tick {
+  font-family: var(--d-font, Arial, sans-serif);
+  font-size: 13px;
+  text-anchor: middle;
+  fill: var(--d-muted);
+}
+.mc-val {
+  font-weight: 600;
+  fill: var(--d-ink);
+}
+.mc-tick-now {
+  fill: var(--d-orange-ink);
+  font-weight: 600;
+}
+.mc-line {
+  fill: none;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mc-line.mc-ink {
+  stroke: var(--d-slate);
+}
+.mc-line.mc-orange {
+  stroke: var(--d-orange);
+}
+.mc-pt.mc-ink {
+  fill: var(--d-slate);
+}
+.mc-pt.mc-orange {
+  fill: var(--d-orange);
+}
+.mc-pt {
+  stroke: var(--d-panel);
+  stroke-width: 2;
+}
+
+/* 剩餘堂數環 */
+.ring {
+  width: clamp(60px, 8vw, 76px);
+  height: auto;
+  aspect-ratio: 1;
+  flex: none;
+}
+.ring-track {
+  fill: none;
+  stroke: var(--d-well);
+  stroke-width: 12;
+}
+.ring-fill {
+  fill: none;
+  stroke: var(--d-slate);
+  stroke-width: 12;
+  stroke-dashoffset: var(--off);
+}
+.ring-low {
+  stroke: var(--d-red);
+}
+.ring-hole {
+  fill: var(--d-well);
+}
+
+/* ───────────── 開場動畫：只跑一次，減少動態時關閉 ───────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .mc-bar {
+    animation: mc-rise 520ms cubic-bezier(0.3, 1.4, 0.5, 1) both;
+    animation-delay: calc(400ms + var(--i) * 55ms);
+  }
+  .mc-col .mc-val {
+    animation: mc-fade 300ms ease-out both;
+    animation-delay: calc(700ms + var(--i) * 55ms);
+  }
+  .mc-line {
+    stroke-dasharray: 1;
+    animation: mc-draw 1100ms cubic-bezier(0.6, 0, 0.2, 1) 450ms both;
+  }
+  .mc-pts .mc-pt {
+    animation: mc-fade 260ms ease-out both;
+    animation-delay: calc(500ms + var(--i) * 220ms);
+  }
+  .ring-fill {
+    animation: ring-fill 1100ms cubic-bezier(0.6, 0, 0.2, 1) 500ms both;
+  }
+}
+
+@keyframes mc-rise {
+  from {
+    transform: scaleY(0);
+  }
+}
+@keyframes mc-fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes mc-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes ring-fill {
+  from {
+    stroke-dashoffset: var(--c);
+  }
+}

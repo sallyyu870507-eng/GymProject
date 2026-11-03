@@ -1,0 +1,1038 @@
+/*
+ * Dashboard 首頁（學員端・教練端）的樣式。
+ * 顏色取自組員 Sidebar：品牌橘 #FF651E、墨色 #18202B、板岩藍 #486581。
+ * 只作用在 .dash 底下，不影響 Sidebar 與其他組員的頁面。
+ */
+.dash {
+  --d-ink: #18202b;
+  --d-ink-2: #243041;
+  --d-orange: #ff651e;
+  --d-orange-ink: #d9480f;
+  --d-orange-soft: #fff3ec;
+  --d-slate: #486581;
+  --d-slate-soft: #e9eef3;
+  --d-red: #d64545;
+  --d-bg: #f3f5f7;
+  --d-panel: #ffffff;
+  --d-well: #eef1f4;
+  --d-line: #e2e8f0;
+  --d-line-strong: #bcccdc;
+  --d-muted: #64748b;
+  /* 與組員 Sidebar 相同的字體 */
+  --d-font: Arial, 'Microsoft JhengHei', sans-serif;
+  --d-num: var(--d-font);
+  --d-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  font-family: var(--d-font);
+  font-size: 15px;
+  color: var(--d-ink);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vw, 20px);
+  color-scheme: light;
+  container-type: inline-size;
+  min-width: 0;
+}
+
+/* 頁面底色跟著 Dashboard（只在 .main 裡有 .dash 時） */
+.main:has(.dash) {
+  background: var(--d-bg, #f3f5f7);
+  max-width: none;
+  padding: clamp(14px, 2.5vw, 28px) clamp(12px, 2.5vw, 32px) 40px;
+  min-width: 0;
+}
+.main:has(.dash) > .dash {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ───────────── 頁首：日期 ───────────── */
+.dash-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.dash-today {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--d-muted);
+}
+.dash-today b {
+  font-family: var(--d-num);
+  font-size: clamp(20px, 2.2vw, 24px);
+  font-weight: 700;
+  color: var(--d-ink);
+}
+.dash-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--d-muted);
+}
+.dash-date input {
+  font: 500 14px var(--d-font);
+  color: var(--d-ink);
+  background: var(--d-panel);
+  border: 1px solid var(--d-line);
+  border-radius: 8px;
+  padding: 6px 10px;
+}
+.dash-date input:focus-visible,
+.dash button:focus-visible,
+.dash a:focus-visible {
+  outline: 2px solid var(--d-orange);
+  outline-offset: 2px;
+}
+.dash-link {
+  border: 0;
+  background: none;
+  padding: 4px 2px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--d-orange-ink);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* ───────────── 深色主視覺（學員：下一堂課／教練：當日計分條） ───────────── */
+.d-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--d-ink);
+  color: #fff;
+  border-radius: 16px;
+  padding: clamp(18px, 2.4vw, 24px) clamp(18px, 2.6vw, 28px);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 8px clamp(16px, 3vw, 32px);
+}
+/* 右側的槓片輪廓：用來呼應健身房，不搶文字 */
+.d-hero::after {
+  content: '';
+  position: absolute;
+  right: -70px;
+  top: 50%;
+  width: 260px;
+  height: 260px;
+  translate: 0 -50%;
+  border-radius: 50%;
+  border: 34px solid rgba(255, 255, 255, 0.04);
+  box-shadow: inset 0 0 0 30px rgba(255, 255, 255, 0.025);
+  pointer-events: none;
+}
+.d-hero-label {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #bcccdc;
+  align-self: start;
+  padding-top: 8px;
+}
+.d-hero-time {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.d-hero-time strong {
+  font-family: var(--d-num);
+  font-size: clamp(36px, 5vw, 54px);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--d-orange);
+}
+.d-hero-time span {
+  font-family: var(--d-num);
+  font-size: clamp(15px, 1.6vw, 18px);
+  font-weight: 500;
+  color: #bcccdc;
+}
+.d-hero-detail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin-top: 8px;
+  font-size: 15px;
+}
+.d-hero-detail .soft {
+  color: #bcccdc;
+}
+.d-hero-count {
+  position: relative;
+  z-index: 1;
+  text-align: right;
+}
+.d-hero-count b {
+  display: block;
+  font-family: var(--d-num);
+  font-size: clamp(26px, 3vw, 34px);
+  line-height: 1;
+  font-weight: 700;
+}
+.d-hero-count small {
+  font-size: 14px;
+  color: #bcccdc;
+}
+.d-hero-btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--d-orange);
+  color: #fff;
+  font-weight: 500;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background 160ms;
+}
+.d-hero-btn:hover {
+  background: #ff7a3d;
+}
+
+/* 教練的計分條：同樣深色，但分成三格數字 */
+.score {
+  grid-template-columns: repeat(3, auto) 1fr;
+  gap: 8px clamp(20px, 4vw, 44px);
+}
+.score-item small {
+  display: block;
+  font-size: 14px;
+  color: #bcccdc;
+  margin-bottom: 4px;
+}
+.score-item b {
+  font-family: var(--d-num);
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1;
+  font-weight: 700;
+}
+.score-item b em {
+  font-style: normal;
+  font-size: 15px;
+  font-weight: 500;
+  color: #bcccdc;
+  margin-left: 4px;
+}
+.score-item.is-next b {
+  color: var(--d-orange);
+}
+.score-item .sub {
+  display: block;
+  font-size: 14px;
+  color: #fff;
+  margin-top: 6px;
+}
+
+/* ───────────── 面板 ───────────── */
+.panel {
+  background: var(--d-panel);
+  border: 1px solid var(--d-line);
+  border-radius: 14px;
+  padding: clamp(14px, 2vw, 20px) clamp(14px, 2vw, 22px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.panel-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+}
+.panel-head a {
+  font-size: 14px;
+  color: var(--d-muted);
+  text-decoration: none;
+}
+.panel-head a:hover {
+  color: var(--d-orange-ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* 不對稱的兩欄：左邊窄的放會員卡與課程，右邊寬的放趨勢圖 */
+.dash-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.65fr);
+  gap: clamp(14px, 2vw, 20px);
+}
+
+/* 大數字一排 */
+.figures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px clamp(16px, 3vw, 28px);
+  margin: 0;
+}
+.figures div {
+  margin: 0;
+}
+.figures dt {
+  font-size: 13px;
+  color: var(--d-muted);
+}
+.figures dd {
+  margin: 0;
+  font-family: var(--d-num);
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 1.1;
+  font-weight: 700;
+}
+.figures dd small {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--d-muted);
+  margin-left: 3px;
+}
+.figures .delta {
+  display: block;
+  font-family: var(--d-num);
+  font-size: 13px;
+  font-weight: 700;
+}
+.delta-good {
+  color: #2f7d5b;
+}
+.delta-watch {
+  color: var(--d-orange-ink);
+}
+.legend-line {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--d-muted);
+}
+.legend-line i {
+  display: inline-block;
+  width: 14px;
+  height: 3px;
+  border-radius: 2px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ───────────── 會員卡 ───────────── */
+.member-card {
+  position: relative;
+  border-radius: 14px;
+  padding: 18px 20px 16px;
+  background: var(--d-slate);
+  color: #fff;
+  overflow: hidden;
+}
+.member-card::before {
+  content: '';
+  position: absolute;
+  inset: auto -40px -60px auto;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  border: 22px solid rgba(255, 255, 255, 0.08);
+}
+.member-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+.member-info {
+  min-width: 0;
+}
+
+/* 會員照片：點一下可以選照片 */
+.member-photo {
+  position: relative;
+  z-index: 1;
+}
+.member-photo label {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: clamp(84px, 9vw, 112px);
+  aspect-ratio: 3 / 4;
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.14);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+.member-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-initial {
+  font-size: 34px;
+  font-weight: 700;
+}
+.photo-action {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 5px 0;
+  text-align: center;
+  font-size: 12px;
+  background: rgba(24, 32, 43, 0.6);
+  transform: translateY(100%);
+  transition: transform 180ms var(--d-ease);
+}
+.member-photo label:hover .photo-action,
+.member-photo input:focus-visible + label .photo-action {
+  transform: none;
+}
+.member-photo input:focus-visible + label {
+  outline: 2px solid var(--d-orange);
+  outline-offset: 2px;
+}
+@media (hover: none) {
+  .photo-action {
+    transform: none;
+  }
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+.member-card .name {
+  font-size: 18px;
+  font-weight: 700;
+}
+.member-card .no {
+  font-family: var(--d-num);
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+.member-card dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 10px 0 0;
+  font-size: 14px;
+}
+.member-card dt {
+  opacity: 0.75;
+}
+.member-card dd {
+  margin: 0;
+  font-size: 14px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.member-card .state {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ───────────── 課程堂數 ───────────── */
+.plans {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.plan {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.plan-name {
+  font-weight: 700;
+}
+.plan-meta {
+  font-size: 14px;
+  color: var(--d-muted);
+}
+.plan-left {
+  margin-left: auto;
+  text-align: right;
+  font-size: 14px;
+  color: var(--d-muted);
+}
+.plan-left b {
+  display: block;
+  font-family: var(--d-num);
+  font-size: clamp(22px, 2.6vw, 26px);
+  line-height: 1;
+  font-weight: 700;
+  color: var(--d-ink);
+}
+.plan-left.is-low b {
+  color: var(--d-red);
+}
+.plan-warn {
+  font-size: 13px;
+  color: var(--d-red);
+}
+
+/* ───────────── 教練：時間軸課表 ───────────── */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+.tl-slot {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 18px;
+  position: relative;
+}
+/* 左側的時間軸線 */
+.tl-slot::before {
+  content: '';
+  position: absolute;
+  left: 117px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--d-line);
+}
+.tl-slot-time {
+  padding: 14px 0;
+  text-align: right;
+  font-family: var(--d-num);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+.tl-slot-time small {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--d-muted);
+  margin-top: 4px;
+}
+.tl-slot-body {
+  margin: 6px 0 6px 18px;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  position: relative;
+}
+.tl-slot-body::before {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  translate: 0 -50%;
+  background: var(--d-panel);
+  border: 2px solid var(--d-line-strong);
+}
+.tl-slot.is-booked .tl-slot-body {
+  background: var(--d-slate-soft);
+}
+.tl-slot.is-booked .tl-slot-body::before {
+  border-color: var(--d-slate);
+  background: var(--d-slate);
+}
+.tl-slot.is-open .tl-slot-body {
+  border: 1.5px dashed var(--d-line-strong);
+  color: var(--d-muted);
+}
+.tl-slot.is-done {
+  opacity: 0.55;
+}
+.tl-slot.is-now .tl-slot-body {
+  background: var(--d-orange-soft);
+  box-shadow: inset 0 0 0 1.5px var(--d-orange);
+}
+.tl-slot.is-now .tl-slot-body::before {
+  border-color: var(--d-orange);
+  background: var(--d-orange);
+}
+.tl-slot-student {
+  font-size: 16px;
+  font-weight: 700;
+}
+.tl-slot-course {
+  font-size: 14px;
+  color: var(--d-muted);
+}
+.tl-slot-tag {
+  font-size: 13px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--d-panel);
+  color: var(--d-slate);
+}
+.tl-slot.is-now .tl-slot-tag {
+  background: var(--d-orange);
+  color: #fff;
+}
+.tl-slot-actions {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tl-slot-actions button {
+  font: inherit;
+  font-size: 14px;
+  padding: 5px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--d-line-strong);
+  background: var(--d-panel);
+  color: var(--d-ink);
+  cursor: pointer;
+  transition:
+    border-color 160ms,
+    color 160ms;
+}
+.tl-slot-actions button:hover {
+  border-color: var(--d-ink);
+}
+.tl-slot-actions button.danger:hover {
+  border-color: var(--d-red);
+  color: var(--d-red);
+}
+
+/* 「現在」線 */
+.now-line {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 18px;
+  align-items: center;
+  height: 24px;
+  position: relative;
+  z-index: 2;
+}
+.now-line span {
+  text-align: right;
+  white-space: nowrap;
+  font-family: var(--d-num);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--d-orange-ink);
+  translate: 0 -1px;
+}
+.now-line i {
+  position: relative;
+  height: 2px;
+  background: var(--d-orange);
+  margin-left: 2px;
+}
+.now-line i::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  translate: -1px -50%;
+  background: var(--d-orange);
+}
+
+.empty-note {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--d-muted);
+}
+
+/* ───────────── 動態：開場一次＋回應使用者操作 ───────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .d-hero {
+    animation: d-drop 600ms var(--d-ease) both;
+  }
+  .d-hero-time strong,
+  .score-item b {
+    animation: d-pop 700ms var(--d-ease) 150ms both;
+  }
+  /* 換日期時 key 改變，課表重新逐列進場 */
+  .tl-slot {
+    animation: d-slide 420ms var(--d-ease) both;
+    animation-delay: calc(var(--i) * 60ms);
+  }
+  .now-line i::before {
+    animation: d-pulse 1.8s ease-out infinite;
+  }
+  .now-line i {
+    transform-origin: left;
+    animation: d-grow 700ms var(--d-ease) 500ms both;
+  }
+}
+@keyframes d-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+@keyframes d-pop {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@keyframes d-slide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+@keyframes d-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+@keyframes d-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 101, 30, 0.5);
+  }
+  70%,
+  100% {
+    box-shadow: 0 0 0 10px rgba(255, 101, 30, 0);
+  }
+}
+
+/* ───────────── RWD：依 Dashboard 本身的寬度調整（Sidebar 會佔掉左邊空間） ───────────── */
+@container (max-width: 920px) {
+  .dash-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@container (max-width: 680px) {
+  .d-hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .d-hero-label {
+    padding-top: 0;
+  }
+  .d-hero-count {
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 6px 14px;
+    flex-wrap: wrap;
+  }
+  .d-hero-count b {
+    display: inline;
+  }
+  .d-hero-count .d-hero-btn {
+    margin-top: 0;
+  }
+  .score {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px 20px;
+  }
+  .score-item.is-next {
+    grid-column: 1 / -1;
+  }
+  .tl-slot,
+  .now-line {
+    grid-template-columns: 58px minmax(0, 1fr);
+    gap: 8px;
+  }
+  .tl-slot::before {
+    left: 75px;
+  }
+  .tl-slot-time {
+    font-size: 16px;
+  }
+  .tl-slot-body {
+    gap: 8px 12px;
+    padding: 10px 12px;
+  }
+  .tl-slot-actions {
+    margin-left: 0;
+    width: 100%;
+  }
+  .now-line span {
+    font-size: 12px;
+  }
+}
+@container (max-width: 460px) {
+  .member-photo label {
+    width: 72px;
+  }
+  .member-card {
+    gap: 12px;
+    padding: 16px;
+  }
+  .tl-slot,
+  .now-line {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tl-slot::before,
+  .tl-slot-body::before,
+  .now-line i::before {
+    display: none;
+  }
+  .tl-slot-time {
+    text-align: left;
+    padding: 10px 0 0;
+  }
+  .tl-slot-time small {
+    display: inline;
+    margin-left: 6px;
+  }
+  .tl-slot-body {
+    margin: 6px 0;
+  }
+  .now-line span {
+    text-align: left;
+  }
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .plan {
+    flex-wrap: wrap;
+  }
+  .panel-head {
+    flex-wrap: wrap;
+  }
+  .dash-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* ───────────── 大螢幕：一個畫面看完，不用捲動 ─────────────
+ * 螢幕夠寬又夠高時，Dashboard 剛好填滿視窗；圖表跟著剩下的空間縮放。
+ * 螢幕太矮時不套用，維持一般往下捲的排版。 */
+.chart-box {
+  min-width: 0;
+}
+@media (min-width: 1100px) and (min-height: 700px) {
+  .main:has(.dash) {
+    height: 100vh;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    overflow-y: auto;
+  }
+  .main:has(.dash) > .dash {
+    height: 100%;
+    gap: 12px;
+  }
+  .dash-head {
+    flex: none;
+  }
+  .dash-today b {
+    font-size: 20px;
+  }
+  .d-hero {
+    flex: none;
+    padding: 16px 24px;
+  }
+  .d-hero-time strong {
+    font-size: clamp(36px, 6vh, 50px);
+  }
+  .d-hero-count b {
+    font-size: 28px;
+  }
+  .d-hero-btn {
+    margin-top: 8px;
+    padding: 7px 16px;
+  }
+  .d-hero::after {
+    width: 200px;
+    height: 200px;
+  }
+
+  /* 學員：兩列卡片平分剩下的高度 */
+  .dash > .dash-grid {
+    flex: 1;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 12px;
+  }
+  .dash-grid > .panel {
+    min-height: 0;
+    overflow: hidden;
+    gap: 10px;
+    padding: 14px 18px;
+  }
+  .chart-box {
+    flex: 1;
+    min-height: 60px;
+    display: flex;
+  }
+  .chart-box .mc {
+    width: 100%;
+    height: 100%;
+  }
+  .figures dd {
+    font-size: clamp(20px, 3.2vh, 26px);
+  }
+  .member-card {
+    padding: 14px 18px;
+  }
+  .member-card dl {
+    margin-top: 10px;
+  }
+  .plans {
+    gap: 8px;
+  }
+  .ring {
+    width: clamp(48px, 7vh, 64px);
+  }
+
+  /* 教練：計分條變矮，課表填滿剩下的高度、每堂課變緊湊 */
+  .score-item b {
+    font-size: clamp(28px, 4.6vh, 38px);
+  }
+  .dash > .panel {
+    flex: 1;
+    min-height: 0;
+    padding: 14px 18px;
+    gap: 8px;
+  }
+  .dash > .panel > .timeline {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .dash > .panel > .timeline > .tl-slot {
+    flex: 1 1 auto;
+    max-height: 84px;
+    align-items: center;
+  }
+  .tl-slot-time {
+    padding: 8px 0;
+    font-size: 16px;
+  }
+  .tl-slot-time small {
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .tl-slot-body {
+    margin: 3px 0 3px 18px;
+    padding: 7px 14px;
+  }
+  .tl-slot-student {
+    font-size: 15px;
+  }
+  .tl-slot-course {
+    font-size: 13px;
+  }
+  .now-line {
+    height: 16px;
+  }
+}
+
+/* ───────────── 載入狀態與錯誤 ───────────── */
+.auth-note {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--d-orange-soft);
+  border: 1px solid #ffe0d0;
+  color: var(--d-orange-ink);
+  font-size: 14px;
+}
+.load-error {
+  margin: 0;
+  font-size: 14px;
+  color: var(--d-red);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+}
+.photo-error {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  width: max-content;
+  max-width: 220px;
+  margin: 0;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: var(--d-red);
+  color: #fff;
+}
+.member-photo label.is-busy {
+  cursor: progress;
+}
+.member-photo label.is-busy img {
+  opacity: 0.6;
+}
+.member-photo label.is-busy .photo-action {
+  transform: none;
+}
+
+/* ───────────── 教練端頁首：頭像＋姓名、編號、日期＋專長 ───────────── */
+.coach-id {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.coach-avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--d-slate);
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+.coach-text {
+  min-width: 0;
+}
+.coach-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 2px 10px;
+  margin: 0;
+  font-size: 15px;
+  font-weight: 400;
+}
+.coach-line b {
+  font-size: 20px;
+  font-weight: 700;
+}
+.coach-no {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: var(--d-muted);
+}
+.coach-date {
+  font-size: 14px;
+  color: var(--d-muted);
+}
+.coach-spec {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--d-muted);
+}
