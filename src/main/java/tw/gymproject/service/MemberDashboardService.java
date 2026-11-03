@@ -4,6 +4,7 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
@@ -168,7 +169,7 @@ public class MemberDashboardService {
             JOIN coach co         ON co.coachid = s.coachid
             WHERE mc.memberid = :memberid
               AND LOWER(b.bookingstatus) = 'booked'
-              AND (s.classdate > :today OR (s.classdate = :today AND s.starttime > :now))
+              AND (s.classdate > :today OR (s.classdate = :today AND s.starttime > CAST(:now AS time(0))))
             ORDER BY s.classdate, s.starttime
             """;
 
@@ -177,7 +178,7 @@ public class MemberDashboardService {
         LocalDateTime now = LocalDateTime.now();
         MapSqlParameterSource params = new MapSqlParameterSource("memberid", memberid)
                 .addValue("today", Date.valueOf(now.toLocalDate()))
-                .addValue("now", Time.valueOf(now.toLocalTime().withNano(0)));
+                .addValue("now", nowText(now));
         List<NextClassResponse> rows = jdbc.query(SQL_NEXT_CLASS, params,
                 (rs, i) -> new NextClassResponse(
                         rs.getInt("bookingid"),
@@ -225,7 +226,7 @@ public class MemberDashboardService {
               SUM(CASE WHEN LOWER(b.bookingstatus) = 'completed' THEN 1 ELSE 0 END) AS completed,
               SUM(CASE WHEN LOWER(b.bookingstatus) = 'cancelled' THEN 1 ELSE 0 END) AS cancelled,
               SUM(CASE WHEN LOWER(b.bookingstatus) = 'booked'
-                        AND (s.classdate > :today OR (s.classdate = :today AND s.starttime > :now))
+                        AND (s.classdate > :today OR (s.classdate = :today AND s.starttime > CAST(:now AS time(0))))
                        THEN 1 ELSE 0 END) AS upcoming
             FROM booking b
             JOIN membercourse mc  ON mc.membercourseid = b.membercourseid
@@ -237,7 +238,7 @@ public class MemberDashboardService {
         LocalDateTime now = LocalDateTime.now();
         MapSqlParameterSource params = new MapSqlParameterSource("memberid", memberid)
                 .addValue("today", Date.valueOf(now.toLocalDate()))
-                .addValue("now", Time.valueOf(now.toLocalTime().withNano(0)));
+                .addValue("now", nowText(now));
         // 沒有任何預約時 SUM 會是 NULL，getInt 會轉成 0
         return jdbc.queryForObject(SQL_BOOKING_STATS, params,
                 (rs, i) -> new BookingStatsResponse(
@@ -259,6 +260,15 @@ public class MemberDashboardService {
         jdbc.update("UPDATE member SET avatarurl = :avatarurl WHERE memberid = :memberid",
                 params.addValue("avatarurl", avatarurl));
         return old.get(0);
+    }
+
+    /**
+     * 「現在幾點」用文字傳給 SQL，再在 SQL 裡 CAST 成 time。
+     * 直接傳 java.sql.Time 的話，SQL Server 驅動程式預設會當成 datetime 送出，
+     * 和 time 欄位比大小會出錯（The data types time and datetime are incompatible）。
+     */
+    private static String nowText(LocalDateTime now) {
+        return now.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
     private static LocalTime toLocalTime(Time t) {
