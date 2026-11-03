@@ -7,25 +7,22 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.servlet.http.HttpSession;
-import tw.gymproject.dto.LoginResultDTO;
+import tw.gymproject.service.CoachSessionService;
 
 /**
  * 教練首頁的課表：
  *   GET /api/coach/schedules/gym?date=2026-11-03   全館所有教練的時段
  *   GET /api/coach/schedules/mine?date=2026-11-03  只有登入教練自己的時段（首頁時間軸用）
  *
- * 獨立版本：不依賴其他 Service / DTO，登入檢查和 SQL 都在這個檔案裡，
- * 只用到登入功能的 LoginResultDTO（session 的 "user"）。
+ * 登入檢查在 CoachSessionService（session 的 "user"），SQL 在這個檔案裡。
  * 回傳格式和管理員的 /admin/schedules/day 一樣。
  */
 @RestController
@@ -84,9 +81,11 @@ public class CoachGymScheduleController {
             """;
 
     private final NamedParameterJdbcTemplate jdbc;
+    private final CoachSessionService coachSession;
 
-    public CoachGymScheduleController(NamedParameterJdbcTemplate jdbc) {
+    public CoachGymScheduleController(NamedParameterJdbcTemplate jdbc, CoachSessionService coachSession) {
         this.jdbc = jdbc;
+        this.coachSession = coachSession;
     }
 
     /** 全館所有教練某一天的時段 */
@@ -94,7 +93,7 @@ public class CoachGymScheduleController {
     public List<GymScheduleRow> getGymSchedule(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             HttpSession session) {
-        requireCoach(session);
+        coachSession.requireCoach(session);
         return query(date, null);
     }
 
@@ -103,35 +102,7 @@ public class CoachGymScheduleController {
     public List<GymScheduleRow> getMySchedule(
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
             HttpSession session) {
-        LoginResultDTO user = requireCoach(session);
-        return query(date, currentCoachId(user));
-    }
-
-    /** 確認有登入、而且是教練 */
-    private LoginResultDTO requireCoach(HttpSession session) {
-        Object sessionUser = session.getAttribute("user");
-        if (!(sessionUser instanceof LoginResultDTO user)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "尚未登入或登入已失效");
-        }
-        if (!"coach".equalsIgnoreCase(user.getRole())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "目前登入身分不是教練");
-        }
-        return user;
-    }
-
-    /** 登入時通常已經放好 coachid；沒有的話用 accountid 反查 */
-    private Integer currentCoachId(LoginResultDTO user) {
-        if (user.getCoachid() != null) {
-            return user.getCoachid();
-        }
-        List<Integer> ids = jdbc.queryForList(
-                "SELECT coachid FROM coach WHERE accountid = :accountid",
-                new MapSqlParameterSource("accountid", user.getAccountid()),
-                Integer.class);
-        if (ids.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "找不到登入帳號對應的教練");
-        }
-        return ids.get(0);
+        return query(date, coachSession.getCurrentCoachId(session));
     }
 
     /** coachid 為 null 時查全館 */
