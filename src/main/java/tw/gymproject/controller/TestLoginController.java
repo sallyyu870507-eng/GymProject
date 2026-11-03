@@ -36,8 +36,8 @@ public class TestLoginController {
     }
 
     @PostMapping("/login")
-    public LoginResultDTO login(@RequestParam String username,
-                                @RequestParam String password,
+    public LoginResultDTO login(@RequestParam("username") String username,
+                                @RequestParam("password") String password,
                                 HttpSession session) {
         List<Map<String, Object>> rows = jdbc.queryForList("""
                 SELECT ua.accountid, ua.username, ua.password, ua.role,
