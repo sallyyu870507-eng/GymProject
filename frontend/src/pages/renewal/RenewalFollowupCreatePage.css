@@ -38,6 +38,15 @@
 .renewal-create-two-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 .renewal-create-status-hint { margin: -7px 0 17px; color: #7b8796; font-size: 13px; }
 .renewal-create-note-field { position: relative; }
+.renewal-followup-shortcuts { display: grid; gap: 8px; margin: 0 0 12px; }
+.renewal-followup-shortcuts-label { color: #3a4657; font-size: 14px; font-weight: 650; }
+.renewal-followup-shortcuts-description { color: #7b8796; font-size: 13px; font-weight: 400; line-height: inherit; }
+.renewal-followup-shortcuts-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.renewal-followup-shortcuts-list button { border: 1px solid #f3c5a3; border-radius: 999px; padding: 7px 12px; color: #a94d13; background: #fff8f2; font: inherit; font-size: 13px; cursor: pointer; }
+.renewal-followup-shortcuts-list button:hover:not(:disabled) { border-color: #f97316; background: #fff0e5; }
+.renewal-followup-shortcuts-list button:focus-visible { outline: 3px solid #ffc096; outline-offset: 2px; }
+.renewal-followup-shortcuts-list button:disabled { cursor: not-allowed; opacity: .55; }
+.renewal-followup-shortcuts-message { min-height: 1.25em; color: #bd3c31; font-size: 12px; }
 .renewal-create-note-count { justify-self: end; color: #8793a2; font-size: 12px; font-weight: 400; }
 .renewal-create-field-error { color: #bd3c31; font-size: 12px; font-weight: 500; }
 .renewal-create-field [aria-invalid="true"] { border-color: #d9534f; }

@@ -13,6 +13,9 @@ public class InBodyPageResponse {
 
     private Integer memberCourseId;
 
+    // 查詢範圍：PLAN 或 COACH_MEMBER
+    private String scope;
+
     private LocalDateTime asOfDateTime;
 
     // 最新一筆有日期的有效量測
@@ -31,6 +34,11 @@ public class InBodyPageResponse {
         private Integer inBodyId;
 
         private Integer attendanceId;
+
+        // 此筆量測所屬課程方案
+        private Integer memberCourseId;
+
+        private String courseName;
 
         private LocalDate recordDate;
 

@@ -64,6 +64,8 @@
 .renewal-inbody-metric-tabs { gap: 5px; padding: 0; border-radius: 0; background: transparent; }
 .renewal-inbody-metric-tabs button { min-width: 92px; border: 1px solid #dbe2ea; border-radius: 7px; padding: 8px 13px; background: #fff; }
 .renewal-inbody-metric-tabs button.is-active { border-color: #f97316; background: #f97316; }
+.renewal-inbody-heading-info { display: grid; gap: 5px; min-width: 0; }
+.renewal-inbody-heading-info p { max-width: 520px; line-height: 1.45; }
 .renewal-inbody-latest, .renewal-inbody-chart-card, .renewal-inbody-history { margin-top: 10px; padding: 0; border: 0; border-radius: 0; }
 .renewal-inbody-latest h3 { display: none; }
 .renewal-inbody-latest-values { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 0; }

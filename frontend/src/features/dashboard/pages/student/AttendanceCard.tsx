@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { request } from '../../../../api.js';
 import { Card } from '../../components/ui';
@@ -8,11 +8,45 @@ type WeeklyAttendance = {
   checkins: number;
 };
 
+function parseWeekDate(value: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatDate(date: Date) {
+  return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function weekRange(value: string) {
+  const start = parseWeekDate(value);
+  if (!start) return `${value}（日期格式無法辨識）`;
+  const end = new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6);
+  return `${formatDate(start)}～${formatDate(end)}`;
+}
+
+function monthDay(value: string) {
+  const date = parseWeekDate(value);
+  return date ? `${String(date.getMonth() + 1).padStart(2, '0')}/${String(date.getDate()).padStart(2, '0')}` : value;
+}
+
+function integerStep(maximum: number) {
+  const raw = Math.max(1, maximum / 4);
+  const magnitude = 10 ** Math.floor(Math.log10(raw));
+  const fraction = raw / magnitude;
+  const factor = fraction <= 1 ? 1 : fraction <= 2 ? 2 : fraction <= 5 ? 5 : 10;
+  return Math.max(1, Math.ceil(factor * magnitude));
+}
+
 export default function AttendanceCard() {
   const [weeks, setWeeks] = useState<WeeklyAttendance[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [attempt, setAttempt] = useState(0);
+  const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
+  const chartRef = useRef<HTMLElement>(null);
+  const [chartWidth, setChartWidth] = useState(720);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -56,10 +90,35 @@ export default function AttendanceCard() {
     return () => controller.abort();
   }, [attempt]);
 
+  useEffect(() => {
+    const element = chartRef.current;
+    if (!element || typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(([entry]) => setChartWidth(entry.contentRect.width));
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
   const total = weeks.reduce((sum, item) => sum + item.checkins, 0);
   const activeWeeks = weeks.filter((item) => item.checkins > 0).length;
   const average = weeks.length ? (total / weeks.length).toFixed(1) : '0.0';
   const maximum = Math.max(1, ...weeks.map((item) => item.checkins));
+  const step = integerStep(maximum);
+  const axisMax = Math.max(step, Math.ceil(maximum / step) * step);
+  const ticks = Array.from({ length: Math.floor(axisMax / step) + 1 }, (_, index) => index * step);
+  const selected = weeks.find((item) => item.week === selectedWeek);
+  const labelLimit = Math.min(weeks.length, Math.max(2, Math.floor((chartWidth - 40) / 38)));
+  const labelIndexes = new Set<number>();
+  if (weeks.length <= labelLimit) {
+    weeks.forEach((_, index) => labelIndexes.add(index));
+  } else {
+    for (let i = 0; i < labelLimit; i += 1) {
+      labelIndexes.add(Math.round(i * (weeks.length - 1) / (labelLimit - 1)));
+    }
+  }
+  const graphTop = 20;
+  const graphBottom = 136;
+  const graphHeight = graphBottom - graphTop;
+  const yForValue = (value: number) => graphTop + (1 - value / axisMax) * graphHeight;
 
   return (
     <Card
@@ -88,68 +147,50 @@ export default function AttendanceCard() {
         <p className="muted">目前尚無出席紀錄。</p>
       ) : (
         <>
-          <div className="mini-stats">
-            <div>
-              <b>{total}</b>
-              <span>近 {weeks.length} 週出席次數</span>
-            </div>
-            <div>
-              <b>{activeWeeks}</b>
-              <span>有出席的週數</span>
-            </div>
-            <div>
-              <b>{average}</b>
-              <span>平均每週出席次數</span>
-            </div>
+          <div className="member-dashboard-stats member-attendance-stats">
+            <div className="member-dashboard-stat"><span className="member-dashboard-stat-label">近 {weeks.length} 週出席次數</span><strong>{total}<small>次</small></strong></div>
+            <div className="member-dashboard-stat"><span className="member-dashboard-stat-label">有出席的週數</span><strong>{activeWeeks}<small>週</small></strong></div>
+            <div className="member-dashboard-stat"><span className="member-dashboard-stat-label">平均每週出席次數</span><strong>{average}<small>次</small></strong></div>
           </div>
 
-          <figure style={{ margin: '24px 0 0' }}>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))`,
-                gap: 6,
-                alignItems: 'end',
-                height: 160,
-                borderBottom: '1px solid var(--line)',
-              }}
-            >
-              {weeks.map((item) => (
-                <div
-                  key={item.week}
-                  title={`${item.week} 當週：出席 ${item.checkins} 次`}
-                  aria-label={`${item.week} 當週出席 ${item.checkins} 次`}
-                  style={{ textAlign: 'center', minWidth: 0 }}
-                >
-                  <span style={{ fontSize: 12, color: 'var(--muted)' }}>
-                    {item.checkins}
-                  </span>
-                  <div
-                    aria-hidden="true"
-                    style={{
-                      height: (item.checkins / maximum) * 120,
-                      background: 'var(--c1)',
-                      borderRadius: '4px 4px 0 0',
-                    }}
-                  />
+          <figure className="member-attendance-figure" ref={chartRef}>
+            <figcaption className="member-attendance-caption">每柱代表一週</figcaption>
+            <div className="member-attendance-chart">
+              <div className="member-attendance-y-axis" aria-hidden="true">
+                <span className="member-attendance-y-unit">次</span>
+                {ticks.map((tick) => <span key={tick} style={{ top: `${yForValue(tick)}px` }}>{tick}</span>)}
+              </div>
+              <div className="member-attendance-plot">
+                {ticks.map((tick) => (
+                  <div key={tick} className="member-attendance-grid-line" style={{ top: `${yForValue(tick)}px` }} />
+                ))}
+                <div className="member-attendance-columns" style={{ gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` }}>
+                  {weeks.map((item) => (
+                    <button
+                      key={item.week}
+                      type="button"
+                      className={`member-attendance-column${selectedWeek === item.week ? ' is-selected' : ''}`}
+                      title={`${weekRange(item.week)}：出席 ${item.checkins} 次`}
+                      aria-label={`${weekRange(item.week)}，出席 ${item.checkins} 次`}
+                      aria-pressed={selectedWeek === item.week}
+                      onClick={() => setSelectedWeek((current) => current === item.week ? null : item.week)}
+                    >
+                      <span className={`member-attendance-count${item.checkins === 0 ? ' is-zero' : ''}`} style={{ top: `${yForValue(item.checkins) - 18}px` }}>{item.checkins || ''}</span>
+                      <span
+                        className={`member-attendance-bar${item.checkins === 0 ? ' is-zero' : ''}`}
+                        style={{ height: `${(item.checkins / axisMax) * graphHeight}px` }}
+                        aria-hidden="true"
+                      />
+                    </button>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
-
-            <figcaption
-              className="muted small"
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: 8,
-                marginTop: 8,
-              }}
-            >
-              <span>{weeks[0].week}</span>
-              <span>每柱代表一週，單位：次</span>
-              <span>{weeks[weeks.length - 1].week}</span>
-            </figcaption>
+            <div className="member-attendance-x-title">週起始日</div>
+            <div className="member-attendance-x-axis" style={{ gridTemplateColumns: `repeat(${weeks.length}, minmax(0, 1fr))` }}>
+              {weeks.map((item, index) => <span key={item.week}>{labelIndexes.has(index) ? monthDay(item.week) : ''}</span>)}
+            </div>
+            {selected && <p className="member-attendance-detail" role="status">{weekRange(selected.week)}：出席 {selected.checkins} 次</p>}
           </figure>
         </>
       )}

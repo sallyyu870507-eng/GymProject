@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { confirmDialog } from './notifications.js'
+import { createNavigationGuard } from './navigationGuard.js'
 import { Link, Navigate, Outlet, Route, Routes, useBeforeUnload, useBlocker, useLocation, useNavigate } from 'react-router'
 import Sidebar from './components/Sidebar.jsx'
 import MemberPage from './MemberPage.jsx'
@@ -28,9 +29,13 @@ function Shell({ user }) {
   const navigate = useNavigate()
   const [hasUnsavedChanges, setUnsavedChanges] = useState(false)
   const unsavedChanges = useRef(false)
+  const navigationGuard = useRef(createNavigationGuard())
   const setHasUnsavedChanges = useCallback(value => {
     unsavedChanges.current = value
     setUnsavedChanges(value)
+  }, [])
+  const allowNavigationTo = useCallback(destination => {
+    navigationGuard.current.allowNextNavigationTo(destination)
   }, [])
   const [navigationLocked, setNavigationLocked] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -56,7 +61,12 @@ function Shell({ user }) {
     }
   }, [mobileOpen])
   const blocker = useBlocker(({ currentLocation, nextLocation }) =>
-    (unsavedChanges.current || navigationLocked) && currentLocation.pathname !== nextLocation.pathname)
+    navigationGuard.current.shouldBlock({
+      currentLocation,
+      nextLocation,
+      hasUnsavedChanges: unsavedChanges.current,
+      navigationLocked,
+    }))
   useEffect(() => {
     if (blocker.state !== 'blocked') return
     if (navigationLocked) { blocker.reset(); return }
@@ -94,7 +104,7 @@ function Shell({ user }) {
     <div id="gym-navigation" className={`navigation-panel ${mobileOpen ? 'open' : ''}`}>
       <Sidebar user={user} role={user.role} activeItem={activeItem} navigationDisabled={navigationLocked} onNavigate={key => { navigate(destinations[key]); setMobileOpen(false) }} onBeforeLogout={async () => !navigationLocked && (!hasUnsavedChanges || await confirmDialog('尚有未儲存的內容，確定登出？', { title: '確定登出？', confirmLabel: '捨棄並登出' }))} />
     </div>
-    <main className="integrated-content"><Outlet context={{ userName: user.name || '', setHasUnsavedChanges, setNavigationLocked }} /></main>
+    <main className="integrated-content"><Outlet context={{ userName: user.name || '', setHasUnsavedChanges, setNavigationLocked, allowNavigationTo }} /></main>
   </div>
 }
 

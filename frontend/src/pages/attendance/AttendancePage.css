@@ -1204,33 +1204,11 @@
 }
 
 
-.attendance-history-more {
-    padding: 0;
-
-    border: none;
-
-    background: none;
-
-    color:
-            var(--attendance-primary);
-
-    font: inherit;
-
+.attendance-history-caption {
+    margin: 9px 0 12px;
+    color: var(--attendance-text-secondary);
     font-size: 13px;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-
-.attendance-history-more:hover {
-    text-decoration: underline;
-}
-
-.attendance-history-more:focus-visible {
-    outline: 3px solid var(--attendance-primary);
-    outline-offset: 3px;
-    border-radius: 3px;
+    line-height: 1.5;
 }
 
 
@@ -1419,102 +1397,6 @@
 
     color:
             var(--attendance-text-secondary);
-}
-
-
-/* =========================================================
-   History Drawer
-   ========================================================= */
-
-.history-drawer-backdrop {
-    position: fixed;
-
-    inset: 0;
-
-    display: flex;
-
-    justify-content: flex-end;
-
-    background:
-            rgba(15, 23, 42, 0.28);
-
-    z-index: 1000;
-}
-
-
-.history-drawer {
-    width:
-            min(420px, 90vw);
-
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-
-    padding: 24px;
-
-    box-sizing: border-box;
-
-    background:
-            var(--attendance-card-bg);
-
-    box-shadow:
-            -8px 0 24px
-            rgba(16, 24, 40, 0.12);
-}
-
-
-.history-drawer-header {
-    display: flex;
-
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 16px;
-
-    margin-bottom: 16px;
-}
-
-
-.history-drawer-header h2 {
-    margin: 0;
-    color: var(--attendance-text-main);
-    font-size: 19px;
-}
-
-
-.history-drawer-header button {
-    padding:
-            8px 12px;
-
-    border:
-            1px solid
-            var(--attendance-border);
-
-    border-radius: 8px;
-
-    background:
-            var(--attendance-card-bg);
-
-    cursor: pointer;
-}
-
-.history-drawer-header button:focus-visible {
-    outline: 3px solid var(--attendance-primary);
-    outline-offset: 2px;
-}
-
-.history-drawer-limit {
-    margin: 0 0 10px;
-    color: var(--attendance-text-secondary);
-    font-size: 13px;
-    line-height: 1.6;
-}
-
-.attendance-history-drawer-list {
-    flex: 0 0 auto;
 }
 
 
@@ -1721,15 +1603,5 @@
     }
 
 }
-
-@media (max-width: 600px) {
-    .history-drawer {
-        width: 100vw;
-        max-width: none;
-        padding: 18px 16px;
-    }
-}
-
-
 
 }

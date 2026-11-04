@@ -152,6 +152,8 @@ export type AttendanceSummary = {
 export type InBodyRecord = {
     inBodyId: number;
     attendanceId: number;
+    memberCourseId: number;
+    courseName: string;
     recordDate: string | null;
     classStartDateTime: string;
     weight: number | null;
@@ -167,8 +169,11 @@ export type InBodyTrendPoint = {
     value: number;
 };
 
+export type InBodyScope = "PLAN" | "COACH_MEMBER";
+
 export type InBodyPageResponse = {
     memberCourseId: number;
+    scope: InBodyScope;
     asOfDateTime: string;
     latestRecord: InBodyRecord | null;
     trends: {

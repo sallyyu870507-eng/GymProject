@@ -1,4 +1,5 @@
 import { sessionFetch } from '../sessionFetch.js'
+import { requestRenewalInBody } from "./renewalInBodyRequest.js";
 import type {
     RenewalCategory,
     RenewalFollowupStatus,
@@ -203,10 +204,7 @@ export async function getRenewalInBody(
     page: number,
     signal?: AbortSignal,
 ): Promise<InBodyPageResponse> {
-    const params = new URLSearchParams({ page: String(page), size: "5" });
-    const response = await sessionFetch(`/api/coach/renewal/${memberCourseId}/inbody?${params.toString()}`, {
-        method: "GET", credentials: "include", signal, headers: { Accept: "application/json" },
-    });
+    const response = await requestRenewalInBody(memberCourseId, page, signal);
     if (!response.ok) throw await toRenewalApiError(response);
     return (await response.json()) as InBodyPageResponse;
 }

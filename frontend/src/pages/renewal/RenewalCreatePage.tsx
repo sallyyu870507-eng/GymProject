@@ -7,7 +7,7 @@ import "../../components/renewal/RenewalContentContainer.css";
 import "./RenewalFollowupCreatePage.css";
 import "./RenewalCreatePage.css";
 
-type LayoutContext = { setHasUnsavedChanges: (value: boolean) => void; setNavigationLocked: (value: boolean) => void };
+type LayoutContext = { setHasUnsavedChanges: (value: boolean) => void; setNavigationLocked: (value: boolean) => void; allowNavigationTo: (destination: string) => void };
 type RouteState = { restoreFilters?: unknown; returnScrollY?: number; fromDetailsSearch?: string; [key: string]: unknown };
 type Values = { courseId: string; addedSessions: string; amount: string; paymentMethod: string; purchaseDate: string; note: string };
 type Errors = Partial<Record<keyof Values, string>> & { form?: string };
@@ -49,7 +49,7 @@ export default function RenewalCreatePage() {
     const memberCourseId = idParam && /^[1-9]\d*$/.test(idParam) ? Number(idParam) : null;
     const navigate = useNavigate(); const location = useLocation();
     const routeState = location.state as RouteState | null;
-    const { setHasUnsavedChanges, setNavigationLocked } = useOutletContext<LayoutContext>();
+    const { setHasUnsavedChanges, setNavigationLocked, allowNavigationTo } = useOutletContext<LayoutContext>();
     const [options, setOptions] = useState<RenewalOptionsResponse | null>(null);
     const [loading, setLoading] = useState(true); const [loadError, setLoadError] = useState<unknown>(null); const [attempt, setAttempt] = useState(0);
     const [values, setValues] = useState<Values>(initialValues); const [errors, setErrors] = useState<Errors>({});
@@ -118,7 +118,9 @@ export default function RenewalCreatePage() {
                 renewalCreated: true,
                 renewalResult: { newMemberCourseId: result.newMemberCourseId, courseName: result.courseName, addedSessions: result.addedSessions, purchaseDate: result.purchaseDate },
             };
-            navigate(`/renewal/${memberCourseId}?tab=overview`, { replace: true, state: successState });
+            const destination = `/renewal/${memberCourseId}?tab=overview`;
+            allowNavigationTo(destination);
+            navigate(destination, { replace: true, state: successState });
         } catch (error) {
             const message = errorText(error); setErrors({ form: message });
             if (isOutcomeUnknown(error)) {

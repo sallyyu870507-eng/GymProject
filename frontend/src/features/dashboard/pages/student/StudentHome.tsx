@@ -13,6 +13,7 @@ type MemberProfile = {
   name: string;
   phone: string | null;
   birthday: string | null;
+  avatarurl: string | null;
   status: string;
 };
 
@@ -22,6 +23,7 @@ export default function StudentHome() {
   const isToday = date === todayISO();
 
   const [profile, setProfile] = useState<MemberProfile | null>(null);
+  const [avatarFailed, setAvatarFailed] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState('');
   const [profileAttempt, setProfileAttempt] = useState(0);
@@ -34,7 +36,10 @@ export default function StudentHome() {
 
     request('/api/member/profile', { signal: controller.signal })
       .then((data) => {
-        if (!controller.signal.aborted) setProfile(data);
+        if (!controller.signal.aborted) {
+          setAvatarFailed(false);
+          setProfile(data);
+        }
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted) return;
@@ -92,7 +97,21 @@ export default function StudentHome() {
 	      <p role="alert">{profileError}</p>
 	    ) : profile ? (
 	      <div className="member-summary">
-			<div className="avatar avatar-empty" aria-hidden="true" />
+			{profile.avatarurl && !avatarFailed ? (
+			  <img
+			    className="avatar"
+			    src={profile.avatarurl}
+			    alt=""
+			    onError={() => setAvatarFailed(true)}
+			  />
+			) : (
+			  <div className="avatar avatar-empty" aria-hidden="true">
+			    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+			      <circle cx="12" cy="8" r="4" />
+			      <path d="M4.5 21a7.5 7.5 0 0 1 15 0" />
+			    </svg>
+			  </div>
+			)}
 	        <dl className="meta">
 	          <dt>姓名</dt>
 	          <dd>{profile.name || '—'}</dd>
