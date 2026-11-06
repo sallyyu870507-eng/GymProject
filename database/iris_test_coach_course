@@ -46,3 +46,48 @@ FROM coachcourse AS cc
 JOIN coach AS c ON c.coachid = cc.coachid
 JOIN course AS co ON co.courseid = cc.courseid
 ORDER BY c.coachno, co.courseid;
+
+
+UPDATE coach
+SET accountid = coachid,
+    gender = N'女',
+    phone = '0912345601',
+    email = 'amy@example.com',
+    specialty = N'初階重訓、中階重訓、TRX'
+WHERE coachid = 1 AND coachno = 'C001';
+
+UPDATE coach
+SET accountid = coachid,
+    gender = N'男',
+    phone = '0923456702',
+    email = 'ben@example.com',
+    specialty = N'筋膜放鬆'
+WHERE coachid = 2 AND coachno = 'C002';
+
+UPDATE coach
+SET accountid = coachid,
+    gender = N'男',
+    phone = '0934567803',
+    email = 'chris@example.com',
+    specialty = N'中階重訓、高階重訓'
+WHERE coachid = 3 AND coachno = 'C003';
+
+UPDATE coach
+SET accountid = coachid,
+    gender = N'男',
+    phone = '0945678904',
+    email = 'david@example.com',
+    specialty = N'初階重訓、筋膜放鬆'
+WHERE coachid = 4 AND coachno = 'C004';
+
+UPDATE coach
+SET accountid = coachid,
+    gender = N'男',
+    phone = '0956789005',
+    email = 'eric@example.com',
+    specialty = N'高階重訓、TRX'
+WHERE coachid = 5 AND coachno = 'C005';
+
+SELECT *
+FROM coach
+ORDER BY coachid;
